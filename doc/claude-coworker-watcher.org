@@ -1,0 +1,82 @@
+* Claude coworker watcher
+:PROPERTIES:
+:ID:       ed93e2a0-e5fb-44ae-8114-3e765337c23f
+:END:
+
+** Premises
+:PROPERTIES:
+:ID:       b0aa731d-cbe8-4c76-85f6-2b527a67f564
+:END:
+
+- ai :≡ The name of the current system user that an AI agent identifies with ; /e.g./ =claude=
+- owner :≡ The name of the current system user that delegates tasks to an AI agent ; /e.g./ =alice=
+- workdir :≡ The directory on the current system that the AI agent has control over ; /e.g./ =~/claude/src/infra=
+
+** SelectedFile
+:PROPERTIES:
+:ID:       c3f2a1b0-1234-5678-abcd-ef0123456789
+:END:
+
+Premises
+- f : SelectedFile
+
+Conclusion
+- f is a file under workdir but not under workdir/.git
+
+** owner_permission
+:PROPERTIES:
+:ID:       5aa7695b-3054-43d5-a1a9-aa3d3973b14d
+:END:
+
+Premises
+- owner : User ; /e.g./ =alice=
+- path : SelectedFile ; /e.g./ =$INFRA/dir=
+- owner is the inode owner of path
+- permission :≡ owner_permission(owner path)
+
+Conclusion
+- permission : String that represents path's owner's permission bits ; /e.g./ "rwx"
+
+** transfer_permission
+:PROPERTIES:
+:ID:       409a7e41-7ac5-435b-873a-7bd0d232bd7c
+:END:
+
+Premises
+- path : SelectedFile ; /e.g./ =$INFRA/dir=
+- transfer_permission(path)
+
+Conclusion
+- ai permission over path is updated to match owner_permission(owner path)
+
+** transfer_all_permissions
+:PROPERTIES:
+:ID:       6a6a2cab-31fa-484b-af88-0166b00d78e0
+:END:
+
+Conclusion
+- For any =f= : SelectedFile ; transfer_permission(f)
+
+** transfer_permission_on_change
+:PROPERTIES:
+:ID:       bd7b85de-eaef-48e1-a639-423d970bb3d0
+:END:
+
+Conclusion
+- inotifywait is started before transfer_all_permissions
+- Eventually, for any =f= : SelectedFile that has been created or whose
+  permissions have been altered by owner ; transfer_permission(f)
+
+Note
+- Directories moved into workdir are not handled automatically. The owner
+  is expected to restart the watcher after a =mv= if a full sync is needed.
+
+** ■
+
+Premises
+- ./claude-coworker-watcher owner ai workdir
+
+Conclusion
+- For any =f= : SelectedFile ; we eventually have:
+  - permission :≡ owner_permission(owner f)
+  - owner_permission(ai f) = permission

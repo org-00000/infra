@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+# Test [[ref:e9579cda-57f3-4d04-8200-d3460365ce75]]
+
+set -euxo pipefail
+IFS=$'\n\t'
+
+# ── Premises ──────────────────────────────────────────────────────────────────
+
+ROOT="$(git rev-parse --show-toplevel)"
+BIN="$ROOT/bin"
+WATCHER_SCRIPT="$BIN/claude-coworker-watcher"
+OWNER="${1:?The name of the user that hosts the AI agent; e.g. phf}"
+AI="${2:?The name of the user that the AI agent identifies with; e.g. claude}"
+if ! id "$AI" &>/dev/null; then
+  echo "ERROR | AI user does not exist. AI: $AI" >&2
+  exit 1
+fi
+WORKDIR="${3:?The path to the directory owned by $OWNER and provided to $AI}"
+WATCHER_UNIT="claude-coworker-watcher"
+UNIT_PATH="/root/.guix-profile/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+confirm_sudo() {
+  echo "SUDO | $*"
+  read -r -p "     Proceed? [y/N] " answer
+  case "$answer" in
+  [yY]) sudo "$@" ;;
+  *)
+    echo "ABORT | user declined" >&2
+    exit 1
+    ;;
+  esac
+}
+
+# ── Setup ─────────────────────────────────────────────────────────────────────
+
+# Clean up any leftover state from previous runs (files may be owned by root
+# or phf, so rm as root).
+rm -rf "$WORKDIR"
+mkdir -p "$WORKDIR"
+chown "$OWNER:$OWNER" "$WORKDIR"
+
+# Stop and reset any previously running watcher unit.
+sudo systemctl stop "$WATCHER_UNIT" 2>/dev/null || true
+sudo systemctl reset-failed "$WATCHER_UNIT" 2>/dev/null || true
+
+# ── Start the watcher ─────────────────────────────────────────────────────────
+
+DESCRIPTION="ACL sync: mirror ${AI} permissions under ${WORKDIR}"
+confirm_sudo systemd-run \
+  --unit="$WATCHER_UNIT" \
+  --collect \
+  --description="$DESCRIPTION" \
+  --setenv=PATH="$UNIT_PATH" \
+  -- bash "$WATCHER_SCRIPT" "$OWNER" "$AI" "$WORKDIR"
+
+confirm_sudo systemctl status "$WATCHER_UNIT"
+echo "INFO | logs: sudo journalctl -u $WATCHER_UNIT -f"
+
+# ── Tests ─────────────────────────────────────────────────────────────────────
+
+# Test 1: new file created by OWNER
+sudo -u "$OWNER" touch "$WORKDIR/file1"
+sleep 0.5
+getfacl "$WORKDIR/file1" | grep "user:${AI}"
+echo "EXPECTED | user:${AI}:rw-"
+
+# Test 2: chmod +x propagates
+sudo -u "$OWNER" chmod +x "$WORKDIR/file1" || true
+sleep 0.5
+getfacl "$WORKDIR/file1" | grep "user:${AI}"
+echo "EXPECTED | user:${AI}:rwx"
+
+# Test 3: chmod -w propagates
+sudo -u "$OWNER" chmod -w "$WORKDIR/file1" || true
+sleep 0.5
+getfacl "$WORKDIR/file1" | grep "user:${AI}"
+echo "EXPECTED | user:${AI}:r-x"
+
+# Test 4: new directory
+sudo -u "$OWNER" mkdir "$WORKDIR/dir1"
+sleep 0.5
+getfacl "$WORKDIR/dir1" | grep "user:${AI}"
+echo "EXPECTED | user:${AI}:rwx"
+getfacl "$WORKDIR/dir1" | grep "default:user:${AI}"
+echo "EXPECTED | default:user:${AI}:rwx"
+
+# Test 5: file created inside new directory inherits ACL
+sudo -u "$OWNER" touch "$WORKDIR/dir1/file2"
+sleep 0.5
+getfacl "$WORKDIR/dir1/file2" | grep "user:${AI}"
+echo "EXPECTED | user:${AI}:rw-"
+
+# Test 6: AI can actually read and execute a file created by OWNER
+sudo -u "$OWNER" bash -c "echo 'echo hello' > $WORKDIR/hello.sh"
+sudo -u "$OWNER" chmod +x "$WORKDIR/hello.sh" || true
+sleep 0.5
+confirm_sudo -u "$AI" bash "$WORKDIR/hello.sh"
+echo "EXPECTED | hello"
+
+# ── Teardown ──────────────────────────────────────────────────────────────────
+
+confirm_sudo systemctl stop "$WATCHER_UNIT"
+rm -rf "$WORKDIR"

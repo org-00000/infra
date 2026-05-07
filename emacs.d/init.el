@@ -622,6 +622,8 @@
 (setq org-babel-scheme-implementation 'geiser)
 
 
+(global-set-key (kbd "M-m") #'string-rectangle)
+
 ;;; --- Display of results --------------------------------------------------
 
 ;; Inline images are shown automatically after a block produces one.

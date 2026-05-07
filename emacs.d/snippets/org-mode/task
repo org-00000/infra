@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: task
+# key: task
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# --
+*** TODO ${1:name}
+:PROPERTIES:
+:ID: `(org-id-new)`
+:OWNER: nobody
+:END:
+
+- Objective :: …
+- Test :: …
+- Plan :: …
+- Result :: …
