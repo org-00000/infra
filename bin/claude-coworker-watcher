@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+
+# [[ref:ed93e2a0-e5fb-44ae-8114-3e765337c23f][Specification]]
+# [[id:e9579cda-57f3-4d04-8200-d3460365ce75]]
+
+set -euo pipefail
+IFS=$'\n\t'
+
+################################################
+# [[ref:b0aa731d-cbe8-4c76-85f6-2b527a67f564]] #
+################################################
+
+if [[ ! "$(id -u)" -eq 0 ]]; then
+  echo "ERROR | must run as root" >&2
+  exit 1
+fi
+
+OWNER="${1:?The name of the system user that owns the AI agent ; e.g. alice}"
+if ! id "$OWNER" &>/dev/null; then
+  echo "ERROR | user $OWNER does not exist" >&2
+  exit 1
+fi
+echo "INFO | OWNER: $OWNER"
+
+AI="${2:?The name of the system user that the AI agent identifies with; e.g. claude}"
+if ! id "$AI" &>/dev/null; then
+  echo "ERROR | user $AI does not exist" >&2
+  exit 1
+fi
+echo "INFO | AI: $AI"
+
+WORKDIR="${3:?The directory that $AI has control over; e.g. ~/claude/src/infra}"
+if [[ ! -d "$WORKDIR" ]]; then
+  echo "ERROR | WORKDIR is not a directory. WORKDIR: $WORKDIR" >&2
+  exit 1
+fi
+echo "INFO | WORKDIR: $WORKDIR"
+
+for cmd in fd inotifywait setfacl getfacl stat awk; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "ERROR | $cmd not found" >&2
+    exit 1
+  fi
+done
+
+################################################
+# [[ref:5aa7695b-3054-43d5-a1a9-aa3d3973b14d]] #
+################################################
+
+# owner_permission owner path
+#
+# Premises:
+#   owner : User         e.g. alice
+#   path  : SelectedFile e.g. $WORKDIR/dir
+#   owner is the inode owner of path
+#
+# Conclusion:
+#   Prints the permission string of owner over path ; e.g. "rwx".
+#   Returns 1 (skip) if the inode owner is not owner.
+
+owner_permission() {
+  local owner="$1"
+  local path="$2"
+
+  local inode_owner
+  inode_owner=$(stat -c '%U' "$path" 2>/dev/null) || return 1
+
+  if [[ "$inode_owner" != "$owner" ]]; then
+    echo "WARN | $path is owned by $inode_owner, not $owner — skipping" >&2
+    return 1
+  fi
+
+  local mode
+  mode=$(stat -c '%a' "$path" 2>/dev/null) || return 1
+
+  # stat -c '%a' may return the full mode integer including file type bits
+  # (e.g. 100644 for a regular file, 40755 for a directory).
+  # Mask to the lowest 9 bits before extracting owner bits.
+  local perm_bits=$((8#$mode & 0777))
+  local owner_bits=$((perm_bits >> 6 & 7))
+
+  local r='-' w='-' x='-'
+  ((owner_bits & 4)) && r='r'
+  ((owner_bits & 2)) && w='w'
+  ((owner_bits & 1)) && x='x'
+
+  echo "${r}${w}${x}"
+}
+
+################################################
+# [[ref:409a7e41-7ac5-435b-873a-7bd0d232bd7c]] #
+################################################
+
+# transfer_permission path
+#
+# Premises:
+#   path : SelectedFile
+#
+# Conclusion:
+#   AI's permission over path is updated to match owner_permission(owner, path).
+#
+# Note: moved-in directories are not recursed into. The owner is expected
+#   to restart the watcher after a mv if a full sync is needed.
+
+transfer_permission() {
+  local path="$1"
+
+  [[ -e "$path" ]] || return 0
+  [[ -L "$path" ]] && return 0
+
+  local desired
+  desired=$(owner_permission "$OWNER" "$path") || return 0
+
+  local current
+  current=$(getfacl --omit-header -- "$path" 2>/dev/null |
+    awk -F: -v u="$AI" '$1=="user" && $2==u {print $3}')
+
+  # Break the ATTRIB feedback loop: setfacl fires ATTRIB, which would
+  # re-enter this function. Skip if the entry is already correct.
+  [[ "$current" == "$desired" ]] && return 0
+
+  setfacl -m "u:${AI}:${desired},mask::${desired}" -- "$path"
+
+  if [[ -d "$path" ]]; then
+    setfacl -d -m "u:${AI}:${desired},mask::${desired}" -- "$path"
+  fi
+}
+
+################################################
+# [[ref:bd7b85de-eaef-48e1-a639-423d970bb3d0]] #
+################################################
+
+# inotifywait is started before transfer_all_permissions to minimise
+# the race window between watch start and initial sync completion.
+# Events that arrive during the initial sync are accepted as a
+# tradeoff for simplicity over full buffering.
+
+echo "INFO | watching $WORKDIR ..." >&2
+
+inotifywait \
+  --monitor \
+  --recursive \
+  --event ATTRIB \
+  --event CREATE \
+  --format '%w%f' \
+  "$WORKDIR" \
+  2>/dev/null |
+  while IFS= read -r path; do
+    transfer_permission "$path"
+  done &
+
+INOTIFY_PID=$!
+trap 'kill "$INOTIFY_PID" 2>/dev/null' EXIT
+
+################################################
+# [[ref:6a6a2cab-31fa-484b-af88-0166b00d78e0]] #
+################################################
+
+echo "INFO | initial sync of $WORKDIR ..." >&2
+
+while IFS= read -r -d '' path; do
+  transfer_permission "$path"
+done < <(fd \
+  --no-ignore \
+  --hidden \
+  --exclude .git \
+  --type f \
+  --type d \
+  --print0 \
+  . "$WORKDIR")
+
+echo "INFO | initial sync complete" >&2
+
+wait "$INOTIFY_PID"

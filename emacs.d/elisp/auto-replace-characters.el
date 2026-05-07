@@ -48,41 +48,43 @@ with completions and special minibuffer behavior."
 (defun auto-replace-characters--sort-rules (rules)
   "Return a copy of RULES sorted by descending trigger length."
   (sort (copy-sequence rules)
-        (lambda (a b) (> (length (car a)) (length (car b))))))
+    (lambda (a b) (> (length (car a)) (length (car b))))))
 
 (defcustom auto-replace-characters-rules
   ;; The literal value is already in the order the user wrote it.
   ;; :initialize calls :set, so the sorted order is established at load time.
   '((",:"   . "→")
-    (",iso" . "≅")
-    (",|-"  . "⊢")
-    (",..." . "…")
-    (",a"   . "α")
-    (",b"   . "β")
-    (",x"   . "×")
-    (",;"   . ":≡")
-    (",--"  . "—")   ; must sort after ",---"
+     (",iso" . "≅")
+     (",|-"  . "⊢")
+     (",..." . "…")
+     (",a"   . "α")
+     (",b"   . "β")
+     (",x"   . "×")
+     (",;"   . ":≡")
+     (",--"  . "—")   ; must sort after ",---"
      (",---" . "≡")   ; must sort before ",--"
-    (",fa"  . "∀")
-    (",phi" . "φ")
-    ("/="   . "≠")
-    (",0/"  . "∅")
-    (",>="  . "≥")
-    (",=<"  . "≤")
-    (",in"  . "∈")
-    (",<-"  . "←")
-    (",=>"  . "⇒")
-    (",<="  . "⇐")
-    (",la"  . "λ")
-    (",!"   . "↓")
-    (",>"   . "▸")
-    (",h"   . "🞎")
-    (",s"   . "■")
-    (",l"   . "↦")
-    (",|>"  . "▸")
-    (",ie"  . "/i.e./")
-    (",eg"  . "/e.g./")
-    (",k"   . "⇝"))
+     (",fa"  . "∀")
+     (",phi" . "φ")
+     ("/="   . "≠")
+     (",0/"  . "∅")
+     (",>="  . "≥")
+     (",=<"  . "≤")
+     (",in"  . "∈")
+     (",<-"  . "←")
+     (",=>"  . "⇒")
+     (",<="  . "⇐")
+     (",la"  . "λ")
+     (",!"   . "↓")
+     (",>"   . "▸")
+     (",h"   . "🞎")
+     (",s"   . "■")
+     (",l"   . "↦")
+     (",|>"  . "▸")
+     (",ie"  . "/i.e./")
+     (",eg"  . "/e.g./")
+     (",k"   . "⇝")
+     ("or!" . "∨")
+     ("and!" . "∧"))
   "Alist of (TRIGGER . REPLACEMENT).
 When TRIGGER appears immediately before point, it is replaced by REPLACEMENT.
 Rules are automatically sorted so that longer triggers take precedence over
@@ -103,8 +105,8 @@ Prevents re-entrant calls from `post-self-insert-hook'.")
 (defun auto-replace-characters--corfu-active-p ()
   "Return non-nil when a Corfu completion popup is currently visible."
   (and (bound-and-true-p corfu-mode)
-       (bound-and-true-p corfu--candidates)
-       corfu--candidates))
+    (bound-and-true-p corfu--candidates)
+    corfu--candidates))
 
 (defun auto-replace-characters--post-self-insert ()
   "Replace the trigger string before point according to `auto-replace-characters-rules'.
@@ -117,13 +119,13 @@ This function is added to `post-self-insert-hook'.  It is a no-op when:
 - a Corfu completion popup is currently visible (to avoid disrupting
   the user's selection)."
   (when (and (not auto-replace-characters--replacing)
-             (not buffer-read-only)
-             (or auto-replace-characters-include-minibuffer
-                 (not (minibufferp)))
-             (not (auto-replace-characters--corfu-active-p)))
+          (not buffer-read-only)
+          (or auto-replace-characters-include-minibuffer
+            (not (minibufferp)))
+          (not (auto-replace-characters--corfu-active-p)))
     (when-let ((rule (auto-replace-characters--find-matching-rule)))
       (let ((trigger-len (length (car rule)))
-            (replacement (cdr rule)))
+             (replacement (cdr rule)))
         (let ((start (- (point) trigger-len)))
           (setq auto-replace-characters--replacing t)
           ;; Use a change group amalgamated with the preceding self-insert so
@@ -132,11 +134,11 @@ This function is added to `post-self-insert-hook'.  It is a no-op when:
           (let ((change-group (prepare-change-group)))
             (activate-change-group change-group)
             (unwind-protect
-                (progn
-                  (delete-region start (point))
-                  (insert replacement)
-                  (accept-change-group change-group)
-                  (undo-amalgamate-change-group change-group))
+              (progn
+                (delete-region start (point))
+                (insert replacement)
+                (accept-change-group change-group)
+                (undo-amalgamate-change-group change-group))
               (setq auto-replace-characters--replacing nil))))))))
 
 (defun auto-replace-characters--find-matching-rule ()
@@ -144,13 +146,13 @@ This function is added to `post-self-insert-hook'.  It is a no-op when:
 Rules in `auto-replace-characters-rules' are sorted by descending trigger
 length, so the first match is always the longest match."
   (cl-loop for rule in auto-replace-characters-rules
-           for trigger = (car rule)
-           for len = (length trigger)
-           when (and (>= (point) len)
-                     (string= (buffer-substring-no-properties
-                               (- (point) len) (point))
-                              trigger))
-           return rule))
+    for trigger = (car rule)
+    for len = (length trigger)
+    when (and (>= (point) len)
+           (string= (buffer-substring-no-properties
+                      (- (point) len) (point))
+             trigger))
+    return rule))
 
 ;;;###autoload
 (define-minor-mode auto-replace-characters-mode
@@ -159,17 +161,17 @@ See `auto-replace-characters-rules' for customization."
   :lighter " ARC"
   :group 'auto-replace-characters
   (if auto-replace-characters-mode
-      (add-hook 'post-self-insert-hook
-                #'auto-replace-characters--post-self-insert nil t)
+    (add-hook 'post-self-insert-hook
+      #'auto-replace-characters--post-self-insert nil t)
     (remove-hook 'post-self-insert-hook
-                 #'auto-replace-characters--post-self-insert t)))
+      #'auto-replace-characters--post-self-insert t)))
 
 ;;;###autoload
 (define-globalized-minor-mode global-auto-replace-characters-mode
   auto-replace-characters-mode
   (lambda ()
     (when (or auto-replace-characters-include-minibuffer
-              (not (minibufferp)))
+            (not (minibufferp)))
       (auto-replace-characters-mode 1))))
 
 (provide 'auto-replace-characters)

@@ -1,0 +1,90 @@
+#! /usr/bin/env bash
+
+################################################
+# [[ref:b1ecf95f-fa27-43ae-b1f2-8ae72830c995]] #
+################################################
+
+set -euo pipefail
+IFS=$'\n\t'
+
+################################################
+# [[ref:123235e2-2bc6-4c99-aeb5-e40f60ab4ad1]] #
+################################################
+
+OWNER="${1:?Owner user name must be provided. e.g. alice}"
+echo "INFO | OWNER: $OWNER"
+
+AI="${2:?AI user name must be provided. e.g. claude}"
+echo "INFO | AI: $AI"
+
+WORKDIR="$(realpath "${3:?Working directory must be provided. e.g. ~/claude/src/infra}")"
+echo "INFO | WORKDIR: $WORKDIR"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WATCHER_SCRIPT="${SCRIPT_DIR}/claude-coworker-watcher"
+WATCHER_UNIT="claude-coworker-watcher"
+
+TEST_FILE="$WORKDIR/.acl-probe"
+echo "content" >"$TEST_FILE"
+if ! sudo -k setfacl -m u:"$AI":rw "$TEST_FILE"; then
+  rm -f "$TEST_FILE"
+  echo "ERROR | ACL is not supported"
+  exit 1
+fi
+rm -f "$TEST_FILE"
+echo "INFO | ACL supported on $WORKDIR"
+
+for cmd in inotifywait setfacl fd; do
+  if ! command -v "$cmd" &>/dev/null; then
+    echo "ERROR: $cmd not found" >&2
+    exit 1
+  fi
+done
+
+################################################
+# [[ref:835e549b-8166-443d-b23b-0ae3e26216f6]] #
+################################################
+
+if id "$AI" &>/dev/null; then
+  echo "INFO | user $AI already exists, skipping creation"
+else
+  sudo -k adduser \
+    --system \
+    --group \
+    --no-create-home \
+    --shell /usr/sbin/nologin \
+    --comment "$AI container user" \
+    "$AI"
+fi
+
+AI_UID=$(id -u "$AI")
+AI_GID=$(id -g "$AI")
+echo "INFO | $AI UID=${AI_UID} GID=${AI_GID}"
+
+################################################
+# [[ref:947e64d0-2ed6-4b14-93c6-d8eaaaf9ffd3]] #
+################################################
+
+# Start the watcher as a system transient unit (root, for setfacl access).
+#
+# Flags:
+#   --unit        : stable unit name, allows later stop/status by name
+#   --collect     : remove the unit after it exits (no ghost units)
+
+if systemctl is-active --quiet "$WATCHER_UNIT" 2>/dev/null; then
+  echo "INFO | stopping existing unit $WATCHER_UNIT ..." >&2
+  sudo systemctl stop "$WATCHER_UNIT"
+  sudo systemctl reset-failed "$WATCHER_UNIT" 2>/dev/null || true
+fi
+
+sudo systemd-run \
+  --unit="$WATCHER_UNIT" \
+  --collect \
+  --description="ACL sync: mirror ${AI} permissions under ${WORKDIR}" \
+  -- \
+  bash "$WATCHER_SCRIPT" "$OWNER" "$AI" "$WORKDIR"
+
+echo "INFO | watcher started as systemd unit: $WATCHER_UNIT"
+echo "INFO | status:  sudo systemctl status $WATCHER_UNIT"
+echo "INFO | logs:    sudo journalctl -u $WATCHER_UNIT -f"
+echo "INFO | stop:    sudo systemctl stop $WATCHER_UNIT"

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: strict-script
+# key: strict
+# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# --
+#! /usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'

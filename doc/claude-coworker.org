@@ -1,0 +1,268 @@
+#+STARTUP: overview
+
+* Claude co-worker
+:PROPERTIES:
+:ID:       b1ecf95f-fa27-43ae-b1f2-8ae72830c995
+:END:
+
+** The ACL Mask and umask Interaction
+:PROPERTIES:
+:ID:       195f921c-517d-401c-8db2-48c6ce1ebdf6
+:END:
+
+*** Background: what the ACL mask is
+
+A POSIX ACL on a file has this structure:
+
+#+begin_example
+user:≡rwx          # owning user
+user:claude:rwx    # named user entry  ← what setfacl sets
+group:≡r--         # owning group
+mask:≡rwx          # THE MASK
+other:≡r--         # others
+#+end_example
+
+The *mask* is a cap. The effective permission of any named user or
+group entry is:
+
+#+begin_example
+effective = entry_permissions AND mask
+#+end_example
+
+The named user entry (=user:claude:rwx=) is what you set with =setfacl=.
+But what =claude= can /actually do/ is that entry ANDed with the mask.
+If the mask is =rw-=, then even if the entry says =rwx=, the effective
+permission is =rw-=.
+
+*** Where the mask comes from on a newly created file
+
+When a process creates a new file, the kernel computes the base
+permissions as:
+
+#+begin_example
+file_permissions = requested_mode AND (NOT umask)
+#+end_example
+
+For a regular file, the requested mode is typically =0666=. With
+=umask 022=:
+
+#+begin_example
+0666 AND NOT(022) = 0666 AND 0755 = 0644  →  rw-r--r--
+#+end_example
+
+With =umask 077=:
+
+#+begin_example
+0666 AND NOT(077) = 0666 AND 0700 = 0600  →  rw-------
+#+end_example
+
+When a file is created inside a directory that has a *default ACL*,
+the kernel initialises the new file's ACL mask from the base
+permissions — specifically from the group permission bits of the
+computed mode. With =umask 077= those bits are =---=, so the mask
+becomes =---=.
+
+*** The consequence
+
+Suppose =owner= has =umask 077= and creates a new file inside =$INFRA=:
+
+#+begin_src sh
+touch $INFRA/newfile
+#+end_src
+
+The resulting ACL is:
+
+#+begin_example
+user:≡rw-           # owner can read/write
+user:claude:rw-     # setfacl entry says rw-
+group:≡---
+mask:≡---           # ← derived from umask 077, group bits = 000
+other:≡---
+#+end_example
+
+Effective permission for =claude=:
+
+#+begin_example
+rw- AND --- = ---
+#+end_example
+
+=claude= can do nothing, despite the explicit ACL entry granting =rw-=.
+The mask silently overrides it. =getfacl= will expose this with an
+annotation:
+
+#+begin_example
+user:claude:rw-         #effective:---
+#+end_example
+
+The =#effective:---= annotation is the diagnostic signal that the mask
+is clipping the named user entry.
+
+*** The fix
+
+Ensure =owner= uses =umask 022= when writing to =$INFRA=, so the mask is
+initialised to =rw-=:
+
+#+begin_src sh
+umask 022
+touch $INFRA/newfile
+# mask is now rw-, claude's effective permission is rw-
+#+end_src
+
+Or re-apply =setfacl= after the fact. This resets the mask to the
+union of all named entry permissions, restoring =claude='s effective
+permissions regardless of what umask produced:
+
+#+begin_src sh
+sudo setfacl -R -m u:claude:rwX "$INFRA"
+#+end_src
+
+To make =umask 022= the default for all shell sessions writing to
+=$INFRA=, add it to =owner='s shell initialisation file (=~/.bashrc=,
+=~/.profile=, or equivalent).
+
+** DONE Premises
+:PROPERTIES:
+:ID:       123235e2-2bc6-4c99-aeb5-e40f60ab4ad1
+:END:
+
+- ai : The name of the user under which the AI agent operates ; /e.g./ "claude"
+- owner : The name of the current user which also owns the AI agent ; /e.g./ "alice"
+- workdir : The path to the directory provided by owner to the AI agent ; /e.g./ "~/claude/src/infra"
+- ACL is supported
+
+** DONE ai user
+:PROPERTIES:
+:ID:       835e549b-8166-443d-b23b-0ae3e26216f6
+:END:
+
+- If ai user does not exist ; then:
+  - build a user named $ai such that:
+    - uid : UID ∧ (uid < 1000)
+    - cannot authenticate
+      - no password
+      - no login shell
+    - no home directory
+    - gid : GID
+
+** DOING ai and owner permissions over files under workdir
+:PROPERTIES:
+:ID:       947e64d0-2ed6-4b14-93c6-d8eaaaf9ffd3
+:END:
+
+./claude-coworker-watcher $owner $ai $workdir
+- see: [[ref:ed93e2a0-e5fb-44ae-8114-3e765337c23f][Claude coworker watcher]]
+
+** TODO Configure User Namespace UID/GID Mapping for =owner=
+   TODO
+=guTODO ix shell -C= uses unprivileged Linux user namespaces. The kernel
+reqTODO uires that the invoking user (=owner=) have subordinate UID and GID
+ranTODO ges declared in =/etc/subuid= and =/etc/subgid=. These ranges allow
+=owTODO ner= to map UIDs inside the namespace without requiring root.
+   TODO
+CheTODO ck whether entries already exist:
+   TODO
+#+bTODO egin_src sh
+greTODO p "^owner:" /etc/subuid
+greTODO p "^owner:" /etc/subgid
+#+eTODO nd_src
+   TODO
+If TODO absent, add them:
+   TODO
+#+bTODO egin_src sh
+sudTODO o usermod --add-subuids 100000-165535 owner
+sudTODO o usermod --add-subgids 100000-165535 owner
+#+eTODO nd_src
+   TODO
+VerTODO ify:
+   TODO
+#+bTODO egin_src sh
+catTODO  /etc/subuid
+# oTODO wner:100000:65536
+   TODO
+catTODO  /etc/subgid
+# oTODO wner:100000:65536
+#+eTODO nd_src
+   TODO
+TheTODO  range =100000-165535= (65536 entries) is the Debian convention. It
+musTODO t not overlap with any existing system UIDs.
+   TODO
+** TODO Create the XDG Runtime Directory for =claude=
+   TODO
+TheTODO  container command references =/run/user/$UID=. Since =claude= is a
+sysTODO tem user with no login session, the =systemd-logind= daemon never
+creTODO ates this directory automatically. It must be created manually:
+   TODO
+#+bTODO egin_src sh
+sudTODO o mkdir -p /run/user/${CLAUDE_UID}
+sudTODO o chown claude:claude /run/user/${CLAUDE_UID}
+sudTODO o chmod 700 /run/user/${CLAUDE_UID}
+   TODO
+# VTODO erify
+ls TODO -ld /run/user/${CLAUDE_UID}
+# dTODO rwx------ 2 claude claude ... /run/user/999
+#+eTODO nd_src
+   TODO
+NotTODO e: this directory lives on a =tmpfs= and is lost on reboot. If the
+conTODO tainer is started after a reboot, re-run the above three commands, or
+addTODO  them to a systemd =tmpfiles.d= rule for persistence:
+   TODO
+#+bTODO egin_src sh
+# /TODO etc/tmpfiles.d/claude-runtime.conf
+echTODO o "d /run/user/${CLAUDE_UID} 0700 claude claude -" \
+  |TODO  sudo tee /etc/tmpfiles.d/claude-runtime.conf
+   TODO
+# ATODO pply immediately without rebooting
+sudTODO o systemd-tmpfiles --create /etc/tmpfiles.d/claude-runtime.conf
+#+eTODO nd_src
+   TODO
+** TODO Configure =sudo= to Allow =owner= to Invoke the Container as =claude=
+   TODO
+=clTODO aude= has =/usr/sbin/nologin= as its shell, so it cannot be switched
+to TODO with =su= or =su -=. The correct mechanism is =sudo -u claude=.
+   TODO
+DetTODO ermine the exact path to =guix=:
+   TODO
+#+bTODO egin_src sh
+whiTODO ch guix
+# eTODO .g. /usr/local/bin/guix
+#+eTODO nd_src
+   TODO
+AddTODO  a sudoers rule granting =owner= the right to run =guix= as =claude=
+witTODO hout a password:
+   TODO
+#+bTODO egin_src sh
+sudTODO o visudo -f /etc/sudoers.d/claude-container
+#+eTODO nd_src
+   TODO
+InsTODO ert:
+   TODO
+#+bTODO egin_src text
+# ATODO llow owner to start the guix container as claude
+ownTODO er ALL=(claude) NOPASSWD: /usr/local/bin/guix
+#+eTODO nd_src
+   TODO
+AdjTODO ust the path if =guix= is installed elsewhere (e.g. =/usr/bin/guix=).
+=viTODO sudo= validates the syntax before saving; a syntax error will be
+cauTODO ght and rejected.
+   TODO
+VerTODO ify:
+   TODO
+#+bTODO egin_src sh
+sudTODO o -u claude -l
+# STODO hould list: (claude) NOPASSWD: /usr/local/bin/guix
+#+eTODO nd_src
+   TODO
+** TODO ■
+
+Premises
+- ./claude-coworker owner ai workdir
+- cd $workdir
+- sudo -u $ai [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf][./env-start]]
+
+Conclusion
+- An AI agent owned by owner can execute in a container rooted at workdir under the
+  permissions accorded to ai.
+
+  Provided appropriate permissions, and that the AI agent can pull/push to GitHub ;
+  then: the AI agent may pull the last version of the upstream repository into its
+  local fork, accomplish a [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][task]], and send a pull request to upstream.

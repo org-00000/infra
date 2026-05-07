@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+# ── Premises ──────────────────────────────────────────────────────────────────
+
+OWNER="${1:?usage: test-transfer-permission <owner> <ai> <workdir>}"
+AI="${2:?usage: test-transfer-permission <owner> <ai> <workdir>}"
+WORKDIR="${3:?usage: test-transfer-permission <owner> <ai> <workdir>}"
+
+# ── Functions ─────────────────────────────────────────────────────────────────
+
+owner_permission() {
+  local owner="$1"
+  local path="$2"
+
+  local inode_owner
+  inode_owner=$(stat -c '%U' "$path" 2>/dev/null) || return 1
+
+  if [[ "$inode_owner" != "$owner" ]]; then
+    echo "WARN | $path is owned by $inode_owner, not $owner — skipping" >&2
+    return 1
+  fi
+
+  local mode
+  mode=$(stat -c '%a' "$path" 2>/dev/null) || return 1
+
+  local perm_bits=$((8#$mode & 0777))
+  local owner_bits=$((perm_bits >> 6 & 7))
+
+  local r='-' w='-' x='-'
+  ((owner_bits & 4)) && r='r'
+  ((owner_bits & 2)) && w='w'
+  ((owner_bits & 1)) && x='x'
+
+  echo "${r}${w}${x}"
+}
+
+transfer_permission() {
+  local path="$1"
+
+  echo "DEBUG | enter path=$path" >&2
+  echo "DEBUG | OWNER=${OWNER:-UNSET} AI=${AI:-UNSET}" >&2
+
+  [[ -e "$path" ]] || {
+    echo "DEBUG | skip: path does not exist" >&2
+    return 0
+  }
+  [[ -L "$path" ]] && {
+    echo "DEBUG | skip: symlink" >&2
+    return 0
+  }
+
+  local desired
+  desired=$(owner_permission "$OWNER" "$path") || {
+    echo "DEBUG | skip: owner_permission returned non-zero" >&2
+    return 0
+  }
+  echo "DEBUG | desired=$desired" >&2
+
+  local current
+  current=$(getfacl --omit-header -- "$path" 2>/dev/null |
+    awk -F: -v u="$AI" '$1=="user" && $2==u {print $3}')
+  echo "DEBUG | current=${current:-EMPTY}" >&2
+
+  [[ "$current" == "$desired" ]] && {
+    echo "DEBUG | skip: already correct" >&2
+    return 0
+  }
+
+  echo "DEBUG | calling setfacl u:${AI}:${desired},mask::${desired}" >&2
+  setfacl -m "u:${AI}:${desired},mask::${desired}" -- "$path"
+
+  if [[ -d "$path" ]]; then
+    setfacl -d -m "u:${AI}:${desired},mask::${desired}" -- "$path"
+  fi
+
+  echo "DEBUG | done path=$path" >&2
+}
+
+# ── Test 1: direct call ───────────────────────────────────────────────────────
+
+echo "=== Test 1: direct call ===" >&2
+FILE="$WORKDIR/probe-direct"
+sudo -u "$OWNER" touch "$FILE"
+echo "DEBUG | stat mode=$(stat -c '%a' "$FILE") owner=$(stat -c '%U' "$FILE")" >&2
+transfer_permission "$FILE"
+echo "RESULT  | $(getfacl --omit-header "$FILE" 2>/dev/null | grep "user:${AI}" || echo MISSING)"
+echo "EXPECTED | user:${AI}:rw-"
+
+# ── Test 2: call from pipeline subshell ───────────────────────────────────────
+
+echo "" >&2
+echo "=== Test 2: call from pipeline subshell ===" >&2
+FILE2="$WORKDIR/probe-subshell"
+sudo -u "$OWNER" touch "$FILE2"
+echo "$FILE2" | while IFS= read -r path; do
+  echo "DEBUG | subshell OWNER=${OWNER:-UNSET} AI=${AI:-UNSET}" >&2
+  transfer_permission "$path"
+done
+echo "RESULT  | $(getfacl --omit-header "$FILE2" 2>/dev/null | grep "user:${AI}" || echo MISSING)"
+echo "EXPECTED | user:${AI}:rw-"
