@@ -95,9 +95,9 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(7990)= in =doc.org=: relocate the =vm/= directory to somewhere under =/run= and update all references.
 
-*** TODO Remove TODO 0d40 comment in bin/actor
+*** DONE Clean up backlog
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       f9b74a3b-e391-450d-887a-22073811c979
 :END:
 
@@ -142,40 +142,6 @@ we know what needs to be done, and who works on what.
 :END:
 
 - Objective :≡ Resolve =TODO(f7bb)= in =backend/lib/backend/generic/sha256.ex=: write the specification that =Backend.Generic.Sha256= implements and link it in the =@moduledoc=.
-
-*** TODO projectctl
-:PROPERTIES:
-:OWNER: nobody
-:ID:       67e45c70-590e-4b86-9ebc-8410d34a6a7d
-:END:
-
-**** Objective
-
-Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6c76ca66][Infrastructure]]: given =version : ℕ= and =server : Ip=, deploy the application at =version= on the =server=.
-
-*** TODO Complete on-boarding guide: Certificates section
-:PROPERTIES:
-:OWNER: nobody
-:ID:       b4f4a6b2-7e11-4a3a-b42c-ed9b6da6ad46
-:END:
-
-- Objective :≡ Resolve the =TODO Certificates= heading in =doc/team/architect/on-boarding.org=: replace the placeholder =mkcert= instructions with the correct Guix-native certificate setup procedure.
-
-*** TODO Complete on-boarding guide: Authenticated commits section
-:PROPERTIES:
-:OWNER: nobody
-:ID:       0f100a4f-9e3d-4b0e-afd1-4348e79754f3
-:END:
-
-- Objective :≡ Resolve the =TODO Authenticated commits= heading in =doc/team/architect/on-boarding.org=: review and finalize the GPG key generation and commit-signing instructions.
-
-*** TODO Complete on-boarding guide: Next steps section
-:PROPERTIES:
-:OWNER: nobody
-:ID:       77912569-3988-4846-a4fc-0923c83b0713
-:END:
-
-- Objective :≡ Resolve the =TODO Next steps= heading in =doc/team/architect/on-boarding.org=: review and finalize the next-steps links and ensure they are accurate.
 
 *** TODO Add references to contributing.org
 :PROPERTIES:

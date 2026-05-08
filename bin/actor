@@ -45,7 +45,7 @@ function image_mk() {
   store_path="$(guix time-machine -C "$CHANNELS" -- system image -t "$image_type" --image-size=20G "$os_path")"
   store_hash=$(sha256sum "$store_path" | cut -d' ' -f1)
 
-  # Compare hashes – skip copy if identical (TODO 0d40)
+  # Compare hashes – skip copy if identical
   if [[ "$store_hash" != "$image_hash" ]]; then
     cp -f "$store_path" "$image_path"
     chmod +w "$image_path"
