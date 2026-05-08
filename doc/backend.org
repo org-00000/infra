@@ -5,6 +5,28 @@
 
 It refines the [[ref:41190386-599d-4048-9b07-278ccbf2c785][application's backend]].
 
+** backend#mode
+:PROPERTIES:
+:ID:       14896dea-bad3-45d9-86d5-55aa0be89f90
+:END:
+
+Represents the current execution mode of the backend, one of: dev | test | prod. See:
+https://hexdocs.pm/mix/Mix.html#module-environments.
+
+** backend#dir
+:PROPERTIES:
+:ID:       9803cae7-58dd-496c-ba6b-685afca2271c
+:END:
+
+Represents the directory where the backend code lives.
+
+** backend#dist
+:PROPERTIES:
+:ID:       3c58dca0-c23f-433c-aad4-a1c488a11146
+:END:
+
+Represents the directory where the backend distribution lives.
+
 ** backend#deps-fetch
 :PROPERTIES:
 :ID: 97be4e51-e157-424c-9ada-5a77ef7a6274

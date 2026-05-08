@@ -42,7 +42,7 @@ The application is described here: [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][a
 
 To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][fork-pr]].
 
-* Directory descriptions
+* Directory description
 
 The remaining of the document describes or points to explanations regarding parts of the
 directory.

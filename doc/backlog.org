@@ -198,6 +198,14 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE The backend implements the frontend OpenAPI contract
+:PROPERTIES:
+:ID: 1e052345-f693-47a6-8b3b-ccb9a6cef6ee
+:OWNER: phf
+:END:
+
+Ensure that the [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend]] implements the frontend's [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][OpenAPI]] contract.
+
 *** DONE Fix ,app-start
 :PROPERTIES:
 :ID: 8077318c-b8d8-4296-b589-ef557723b6d4
