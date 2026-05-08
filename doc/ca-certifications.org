@@ -1,4 +1,4 @@
-* Simple Explanation of HTTPS (Updated)
+* Simple Explanation of HTTPS
 
 Chrome looks up ~example.com~ in DNS and gets an IP address (192.1.2.3). It connects to that
 IP over TCP.

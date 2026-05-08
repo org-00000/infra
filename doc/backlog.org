@@ -198,15 +198,20 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
-*** TODO Update ./doc/*
+*** DONE Simplify ./doc/*
 :PROPERTIES:
 :ID: 3b2dc36c-8217-4028-883e-374eb7497a7c
 :OWNER: phf
 :END:
 
-- Introduce the idea of "refinement of a definition".
-- Ensure that ./doc/* specifies what's necessary of the rest of the code base.
-- Explicit the invariant of a contributing cycle.
+Factorize:
+- ./doc/,image-init-build.org
+- ./doc/,synchronize-with-upstream.org
+- ./doc/,todos.org
+- ./doc/,vm-deploy.org
+- ./doc/,vm-init-start.org
+
+Into: ./doc/actor.org
 
 *** DONE Update ./doc/actor.org
 :PROPERTIES:
