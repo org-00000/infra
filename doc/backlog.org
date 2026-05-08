@@ -185,7 +185,7 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
 
 - Objective :≡ Resolve the =TODO References= heading in =doc/contributing.org=: add the reference to ZeroMQ (Pieter Hintjens) and any other relevant works.
 
-*** DOING Add Claude as a co-worker
+*** TODO Add Claude as a co-worker
 :PROPERTIES:
 :ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
 :OWNER: phf
@@ -197,6 +197,28 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   Since Claude uses =usr= API key, /i.e./ =~/.claude=, then this setup should allow any one
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
+
+*** DOING Fix ,db-start
+:PROPERTIES:
+:ID: e710c15a-0750-400e-985a-19e66b2a656a
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_src bash
+phf@pc1:infra [env]$ ,db-start
+PostgreSQL is already running. Stopping it first...
+waiting for server to shut down.... done
+server stopped
+waiting for server to start.... done
+server started
+psql: error: connection to server on socket "/home/phf/src/infra/_postgresql/run/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "postgres"
+#+end_src
+
+**** Objective
+
+Fix [[ref:092b1e5e-34ff-49fd-b292-4b3b2fa81934]] so that it implements its [[ref:87cf68ef-3011-46ad-8e8a-84d06cbbcc3c][specification]].
 
 *** DONE Integrate TODO in the backlog
 :PROPERTIES:
