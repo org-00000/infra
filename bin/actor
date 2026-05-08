@@ -161,6 +161,7 @@ elif [[ "$MSG" == ",app-start" ]]; then
   # [[id:51ade351-7413-4355-9e56-55d1166380b5]]
   inside_container_check
   ,frontend-dist-mk "http://localhost:4000/api"
+  cp -r "$FRONTEND_DIST/." "$BACKEND/priv/static/"
   ,backend-iex-start
 
 elif [[ "$MSG" == ",image-init-build" ]]; then
