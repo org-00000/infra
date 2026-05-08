@@ -28,7 +28,18 @@ _cmd_check git
 _cmd_check ssh-add
 _cmd_check guix
 
-# TODO(55c8): add other checks. For instance, KVM and QEMU should be available
+function _kvm_check() {
+  if [[ ! -e /dev/kvm ]]; then
+    echo "ERROR | /dev/kvm does not exist: load the kvm kernel module"
+    exit 1
+  fi
+  if [[ ! -r /dev/kvm ]] || [[ ! -w /dev/kvm ]]; then
+    echo "ERROR | /dev/kvm is not accessible: add $USER to the kvm group"
+    exit 1
+  fi
+}
+_kvm_check
+_cmd_check qemu-system-x86_64
 
 # The script current directory is set to the root of the project and environment
 # variables are loaded (see: [[ref:c86dd881-e3c4-4f73-9084-b80a02a7e581][profile]]).
