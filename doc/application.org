@@ -3,6 +3,41 @@
 :ID:       91681523-bbeb-4ee6-b795-c13752d447d0
 :END:
 
+represents the application.
 
+** application#frontend
+:PROPERTIES:
+:ID:       4c7a1158-f7d3-446c-a147-9603a1b61db6
+:END:
 
-** application#url
+Represents the program that executes client side and offers a GUI to the client.
+
+** application#backend
+:PROPERTIES:
+:ID:       41190386-599d-4048-9b07-278ccbf2c785
+:END:
+
+Represents the program that executes server side and replies to [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontends]] requests.
+
+** application#contract
+:PROPERTIES:
+:ID:       2bb30a99-0728-42e5-98a1-43cf31509420
+:END:
+
+Represents the contract that defines the requests that the [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontend]] is allowed to
+make to the [[ref:41190386-599d-4048-9b07-278ccbf2c785][backend]] and what the frontend can expect in return.
+
+** application#start
+:PROPERTIES:
+:ID:       3a2b4174-ea2e-4ed2-97b3-23b562be59a2
+:END:
+
+Premises
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
+- The [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] has been fetched.
+- application#start
+
+Conclusion
+- The application is serving requests made to http://localhost:4000.
+- The local bash session has been replaced by an interactive session allowing a REPL
+  like workflow in the application backend context.

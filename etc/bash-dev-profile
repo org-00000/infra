@@ -98,6 +98,12 @@ export EDITOR="emacs --init-dir $EMACSD"
 # [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][Specification]]
 export FRONTEND="$ROOT/frontend"
 
+# [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][Specification]]
+export FRONTEND_OPENAPI="$FRONTEND/openapi.yaml"
+
+# [[ref:985496c0-8e69-4545-9dc2-e9c830e02581][Specification]]
+export FRONTEND_DIST="$FRONTEND/dist"
+
 ###########
 # Backend #
 ###########
