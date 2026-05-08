@@ -111,9 +111,9 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(c783)= in =bin/actor=: make =,frontend-fetch= handle the case where the frontend git URL changes after the repository has already been cloned.
 
-*** TODO Add environment checks to bin/env-start
+*** DONE Add environment checks to bin/env-start
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       0d1f4f9e-4c0a-4224-b007-eb1339555ab5
 :END:
 
