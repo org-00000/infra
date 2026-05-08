@@ -208,3 +208,9 @@ NPM_ROOT="$NPM/npm-global"
 
 CLAUDE="$HOME/.claude"
 CLAUDE_CONFIG="$HOME/.claude.json"
+
+#############
+# Elixir LS #
+#############
+
+EXS_LS="$EMACSD/bin/elixir-ls/language_server.sh"

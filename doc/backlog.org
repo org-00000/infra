@@ -208,6 +208,49 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
 - Ensure that ./doc/* specifies what's necessary of the rest of the code base.
 - Explicit the invariant of a contributing cycle.
 
+*** DONE Update init.el for Elixir
+:PROPERTIES:
+:ID: 61681f7c-bc1e-47f5-ba0e-678f048714a0
+:OWNER: phf
+:END:
+
+- Objective :: Update [[file:~/src/infra/emacs.d/init.el]] for Elixir editing.
+- Plan ::
+  1. read example configuration below
+  2. update init.el
+
+#+begin_src emacs-lisp
+;; Load local tree-sitter modes
+(add-to-list 'load-path (file-name-concat user--package "elixir-ts-mode"))
+(add-to-list 'load-path (file-name-concat user--package "heex-ts-mode"))
+
+;; Install grammars the first time (idempotent)
+(unless (treesit-language-available-p 'elixir)
+  (elixir-ts-install-grammar))
+(unless (treesit-language-available-p 'heex)
+  (heex-ts-install-grammar))
+
+;; Autoload the new modes
+(autoload 'elixir-ts-mode "elixir-ts-mode" "Major mode for Elixir (tree-sitter)" t)
+(autoload 'heex-ts-mode   "heex-ts-mode"   "Major mode for Heex"               t)
+
+;; File associations
+(add-to-list 'auto-mode-alist '("\\.ex\\'"  . elixir-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.exs\\'" . elixir-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.heex\\'" . heex-ts-mode))
+
+;; Remap the old non-tree-sitter mode to the new one
+(add-to-list 'major-mode-remap-alist '(elixir-mode . elixir-ts-mode))
+
+;; Start Eglot automatically in Elixir files
+(add-hook 'elixir-ts-mode-hook #'eglot-ensure)
+
+;; Tell Eglot where the elixir-ls script lives
+(require 'eglot)
+(add-to-list 'eglot-server-programs
+             `(elixir-ts-mode . ,(file-name-concat (expand-file-name "~") "bin/elixir-ls/language_server.sh")))
+#+end_src
+
 *** DONE Update ./doc/*
 :PROPERTIES:
 :ID:       549b970b-3543-4186-aff3-b0051e70c65e

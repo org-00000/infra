@@ -51,4 +51,19 @@ npm config set prefix ~/.npm-global
 ,install-node-binaries
 export PATH="$PATH:$HOME/.npm-global/bin"
 
+# Fetch Elixir language server if needed
+if [[ ! -f "$EXS_LS" ]]; then
+  mkdir -vp "${EXS_LS%/*}"
+  pushd "${EXS_LS%/*}"
+  URL="https://github.com/elixir-lsp/elixir-ls/releases/download/v0.30.0/elixir-ls-v0.30.0.zip"
+  wget "$URL"
+  unzip "${URL##*/}"
+  rm *.zip *.bat
+  if [[ ! -f "$EXS_LS" ]]; then
+    echo "ERROR | could not build Elixir language server. EXS_LS: $EXS_LS"
+    exit 1
+  fi
+  popd
+fi
+
 $EDITOR "$README" &
