@@ -106,13 +106,13 @@ So, the most general form of a specification is:
 It reads top to bottom. The =Public= and =Private= may be omitted if they are not
 necessary as shown by the =Point= example.
 
-** Premises and conclusion
+** Natural deduction
 :PROPERTIES:
 :ID:       8b8c3d71-19de-4632-b96e-62734e7160ac
 :END:
 
-- To convey a meaning of the form /if X; then: Y/, we use Gentzen-style natural
-  deduction format. We write:
+- To convey a meaning of the form /if X; then: Y/, we use Gentzen-style [[https://en.wikipedia.org/wiki/Natural_deduction][natural
+  deduction]] format. We write:
   - a /Premises/ section,
   - a /Conclusion/ section stating what holds if all premises are satisfied.
   - The Conclusion is a *partial correctness* statement: it specifies what is supposed to
@@ -134,17 +134,18 @@ necessary as shown by the =Point= example.
 
 ** Notation
 
-- x : X :: "x : X" means: "x is a X". For instance, "x : ℕ" means t
+- "x : X" means: "x is a X". For instance, "x : ℕ" means that x is an instance of ℕ ;
+  /i.e./ a natural number.
 
-- :≡ :: "x :≡ 2" means: "x is a symbol for 2", the definition of "x" is "2".
+- "x :≡ 2" means: "x is a symbol for 2", the definition of "x" is "2".
 
-- Constructor :: Assume that "T" is a specification. Then, we may define an algorithm
-  to build something that is a T. We call this algorithm a constructor of T.
+- Assume that "T" is a specification. Then, we may define an algorithm to build
+  something that is a T. We call this algorithm a /constructor/ of T.
   - For instance, we need two integers "x" and "y" to define a point "<x,y>". Then,
     we define the constructor Point#mk : ℤ ℤ → Point and the notation "<x,y> :≡
     Point#mk(x y)"
 
-- Eliminator :: Assume that t : T, then what can we do with "t" ?
+- Assume that t : T, then what can we do with "t" ?
 
   To do something with t means that there is an algorithm that starts from t and then
   does something with it. In other words, it uses t: it is a usage of instances of T.
@@ -152,11 +153,10 @@ necessary as shown by the =Point= example.
   An eliminator is an algorithm that introduces usages of T. Its signature is:
   T#elim : … → T → C.
 
-  - For instance, we may define the eliminator of Point like so:
+  - For instance, we may define the /eliminator/ of Point like so:
     - Point#elim : (ℤ ℤ → C) → Point → C :≡ f ↦ <x,y> ↦ f(x y)
     - Then, we can define an "accessor" to extract the x coordinate of a point like
-      so:
-      - Point#x :≡ Point#elim (x y ↦ x)
+      so: Point#x :≡ Point#elim (x y ↦ x)
     - Then, given p :≡ <1,2>; Point#x(p) = 1.
       - Proof:
         1. Point#x(p) ≡ (Point#elim (x y ↦ x))(p)
@@ -171,29 +171,29 @@ necessary as shown by the =Point= example.
            - by 3. and substitution
         6. ■
 
-- Procedure :: A procedure is a sequence of instructions. We denote p : A B … ⇝ Z the
-  procedures that starts from instances of A, B and other specifications an ends with
-  an instance of Z. So: z : Z :≡ p(a b …). If p has side effects, then they are
+- A /procedure/ is a sequence of instructions. We denote p : A B … ⇝ Z the procedures
+  that starts from instances of A, B and other specifications an ends with an
+  instance of Z. So: z : Z :≡ p(a b …). If p has side effects, then they are
   documented using [[ref:8b8c3d71-19de-4632-b96e-62734e7160ac][Premises and conclusion]].
 
-- Function :: A function is procedure without side effects: its result is entirely
-  defined by its inputs. We write: f : A B … → Z to denote a function that starts
-  from an instance of A, B and other instances and results in an instance of Z.
+- A /function/ is procedure without side effects: its result is entirely defined by its
+  inputs. We write: f : A B … → Z to denote a function that starts from an instance
+  of A, B and other instances and results in an instance of Z.
 
-- API :: Given a specification "T", then a set of predefined procedures starting from
-  T may be defined. These functions may satisfy some invariant. Such a set is called
-  an API.
+- Given a specification "T", then a set of predefined procedures starting from T may
+  be defined. These functions may satisfy some invariant. Such a set is called an
+  /API/.
 
   More generally, T may offer functions of the form Any … → C, /e.g./ predicates. These
   are exported using the same convention, /e.g./ T#? : Any → Boolean.
 
 ** Identifier and reference
 
-- Identifier :: The =:ID: uuid= property provides a unique identifier to the
+- The =:ID: uuid= property in a [[https://orgmode.org/manual/Property-Syntax.html][property drawer]] provides a unique /identifier/ to the
   specification. An inline id may be provided using the =[[id:uuid]]= notation. A global
   property for the whole file may be introduced using =#+ID: uuid= notation.
 
-- Reference :: An identifier may be referenced using the =[[ref:uuid]]= or =[[ref:uuid][name]]= notations.
+- An identifier may be /referenced/ using the =[[ref:uuid]]= or =[[ref:uuid][name]]= notations.
 
 ** Specification and implementations
 
