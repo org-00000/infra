@@ -63,14 +63,6 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in =application-conf= is still needed and remove it if not.
 
-*** TODO Use guix-extension in os/1.scm
-:PROPERTIES:
-:OWNER: nobody
-:ID:       62b5b081-2b6e-4838-8f21-f4a3c8485538
-:END:
-
-- Objective :≡ Resolve =TODO(b1e3)= in =os/1.scm=: replace the current store trust approach with =guix-extension=.
-
 *** DONE Move certs/ under etc/
 :PROPERTIES:
 :OWNER: phf
@@ -79,7 +71,7 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(a4a3)= in =doc.org=: relocate the =certs/= directory under =etc/= and update all references.
 
-*** TODO Move ssh/ under etc/
+*** DONE Move ssh/ under etc/
 :PROPERTIES:
 :OWNER: phf
 :ID:       e45a3eb6-8ef5-4525-9c97-d2b5a79efd88

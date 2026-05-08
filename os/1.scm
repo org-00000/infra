@@ -73,7 +73,6 @@
 
 ;; For this system to accept to be deployed to, it needs to trust the programs it
 ;; receives from the emitter ([[ref:d78940d6-33a0-4235-b094-9fa13dc27506][GuixDeployment]]). So, it trusts the current machine.
-;; TODO(b1e3): use guix-extension
 (define %store-pub-key (getenv "APP_STORE_KEY"))
 (define init-base-services
   (modify-services
