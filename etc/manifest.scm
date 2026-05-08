@@ -93,6 +93,7 @@
            "emacs-yasnippet"
            "fd"
            "file"
+           "findutils"
            "font-jetbrains-mono"
            "fontconfig"
            "gawk"

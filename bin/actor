@@ -234,39 +234,42 @@ elif [[ "$MSG" == ",vm-deploy" ]]; then
   guix time-machine -C "$CHANNELS" -- deploy "$DEPLOY_VM"
 
 elif [[ "$MSG" == ",ca-build" ]]; then
-  # Specification
-  # - make chrome accept my local CA → HTTPS local tests
+  # [[ref:bdfdc0d0-6b2a-45a5-b4ca-17b224087d68][Specification]]
+
+  inside_container_check
+
+  mkdir -p "$CERTS"
 
   # 1. Create local CA key + self-signed CA cert
-  openssl genrsa -out certs/ca-key.pem 4096
-  openssl req -new -x509 -days 3650 -key certs/ca-key.pem \
+  openssl genrsa -out "$CERTS/ca-key.pem" 4096
+  openssl req -new -x509 -days 3650 -key "$CERTS/ca-key.pem" \
     -subj "/CN=clocks-dev-CA" \
-    -out certs/ca-cert.pem
+    -out "$CERTS/ca-cert.pem"
 
   # 2. Create leaf key + CSR
-  openssl genrsa -out certs/dev-key.pem 2048
-  openssl req -new -key certs/dev-key.pem \
+  openssl genrsa -out "$CERTS/dev-key.pem" 2048
+  openssl req -new -key "$CERTS/dev-key.pem" \
     -subj "/CN=localhost" \
-    -out certs/dev-csr.pem
+    -out "$CERTS/dev-csr.pem"
 
   # 3. Sign the leaf cert with your CA
   #    SAN is mandatory — Chrome ignores CN for hostname validation since 2017
-  cat >certs/dev-ext.cnf <<EOF
+  cat >"$CERTS/dev-ext.cnf" <<EOF
 subjectAltName=DNS:localhost,IP:127.0.0.1
 basicConstraints=CA:FALSE
 keyUsage=digitalSignature,keyEncipherment
 extendedKeyUsage=serverAuth
 EOF
 
-  openssl x509 -req -days 825 -in certs/dev-csr.pem \
-    -CA certs/ca-cert.pem -CAkey certs/ca-key.pem -CAcreateserial \
-    -extfile certs/dev-ext.cnf \
-    -out certs/dev-cert.pem
+  openssl x509 -req -days 825 -in "$CERTS/dev-csr.pem" \
+    -CA "$CERTS/ca-cert.pem" -CAkey "$CERTS/ca-key.pem" -CAcreateserial \
+    -extfile "$CERTS/dev-ext.cnf" \
+    -out "$CERTS/dev-cert.pem"
 
   certutil -d sql:"$HOME"/.pki/nssdb -A \
     -n "clocks-dev-CA" \
     -t "CT,," \
-    -i certs/ca-cert.pem
+    -i "$CERTS/ca-cert.pem"
 
 elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
   # [[ref:c5d59ff9-cc78-4f98-a7f6-22d19c39caff][Specification]]
