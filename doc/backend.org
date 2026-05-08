@@ -3,29 +3,43 @@
 :ID:       43703ca8-74e9-454e-95c6-566ca4f8bbc7
 :END:
 
-It refines the [[ref:41190386-599d-4048-9b07-278ccbf2c785][application's backend]].
+Represents the program that executes server side and replies to [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontend]] requests,
+satisfying this [[ref:2bb30a99-0728-42e5-98a1-43cf31509420][contract]].
 
 ** backend#mode
 :PROPERTIES:
 :ID:       14896dea-bad3-45d9-86d5-55aa0be89f90
 :END:
 
-Represents the current execution mode of the backend, one of: dev | test | prod. See:
-https://hexdocs.pm/mix/Mix.html#module-environments.
+Premises
+- m :≡ backend#mode
+
+Conclusion
+- m : dev | test | prod
+- m is the current [[https://hexdocs.pm/mix/Mix.html#module-environments][execution mode]] of the backend.
 
 ** backend#dir
 :PROPERTIES:
 :ID:       9803cae7-58dd-496c-ba6b-685afca2271c
 :END:
 
-Represents the directory where the backend code lives.
+Premises
+- p :≡ backend#dir
+
+Conclusion
+- p = [[file:~/src/infra/backend/]]
+- p is the path to the directory where the backend code lives.
 
 ** backend#dist
 :PROPERTIES:
 :ID:       3c58dca0-c23f-433c-aad4-a1c488a11146
 :END:
 
-Represents the directory where the backend distribution lives.
+Premises
+- p :≡ backend#dist
+
+Conclusion
+- p is a path to a directory where the [[https://hexdocs.pm/mix/Mix.Tasks.Release.html][release]] of the backend code lives, if any.
 
 ** backend#deps-fetch
 :PROPERTIES:
@@ -33,10 +47,11 @@ Represents the directory where the backend distribution lives.
 :END:
 
 Premises
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
 - backend#deps-fetch
 
 Conclusion
-- backend's dependencies have been fetched
+- backend's dependencies have been fetched into [[ref:9803cae7-58dd-496c-ba6b-685afca2271c][backend#dir]].
 
 ** backend#db-migrate
 :PROPERTIES:
@@ -56,8 +71,8 @@ Conclusion
 :END:
 
 Premises
-- The [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] distribution has been built.
+- [[ref:985496c0-8e69-4545-9dc2-e9c830e02581][frontend#dist]] has been built.
 - backend#iex-start
 
 Conclusion
-- The application is executing locally and offering an iex REPL
+- The application is executing locally, listening on [[http://localhost:4000]], and offering an iex REPL.
