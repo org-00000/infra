@@ -163,7 +163,7 @@ export CERTS_LOCAL_PRV="$CERTS/dev-key.pem"
 # VM #
 ######
 
-export VM="$ROOT/vm"
+export VM="$XDG_RUNTIME_DIR/infra/vm"
 export VM_RUN="$VM/run"
 export VM_SOCKET="$VM_RUN/vm.sock"
 export VM_UNIT="vm.service"
