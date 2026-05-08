@@ -3,15 +3,21 @@
 :ID:       b3ac672a-faf5-4fdb-8942-46abace12dcf
 :END:
 
-It represents the program received by a client after requesting the [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]]'s
-URL.
+It refines the [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][application's frontend]].
+
+** frontend#open-api
+:PROPERTIES:
+:ID:       e58ffb29-988b-4423-a5d7-2d5c41b58ff1
+:END:
+
+It is a path to the OpenAPI contract that refines the [[ref:2bb30a99-0728-42e5-98a1-43cf31509420][application's contract]].
 
 ** frontend#dir
 :PROPERTIES:
 :ID:       834f11b4-dcdf-46c2-8472-15884c46ed98
 :END:
 
-The directory where the frontend code lives.
+It is a path to the directory where the frontend code lives.
 
 ** frontend#fetch
 :PROPERTIES:
@@ -24,19 +30,26 @@ Premises
 - frontend#fetch repo
 
 Conclusion
-- The last version of the frontend is fetched from repo into [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][frontend#dir]] as well as
-  its dependencies.
+- The last version of the frontend has been fetched from repo into [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][frontend#dir]] as
+  well as its dependencies.
 
 ** frontend#dist
+:PROPERTIES:
+:ID:       985496c0-8e69-4545-9dc2-e9c830e02581
+:END:
+
+It is a path to the directory where the distribution of the frontend code lives, if any.
+
+** frontend#dist-mk
 :PROPERTIES:
 :ID:       5357e215-36ce-4592-839d-7032b21b5b62
 :END:
 
 Premises
 - The last version of the frontend has been fetched.
-  - See: [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][frontend#fetch]]
-- backend : The URL of the [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend]] ; /e.g./ "http://localhost:4000/api"
-- frontend#dist backend
+- backend-url : The URL of the [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend-url]] ; /e.g./ "http://localhost:4000/api"
+- frontend#dist-mk backend-url
 
 Conclusion
-- A distribution is built such that requests are made by the frontend to backend
+- A [[https://vite.dev/guide/build][distribution]] has been built and stored into [[ref:985496c0-8e69-4545-9dc2-e9c830e02581][frontend#dist]] such that requests are
+  directed towards backend-url.

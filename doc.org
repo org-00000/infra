@@ -7,7 +7,11 @@ Start the development environment with:
 ./bin/env-start
 #+end_src
 
-Once started, an editor opens this very file. Its basic commands are:
+Once started, an editor opens this very file.
+
+* Editor's basic commands
+
+Its basic commands are:
 - Move the point using the arrows.
 - Place the point on a section and press <tab> to unfold it.
 - Click on a link to view references to it.
@@ -17,11 +21,28 @@ Once started, an editor opens this very file. Its basic commands are:
 - Quit the editor using C-x C-c.
 - It means: press on <control> and "x", then: press on <control> and "c".
 
-To understand /what/ ~./bin/env-start~ is supposed to do, you may consult its /spec/, /i.e./
-/specification/, which is referenced from its source code. See: [[ref:b80c22c9-2eed-4eea-a469-136e7666ea96]]. To understand /how/ it
-does what it is supposed to do, read the source code.
+* Specifications and programs
 
-To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][Contributing]].
+To understand /what/ ~./bin/env-start~ is supposed to do, you may consult its /spec/, /i.e./
+/specification/, which is referenced from its source code. See: [[ref:b80c22c9-2eed-4eea-a469-136e7666ea96]]. To understand
+/how/ it does what it is supposed to do, read the source code.
+
+* Terms, definitions and refinements
+
+If a term has an id, then its definition may be refined by other contents that refers
+to it, providing different levels of descriptions details of the object referenced by
+the term: search for references to this id (you may just click on the id to list
+them).
+
+* The application
+
+The application is described here: [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]].
+
+* Contributing
+
+To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][fork-pr]].
+
+* Directory descriptions
 
 The remaining of the document describes or points to explanations regarding parts of the
 directory.

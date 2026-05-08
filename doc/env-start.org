@@ -1,4 +1,9 @@
-* env-start
+* env
+:PROPERTIES:
+:ID:       6612d34b-e5e7-4d42-b1bf-d73bb1ed9906
+:END:
+
+** env#start
 :PROPERTIES:
 :ID:       d8afe12e-f756-4c33-a7dd-f380004f91bf
 :END:
@@ -7,7 +12,7 @@ Premises
 - git is installed
 - ssh-add is installed
 - guix is installed
-- ./env-start
+- env#start
 
 Conclusion
 - A development environment has been started.

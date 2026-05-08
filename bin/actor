@@ -83,22 +83,21 @@ elif [[ "$MSG" == ",frontend-fetch" ]]; then
 
   inside_container_check
 
-  URL="$1"
+  FRONTEND_REPO="$1"
   # TODO(c783): take into account the fact that URL may change
   if [[ ! -d "$FRONTEND" ]]; then
-    git clone "$URL" "$FRONTEND"
+    git clone "$FRONTEND_REPO" "$FRONTEND"
   fi
   cd "$FRONTEND"
   git pull
   npm install
 
-elif [[ "$MSG" == ",frontend-dist" ]]; then
+elif [[ "$MSG" == ",frontend-dist-mk" ]]; then
   # [[ref:5357e215-36ce-4592-839d-7032b21b5b62][Specification]]
-
   inside_container_check
-  SERVER="$1"
+  BACKEND_URL="$1"
   cd "$FRONTEND"
-  export VITE_API_BASE_URL="$SERVER"
+  export VITE_API_BASE_URL="$BACKEND_URL"
   npm run build
 
 elif [[ "$MSG" == ",db-start" ]]; then
@@ -158,12 +157,8 @@ elif [[ "$MSG" == ",backend-iex-start" ]]; then
 
 elif [[ "$MSG" == ",app-start" ]]; then
   # [[ref:3a2b4174-ea2e-4ed2-97b3-23b562be59a2][Specification]]
-
   inside_container_check
-
-  URL="$1"
-  ,frontend-fetch "$URL"
-  ,frontend-dist "$BACKEND_URL"
+  ,frontend-dist-mk "http://localhost:4000/api"
   ,backend-iex-start
 
 elif [[ "$MSG" == ",image-init-build" ]]; then
@@ -273,6 +268,7 @@ EOF
 
 elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
   # [[ref:c5d59ff9-cc78-4f98-a7f6-22d19c39caff][Specification]]
+  # [[id:61e5914d-eb8d-46cf-8b7c-31b68079c83e]]
 
   inside_container_check
 
@@ -285,6 +281,7 @@ elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
     echo "WARNING | the objective is to have an exact copy of upstream"
     echo "WARNING | this operation will delete any local commits"
     echo "WARNING | as well as on origin/master that are not on upstream/master"
+    echo "WARNING | you may want to save your work in a git stash or another branch"
     read -r -p "Are you sure you want to continue? [y/N] " reply
     case "$reply" in
     [Yy]*) ;;

@@ -1,39 +1,28 @@
-* Contributing
+* fork-pr
 :PROPERTIES:
 :ID:       5513764b-8595-4e2d-bcf9-8e8214ee901b
 :END:
 
-** Specification
-
-Given a small team; maybe augmented by AI; then how to contribute collectively to the
-project?
-
-** Fork and pull request
-:PROPERTIES:
-:ID:       c8f29915-b70c-4ca7-b0de-ecd01406112b
-:END:
-
 Fork
-1. Fork the repository.
-2. git remote add upstream $UPSTREAM_URL
+1. Fork the repository: https://github.com/org-00000/infra
+2. git remote add upstream git@github.com:org-00000/infra.git
 
 PR
-1. Define or choose a task in the [[ref:90abac79-d226-4de2-9174-9df6c48c25c0][backlog]].
+1. Define or choose a [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][task]] in the [[ref:90abac79-d226-4de2-9174-9df6c48c25c0][backlog]].
 2. Make sure that the task is well understood, talk with the team: update the task
    accordingly.
 3. Assign yourself to the task.
 4. Add/update/delete relevant [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][specifications]] and implementations.
 5. Send a [[ref:5deb7507-29b1-44da-9286-a81ced5f594c][PR]].
 6. Wait for the PR to be merged. You may work on an other local branch in the meantime.
-7. Synchronize with upstream.
-   - ./bin/,synchronize-with-upstream
+7. Synchronize with upstream: [[ref:61e5914d-eb8d-46cf-8b7c-31b68079c83e][,synchronize-with-upstream]]
 
-** Ruleset
+** fork-pr#ruleset
 
-The [[ref:c8f29915-b70c-4ca7-b0de-ecd01406112b][Fork and pull request]] is enforced by a rule set:
+[[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][Fork and pull]] is enforced by a rule set:
 - https://github.com/org-00000/infra/settings/rules/16035411
 
-** Pull request
+** fork-pr#pull-request
 :PROPERTIES:
 :ID:       5deb7507-29b1-44da-9286-a81ced5f594c
 :END:

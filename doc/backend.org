@@ -3,7 +3,7 @@
 :ID:       43703ca8-74e9-454e-95c6-566ca4f8bbc7
 :END:
 
-It represents a backend which objective is to reply to the [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]].
+It refines the [[ref:41190386-599d-4048-9b07-278ccbf2c785][application's backend]].
 
 ** backend#deps-fetch
 :PROPERTIES:
@@ -14,7 +14,7 @@ Premises
 - backend#deps-fetch
 
 Conclusion
-- backend dependencies have been fetched
+- backend's dependencies have been fetched
 
 ** backend#db-migrate
 :PROPERTIES:
@@ -34,8 +34,7 @@ Conclusion
 :END:
 
 Premises
-- The frontend has been fetched and built.
-  - See: [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]]
+- The [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] distribution has been built.
 - backend#iex-start
 
 Conclusion
