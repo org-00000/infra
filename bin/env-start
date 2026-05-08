@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf][Specification]]
+# [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][Specification]]
 # [[id:b80c22c9-2eed-4eea-a469-136e7666ea96]]
 
 set -euo pipefail
