@@ -198,6 +198,7 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Define and implement doc/frontend.org
 *** DONE Define and implement doc/backend.org
 *** DONE Fix corfu error
 :PROPERTIES:
