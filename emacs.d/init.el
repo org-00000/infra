@@ -4,87 +4,50 @@
 ;;; Each comment states *what* is true after the form below it runs.
 ;;; The file is linear: every section may rely on what came before it.
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Startup
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(add-to-list 'load-path (file-name-concat user-emacs-directory "elisp"))
-
 ;; The startup screen, echo-area banner, and scratch-buffer message are
 ;; suppressed — Emacs opens directly to a clean state.
 (setq inhibit-startup-message t
   inhibit-startup-echo-area-message t
   initial-scratch-message nil)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Sound
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; The audible/visible bell is silenced entirely.
 (setq ring-bell-function 'ignore)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; User-Interface chrome
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; The toolbar, menu bar, and scroll bar are hidden, leaving only the buffer.
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 
 ;; The frame title shows the current buffer name instead of "GNU Emacs".
-(setq frame-title-format '("%b — Emacs"))
+(setq frame-title-format '("%b"))
 
 ;; which-key is active: pressing an incomplete key sequence shows
 ;; a popup listing all possible completions.
 (require 'which-key)
 (which-key-mode 1)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Editing defaults
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Customise-written variables live in custom.el, keeping init.el clean.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file t)
 
 ;; Indentation uses spaces (never tabs), with a width of 2 columns.
 ;; Paragraph filling wraps at 90 characters (fill-column).
-;; Visual line wrapping occurs at the window edge (set by global-visual-line-mode below).
 (setq-default indent-tabs-mode nil
               tab-width 2
               fill-column 90)
 
-;; Typing over an active region replaces it (standard selection behaviour).
+;; Typing over an active region replaces it.
 (delete-selection-mode 1)
-(require 'expreg)
-(global-set-key (kbd "C-<") #'expreg-expand)
-
-
-;; Long lines wrap visually at the window edge rather than being truncated.
-(global-visual-line-mode 1)
 
 ;; A single space ends a sentence, so fill commands work correctly.
 (setq sentence-end-double-space nil)
 
-(require 'auto-replace-characters)
-(add-hook 'org-mode-hook  #'auto-replace-characters-mode)
-(add-hook 'prog-mode-hook #'auto-replace-characters-mode)
-
-;; Stop Emacs from asking retarted questions
+;; Stop Emacs from asking dumb questions
 (setq disabled-command-function nil)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Memory & subprocess I/O
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; The GC threshold is raised to 100 MiB, and the LSP read buffer to 1 MiB,
 ;; reducing GC pauses during heavy editing and fast subprocess output.
 (setq gc-cons-threshold (* 100 1024 1024)
   read-process-output-max (* 1024 1024))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Native compilation
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; If native compilation is available, async warnings are suppressed so they
 ;; do not interrupt the editing session.
@@ -92,16 +55,11 @@
      (native-comp-available-p))
   (setq native-comp-async-report-warnings-errors 'silent))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Files, backups, and auto-saves
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Buffers are automatically reverted when their file changes on disk.
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
 
-;; Backup files are written to ~/.emacs.d/backups/ (not next to the original).
+;; Backup files are written to backups/ (not next to the original).
 (defvar this-backup-dir (concat user-emacs-directory "backups/"))
 (make-directory this-backup-dir t)
 
@@ -122,11 +80,6 @@
 ;; Minibuffer history is saved across sessions.
 (savehist-mode 1)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Navigation
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; The current line is highlighted in every buffer.
 (global-hl-line-mode 1)
 
@@ -142,6 +95,26 @@
 
 ;; Line numbers appear in every programming buffer.
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+;; Yes/no prompts accept "y" / "n" instead of the full words.
+(setq use-short-answers t)
+
+;; All text is UTF-8 with Unix line endings by default.
+(set-language-environment "UTF-8")
+(setq default-buffer-file-coding-system 'utf-8-unix)
+
+;; The modus-vivendi-tinted dark theme is loaded at startup.
+;; Bold and italic constructs are rendered as such, and mixed-pitch fonts
+;; are enabled so proportional and monospaced faces coexist cleanly.
+(require 'modus-themes)
+(load-theme 'modus-vivendi-tinted t)
+(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
+(setq modus-themes-bold-constructs t
+      modus-themes-italic-constructs t
+      modus-themes-mixed-fonts t)
+
+;; F5 toggles between the light and dark modus variants.
+(global-set-key (kbd "<f5>") #'modus-themes-toggle)
 
 ;; M-i opens a consult-imenu popup for the current buffer's structure.
 ;; Org headings are indexed to arbitrary depth.
@@ -166,89 +139,10 @@
   (ibuffer-sidebar-toggle-sidebar))
 (global-set-key (kbd "C-x C-n") #'sidebar-toggle)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; lar — live auto-reload
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; The local "lar" library is on the load path and required.
-(add-to-list 'load-path (file-name-concat user-emacs-directory "elisp/lar"))
-(require 'lar)
-
-;; lar-mode is active in Org and programming buffers.
-;; In programming buffers it also reloads automatically on every save.
-(defun lar-auto-reload () (add-hook 'after-save-hook #'lar-reload nil t))
-(add-hook 'org-mode-hook #'lar-mode)
-(add-hook 'org-mode-hook #'lar-auto-reload)
-(add-hook 'prog-mode-hook #'lar-mode)
-(add-hook 'prog-mode-hook #'lar-auto-reload)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Interaction
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Yes/no prompts accept "y" / "n" instead of the full words.
-(setq use-short-answers t)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Encoding
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; All text is UTF-8 with Unix line endings by default.
-(set-language-environment "UTF-8")
-(setq default-buffer-file-coding-system 'utf-8-unix)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Theme
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; The modus-vivendi-tinted dark theme is loaded at startup.
-;; Bold and italic constructs are rendered as such, and mixed-pitch fonts
-;; are enabled so proportional and monospaced faces coexist cleanly.
-(require 'modus-themes)
-(load-theme 'modus-vivendi-tinted t)
-(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-(setq modus-themes-bold-constructs t
-      modus-themes-italic-constructs t
-      modus-themes-mixed-fonts t)
-
-;; F5 toggles between the light and dark modus variants.
-(global-set-key (kbd "<f5>") #'modus-themes-toggle)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Custom variables
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Customise-written variables live in custom.el, keeping init.el clean.
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file t)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Clipboard integration
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Emacs kill-ring and system clipboard are unified: kills are available
-;; for paste in other applications, and vice versa.
-(setq select-enable-clipboard t
-      select-enable-primary t)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Font
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; The default face uses JetBrains Mono at 10 pt (height 100 = 10 pt).
 (set-face-attribute 'default nil
         :family "JetBrains Mono"
         :height 100)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Minibuffer completion — Vertico, Orderless, Marginalia
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Vertico provides a vertical candidate list in the minibuffer (15 rows,
 ;; cycling from last back to first).
@@ -271,11 +165,6 @@
 (require 'marginalia)
 (marginalia-mode 1)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Consult — search & navigation commands
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Consult replaces several built-in commands with richer, live-preview
 ;; equivalents: buffer switching, bookmark jumping, yank-pop, line/imenu
 ;; navigation, ripgrep, and find.
@@ -284,7 +173,6 @@
 (global-set-key (kbd "C-x 4 b") #'consult-buffer-other-window)
 (global-set-key (kbd "C-x r b") #'consult-bookmark)
 (global-set-key (kbd "M-y")     #'consult-yank-pop)
-(global-set-key (kbd "C-y")     #'yank)
 (global-set-key (kbd "C-s") #'consult-line)
 (global-set-key (kbd "M-g g")   #'consult-goto-line)
 (global-set-key (kbd "M-g M-g") #'consult-goto-line)
@@ -300,11 +188,6 @@
 (setq xref-show-xrefs-function       #'consult-xref
       xref-show-definitions-function #'consult-xref)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Embark — act on minibuffer candidates
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Embark lets you act on any candidate in the minibuffer or at point
 ;; (open, copy, delete, …) via a contextual action menu.
 ;; C-.  → embark-act   (pick an action)
@@ -316,11 +199,6 @@
 
 ;; Consult live-preview is active in embark-collect buffers.
 (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Corfu — in-buffer completion popup
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Corfu shows an in-buffer popup of completion candidates.
 ;; corfu-terminal replaces the default child-frame renderer with a TUI-safe
@@ -348,11 +226,6 @@
 (add-to-list 'savehist-additional-variables 'corfu-history)
 (savehist-mode 1)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Cape — additional completion-at-point sources
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Cape feeds dabbrev (dynamic abbreviation), file paths, and language
 ;; keywords into corfu as extra completion sources.
 (require 'cape)
@@ -366,11 +239,6 @@
 (advice-add #'comint-completion-at-point :around #'cape-wrap-nonexclusive)
 (advice-add #'eglot-completion-at-point  :around #'cape-wrap-buster)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Dired
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Dired lists files in long format with human-readable sizes, directories
 ;; first. When two Dired buffers are open, operations default to the other
 ;; window as the target. Buffers auto-revert, and opening a subdirectory
@@ -383,20 +251,10 @@
 ;; Details (permissions, size, date) are hidden by default for a cleaner view.
 (add-hook 'dired-mode-hook #'dired-hide-details-mode)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Eldoc
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Eldoc documentation is always single-line (no multi-line echo area),
 ;; and appears after a 500 ms idle delay.
 (setq eldoc-echo-area-use-multiline-p nil
       eldoc-idle-delay 0.5)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Flymake
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Flymake checks for errors 500 ms after the last change.
 ;; M-n / M-p jump to the next / previous diagnostic in the buffer.
@@ -408,30 +266,15 @@
       (local-set-key (kbd "M-n") #'flymake-goto-next-error)
       (local-set-key (kbd "M-p") #'flymake-goto-prev-error)))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Isearch
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Isearch shows a "(current/total)" match counter in the prompt,
 ;; and wraps around without pausing or beeping.
 (setq isearch-lazy-count t
       lazy-count-prefix-format "(%s/%s) "
       isearch-wrap-pause 'no-ding)
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Ibuffer
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; C-x C-b opens ibuffer (grouped, sortable buffer list) instead of the
 ;; default buffer-list.
 (global-set-key (kbd "C-x C-b") #'ibuffer)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Electric pair (non-Lisp modes only)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; In programming modes that are not Lisp dialects, electric-pair-local-mode
 ;; auto-closes brackets, quotes, etc.  Lisp modes are excluded because
@@ -444,11 +287,6 @@
 (add-hook 'text-mode-hook #'electric-pair-mode)
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Eglot — LSP client
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Eglot is the LSP client. The buffer is formatted automatically on save
 ;; while Eglot manages it.  The event log is disabled (size 0) to avoid
 ;; memory growth, and servers are shut down when their last buffer is closed.
@@ -458,11 +296,6 @@
       (add-hook 'before-save-hook #'eglot-format-buffer nil t)))
 (setq eglot-events-buffer-size 0
       eglot-autoshutdown t)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Tree-sitter
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Tree-sitter font-lock is set to level 4 (maximum granularity).
 (setq treesit-font-lock-level 4)
@@ -482,21 +315,11 @@
   (yaml-mode       . yaml-ts-mode)
   (toml-mode       . toml-ts-mode)))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Git — Magit
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ;; Magit is the Git interface. C-x g opens magit-status.
 ;; All hunks are shown with word-level diff refinement.
 (require 'magit)
 (setq magit-diff-refine-hunk 'all)
 (global-set-key (kbd "C-x g") #'magit-status)
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Lisp / Scheme / Guile
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Bug-reference mode turns issue numbers (e.g. #1234) into clickable links
 ;; in programming and ERC buffers.
@@ -527,11 +350,6 @@
 (require 'geiser-guile)
 (setq lisp-indent-offset 2)
 (add-to-list 'auto-mode-alist '("\\.scm\\'" . scheme-mode))
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Org-mode
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; org-mode is loaded explicitly so all subsequent setq forms affect the
 ;; real org variables rather than auto-load stubs.
@@ -618,32 +436,18 @@
 (setq org-link-keep-stored-after-insertion t)
 (setq org-fontify-emphasized-text t)
 
-
-;;;;;;;;;;;;;;
-;; Snippets ;;
-;;;;;;;;;;;;;;
-
 (require 'f)
 (require 'yasnippet)
 (setq yas-snippet-dirs
-      (list (f-join user-emacs-directory "snippets")
-            yas-snippet-dirs))
+      (list (f-join user-emacs-directory "snippets")))
 (yas-global-mode 1)
 
 
 (setq enable-recursive-minibuffers t)
 
-;;;;;;;;;;
-;; Tabs ;;
-;;;;;;;;;;
-
 (require 'tab-bar)
 (tab-bar-mode)
 (global-set-key (kbd "C-t") #'tab-new)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; On startup, take half of the screensize ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq frame-resize-pixelwise t)
 (defun my-frame-to-half-width (&optional right)
@@ -664,37 +468,52 @@ Height is set to the full usable monitor height."
 (when (display-graphic-p)
   (my-frame-to-half-width))
 
-;;;;;;;;;;;;;;;;;;
-;; LSP for Bash ;;
-;;;;;;;;;;;;;;;;;;
-
+;; Language server enabled for Bash
 (add-to-list 'eglot-server-programs
   '((sh-mode bash-ts-mode) . ("bash-language-server" "start")))
 (add-hook 'sh-mode-hook #'eglot-ensure)
+;; Bash indentation
+(setq sh-basic-offset 2)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Copy path of heading to clipboard ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; FIX #9: M-p was also bound via the Flymake mode hook to
-;; flymake-goto-prev-error using local-set-key, which takes precedence over
-;; major-mode maps. In a pure Org buffer (no Flymake), M-p here works as
-;; intended. In an Org buffer with Flymake active, the Flymake local binding
-;; wins. This is documented explicitly; resolve by choosing a non-conflicting
-;; key if both bindings are needed simultaneously.
+;; Copy path of heading to clipboard
 (defun org-copy-outline-path-to-kill-ring ()
   "Copy current heading's full outline path (Org syntax) to kill ring."
   (interactive)
   (let* ((filename (file-name-nondirectory (buffer-file-name)))
-         (outline-path (org-get-outline-path))
-         (current-heading (org-get-heading t t t t))
-         (todo-keyword (org-get-todo-state))
-         (heading-with-todo (if todo-keyword
-                                (concat todo-keyword " " current-heading)
-                              current-heading))
-         (full-path (append outline-path (list heading-with-todo)))
-         (path (org-format-outline-path full-path 10000 nil " → ")))
+          (outline-path (org-get-outline-path))
+          (current-heading (org-get-heading t t t t))
+          (todo-keyword (org-get-todo-state))
+          (heading-with-todo (if todo-keyword
+                               (concat todo-keyword " " current-heading)
+                               current-heading))
+          (full-path (append outline-path (list heading-with-todo)))
+          (path (org-format-outline-path full-path 10000 nil " → ")))
     (kill-new path)
     (message "Outline path → kill-ring: %s" path)))
 
 (define-key org-mode-map (kbd "M-p") #'org-copy-outline-path-to-kill-ring)
+
+;; Repeating C-< expand the current selection: word, sentence, ….
+(require 'expreg)
+(global-set-key (kbd "C-<") #'expreg-expand)
+
+;; Find additional elisp files if needed.
+(defvar local-elisp-dir (file-name-concat user-emacs-directory "elisp")) 
+(add-to-list 'load-path local-elisp-dir)
+
+(require 'auto-replace-characters)
+(add-hook 'org-mode-hook  #'auto-replace-characters-mode)
+(add-hook 'prog-mode-hook #'auto-replace-characters-mode)
+
+(add-to-list 'load-path (file-name-concat local-elisp-dir "lar"))
+(require 'lar)
+
+;; lar-mode is active in Org and programming buffers.
+;; In programming buffers it also reloads automatically on every save.
+(defun lar-auto-reload () (add-hook 'after-save-hook #'lar-reload nil t))
+(add-hook 'org-mode-hook #'lar-mode)
+(add-hook 'org-mode-hook #'lar-auto-reload)
+(add-hook 'prog-mode-hook #'lar-mode)
+(add-hook 'prog-mode-hook #'lar-auto-reload)
+
+

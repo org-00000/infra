@@ -198,8 +198,24 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Fix copy/paste error with Emacs
+:PROPERTIES:
+:ID: 00b8b1d2-fb2b-4df2-8b98-02a189621113
+:OWNER: phf
+:END:
+
+Emacs does not replace selection with pasted content, fix that.
+
 *** DONE Define and implement doc/frontend.org
+:PROPERTIES:
+:OWNER: phf
+:END:
+
 *** DONE Define and implement doc/backend.org
+:PROPERTIES:
+:OWNER: phf
+:END:
+
 *** DONE Fix corfu error
 :PROPERTIES:
 :ID: 18bb9a7b-ac54-4192-8945-80ddae7bc1e6
