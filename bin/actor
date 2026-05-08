@@ -76,7 +76,7 @@ if [[ "$MSG" == ",install-node-binaries" ]]; then
   # [[ref:220179a9-aa3e-490d-ab6e-3ef02d759bee][Specification]]
 
   inside_container_check
-  npm install -g
+  npm install -g @anthropic-ai/claude-code bash-language-server
 
 elif [[ "$MSG" == ",frontend-fetch" ]]; then
   # [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][Specification]]
@@ -111,18 +111,19 @@ elif [[ "$MSG" == ",db-start" ]]; then
   fi
 
   if [[ ! -e "$DB_VERSION" ]]; then
-    initdb -D "$DB_DATA" --locale=C.UTF-8 --encoding=UTF8
-    cat <<'EOF' >"$DB_HBA"
+    initdb -D "$DB_DATA" --locale=C.UTF-8 --encoding=UTF8 --username=postgres
+  fi
+
+  cat <<'EOF' >"$DB_HBA"
 # TYPE  DATABASE  USER  ADDRESS  METHOD
 local   all       all            peer  map=appmap
 EOF
-    cat <<EOF >"$DB_INDENT"
+  cat <<EOF >"$DB_IDENT"
 # MAPNAME  SYSTEM-USERNAME PG-USERNAME
 appmap     $USER           postgres
 appmap     root            postgres
 EOF
-  fi
-  pg_ctl -D "$DB_DATA" -l "$DB_LOG" -o "-k $DB_RUN -p $DB_PORT" start
+  pg_ctl -D "$DB_DATA" -l "$DB_LOG" -o "-k $DB_RUN -p $DB_PORT -c listen_addresses=''" start
   # test the connection.
   psql -h "$DB_RUN" -U postgres -c "\q"
 

@@ -67,14 +67,14 @@ export SECRET_KEY_BASE=""
 # variables values.
 export SECRET="$ETC/secret.gpg"
 if [[ -v GUIX_ENVIRONMENT ]]; then
-    if [[ -f "$SECRET" ]]; then
-        set +xv
-        set -a
-        eval "$(gpg --quiet --batch --yes --decrypt "$SECRET" 2>/dev/null)"
-        set +a
-    else
-        echo "INFO | SECRET file does not exist. Using default values. SECRET: $SECRET"
-    fi
+  if [[ -f "$SECRET" ]]; then
+    set +xv
+    set -a
+    eval "$(gpg --quiet --batch --yes --decrypt "$SECRET" 2>/dev/null)"
+    set +a
+  else
+    echo "INFO | SECRET file does not exist. Using default values. SECRET: $SECRET"
+  fi
 fi
 
 ########
@@ -123,7 +123,7 @@ export DB_DATA="$DB/data"
 export DB_LOG="$DB/postgres.log"
 export DB_VERSION="$DB_DATA/PG_VERSION"
 export DB_HBA="$DB_DATA/pg_hba.conf"
-export DB_INDENT="$DB_DATA/pg_indent.conf"
+export DB_IDENT="$DB_DATA/pg_ident.conf"
 export DB_RUN="$DB/run"
 export DB_PORT=5432
 
@@ -188,3 +188,20 @@ export APP_HOST_ROOT_KEY="$KEY_SSH_PUB"
 export APP_HOST_CERT_PUB="$CERTS_LOCAL_PUB"
 export APP_HOST_CERT_PRV="$CERTS_LOCAL_PRV"
 export APP_STORE_KEY="$KEY_STORE"
+
+#######
+# NPM #
+#######
+
+NPM="$ROOT/npm"
+
+# We want to persist installations accross container restarts but avoid to pollute host,
+# so we mount NPM global using this directory.
+NPM_ROOT="$NPM/npm-global"
+
+##########
+# Claude #
+##########
+
+CLAUDE="$HOME/.claude"
+CLAUDE_CONFIG="$HOME/.claude.json"
