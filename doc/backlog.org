@@ -198,6 +198,24 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Fix ssh host
+:PROPERTIES:
+:ID: eccdb110-926c-4640-9612-348b64ed64f7
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_example
+The authenticity of host 'github.com (140.82.121.3)' can't be established.
+ED25519 key fingerprint is: SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU
+This key is not known by any other names.
+#+end_example
+
+**** Objective
+
+Continue without asking
+
 *** DONE Fix ,db-start
 :PROPERTIES:
 :ID: e710c15a-0750-400e-985a-19e66b2a656a
