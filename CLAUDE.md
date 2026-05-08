@@ -11,3 +11,5 @@
   matching identifier ; e.g. [id:<id>]
 - Given an identifier [id:<id>], you may find contents that reference it by searching for the
   matching references ; e.g. [ref:<id>]
+- Read: ./etc/bash-dev-session
+- Read: ./etc/bash-dev-profile

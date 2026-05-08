@@ -155,7 +155,7 @@ export IMAGE_INIT="$IMAGE/init.qcow2"
 # SSL Certificates #
 ####################
 
-export CERTS="$ROOT/certs"
+export CERTS="$ETC/certs"
 export CERTS_LOCAL_PUB="$CERTS/dev-cert.pem"
 export CERTS_LOCAL_PRV="$CERTS/dev-key.pem"
 

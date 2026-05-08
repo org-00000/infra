@@ -71,9 +71,9 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(b1e3)= in =os/1.scm=: replace the current store trust approach with =guix-extension=.
 
-*** TODO Move certs/ under etc/
+*** DONE Move certs/ under etc/
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       b50c0b23-277e-4a87-843e-348a041a0623
 :END:
 
@@ -81,7 +81,7 @@ we know what needs to be done, and who works on what.
 
 *** TODO Move ssh/ under etc/
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       e45a3eb6-8ef5-4525-9c97-d2b5a79efd88
 :END:
 
@@ -89,7 +89,7 @@ we know what needs to be done, and who works on what.
 
 *** TODO Move vm/ under /run
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       17b0ea19-a100-46ba-9ec7-deedd68ee191
 :END:
 

@@ -116,8 +116,8 @@ Premises
 - ,ca-build
 
 Conclusion
-- A local CA key and self-signed CA certificate exist under =certs/=.
-- A leaf certificate for =localhost= signed by the local CA exists under =certs/=.
+- A local CA key and self-signed CA certificate exist under =etc/certs/=.
+- A leaf certificate for =localhost= signed by the local CA exists under =etc/certs/=.
 - The local CA has been registered in the NSS database so that Chrome accepts HTTPS
   connections to =localhost=.
 
