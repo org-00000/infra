@@ -198,7 +198,7 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
-*** DOING Fix ,db-start
+*** DONE Fix ,db-start
 :PROPERTIES:
 :ID: e710c15a-0750-400e-985a-19e66b2a656a
 :OWNER: phf
@@ -208,12 +208,10 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
 
 #+begin_src bash
 phf@pc1:infra [env]$ ,db-start
-PostgreSQL is already running. Stopping it first...
-waiting for server to shut down.... done
-server stopped
+pg_ctl: another server might be running; trying to start server anyway
 waiting for server to start.... done
 server started
-psql: error: connection to server on socket "/home/phf/src/infra/_postgresql/run/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "postgres"
+psql: error: connection to server on socket "/home/phf/src/infra/_postgresql/run/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist
 #+end_src
 
 **** Objective

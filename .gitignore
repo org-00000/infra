@@ -26,4 +26,9 @@ phoenix/priv/static/
 
 /experiment
 
+# node, npm, etc.
+npm-global
 node_modules
+
+# Claude
+/.claude

@@ -38,8 +38,7 @@ ENV="$ETC/bash-dev-profile"
 source "$ENV"
 
 if ! ssh-add -l &>/dev/null; then
-  echo "ERROR | The SSH agent is necessary to connect to a VPS"
-  exit 1
+  echo "WARNING | The SSH agent is necessary to connect to a VPS"
 fi
 
 # If the host has not signing key; then: build it. This signature should be accepted
@@ -49,11 +48,16 @@ if [[ ! -f "$HOST_ETC_GUIX/signing-key.pub" ]]; then
   sudo -k guix archive --generate-key
 fi
 
-CLAUDE="$HOME/.claude"
-
+# Ensure that relevant files are shared between the host and the guest.
 if [[ ! -d "$CLAUDE" ]]; then
   mkdir -vp "$CLAUDE"
 fi
+if [[ ! -e "$CLAUDE_CONFIG" ]]; then
+  touch "$CLAUDE_CONFIG"
+fi
+
+# Ensure that relevant files are shared between the host and the guest.
+mkdir -p "$NPM_ROOT"
 
 # [[id:21b4b68a-aef7-44e5-ac79-a26a7100cbdd]]
 # If SSL certificates are placed in a known directory, then OTP can use them.
@@ -80,4 +84,6 @@ guix time-machine -C "$CHANNELS" -- shell \
   --expose="$XDG_RUNTIME_DIR" \
   --share="/run/user/$UID" \
   --share="$CLAUDE" \
+  --share="$NPM_ROOT"="$HOME/.npm-global" \
+  --share="$CLAUDE_CONFIG" \
   -- bash --init-file "$DEV_SESSION" -i
