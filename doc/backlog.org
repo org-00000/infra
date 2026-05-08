@@ -7,37 +7,16 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
-*** TODO Define ShortCommit
+*** DONE Add definitions
 :PROPERTIES:
-:OWNER: nobody
+:OWNER: phf
 :ID:       aef0d902-9aee-4099-a3be-395c1b4a94e0
 :END:
 
-- Objective :≡ Replace =TODO(2314)= in =doc/definitions.org= with a proper definition of =ShortCommit=.
-
-*** TODO Define Commit
-:PROPERTIES:
-:OWNER: nobody
-:ID:       641fc820-fefd-45de-ac7d-db7eb02631e3
-:END:
-
-- Objective :≡ Replace =TODO(6316)= in =doc/definitions.org= with a proper definition of =Commit=.
-
-*** TODO Define Ip
-:PROPERTIES:
-:OWNER: nobody
-:ID:       bb0ff784-2050-485a-815b-38f4417a6441
-:END:
-
-- Objective :≡ Replace =TODO(8a23)= in =doc/definitions.org= with a proper definition of =Ip=.
-
-*** TODO Define Port
-:PROPERTIES:
-:OWNER: nobody
-:ID:       fc3c0f62-4620-43c7-94d2-613789b1317b
-:END:
-
-- Objective :≡ Replace =TODO(a2f4)= in =doc/definitions.org= with a proper definition of =Port=.
+- Objective :≡ Replace =TODO(2314)= in =doc/definitions.org= with a link to wikipedia of =ShortCommit=.
+- Objective :≡ Replace =TODO(6316)= in =doc/definitions.org= with a link to wikipedia of =Commit=.
+- Objective :≡ Replace =TODO(8a23)= in =doc/definitions.org= with a link to wikipedia of =Ip=.
+- Objective :≡ Replace =TODO(a2f4)= in =doc/definitions.org= with a link to wikipedia of =Port=.
 
 *** TODO Add references to specification.org
 :PROPERTIES:
@@ -61,7 +40,8 @@ we know what needs to be done, and who works on what.
 :ID:       9eab79c9-f638-4049-873f-d95ebe938359
 :END:
 
-- Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in =application-conf= is still needed and remove it if not.
+- Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
+  =application-conf= is still needed and remove it if not.
 
 *** DONE Move certs/ under etc/
 :PROPERTIES:
@@ -79,7 +59,7 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(6856)= in =doc.org=: relocate the =ssh/= directory under =etc/= and update all references.
 
-*** TODO Move vm/ under /run
+*** DONE Move vm/ under /run
 :PROPERTIES:
 :OWNER: phf
 :ID:       17b0ea19-a100-46ba-9ec7-deedd68ee191

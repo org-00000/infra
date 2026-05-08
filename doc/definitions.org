@@ -21,8 +21,8 @@ Represents a set of definitions.
 
 ** Git
 
-- [[id:88356c79-513c-4651-b3b7-ccac82e11a68][ShortCommit]] :≡ TODO(2314)
-- [[id:8d611509-d83d-463a-add8-36e862c83f95][Commit]] :≡ TODO(6316)
+- [[id:88356c79-513c-4651-b3b7-ccac82e11a68][ShortCommit]] :≡ https://en.wikipedia.org/wiki/Checksum#git
+- [[id:8d611509-d83d-463a-add8-36e862c83f95][Commit]] :≡ https://en.wikipedia.org/wiki/Commit_(version_control)
 
 ** Phoenix
 
@@ -44,8 +44,8 @@ Represents a set of definitions.
 
 ** Internet
 
-- [[id:2e06869b-d68d-4683-a3e6-84357b245e3d][Ip]] :≡ TODO(8a23)
-- [[id:26ba86e3-8472-48b7-9701-00313fa7a030][Port]] :≡ TODO(a2f4)
+- [[id:2e06869b-d68d-4683-a3e6-84357b245e3d][Ip]] :≡ https://en.wikipedia.org/wiki/IP_address
+- [[id:26ba86e3-8472-48b7-9701-00313fa7a030][Port]] :≡ https://en.wikipedia.org/wiki/Port_(computer_networking)
 - [[id:56eb52ec-d0e8-4f03-8199-9ca69887c0c5][Authority]] :≡ https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#basics_anatomy_of_a_url
 - [[id:d9112676-5f0e-41ac-908d-b48e1f923538][Bunny.net]] :≡ https://jola.dev/posts/dropping-cloudflare
 
