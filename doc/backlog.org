@@ -198,6 +198,49 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Fix ,app-start
+:PROPERTIES:
+:ID: 8077318c-b8d8-4296-b589-ef557723b6d4
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_example
+phf@pc1:infra [env]$ ,app-start
+…
+12:21:58.022 [error] Postgrex.Protocol (#PID<0.202.0> ("db_conn_1")) failed to connect: ** (DBConnection.ConnectionError) tcp connect (localhost:5432): connection refused - :econnrefused
+
+12:21:58.027 [error] :gen_statem #PID<0.202.0> terminating
+,** (DBConnection.ConnectionError) tcp connect (localhost:5432): connection refused - :econnrefused
+    (db_connection 2.9.0) lib/db_connection/connection.ex:110: DBConnection.Connection.handle_event/4
+    (stdlib 6.2.2.2) gen_statem.erl:3737: :gen_statem.loop_state_callback/11
+    (stdlib 6.2.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Process Label: "db_conn_1"
+Queue: [internal: {:connect, :init}]
+Postponed: []
+State: Postgrex.Protocol
+Callback mode: :handle_event_function, state_enter: false
+
+12:21:58.032 [error] Postgrex.Protocol (#PID<0.208.0> ("db_conn_1")) failed to connect: ** (DBConnection.ConnectionError) tcp connect (localhost:5432): connection refused - :econnrefused
+
+12:21:58.032 [error] :gen_statem #PID<0.208.0> terminating
+,** (DBConnection.ConnectionError) tcp connect (localhost:5432): connection refused - :econnrefused
+    (db_connection 2.9.0) lib/db_connection/connection.ex:110: DBConnection.Connection.handle_event/4
+    (stdlib 6.2.2.2) gen_statem.erl:3737: :gen_statem.loop_state_callback/11
+    (stdlib 6.2.2.2) proc_lib.erl:329: :proc_lib.init_p_do_apply/3
+Process Label: "db_conn_1"
+Queue: [internal: {:connect, :init}]
+Postponed: []
+State: Postgrex.Protocol
+Callback mode: :handle_event_function, state_enter: false
+,** (Mix) The database for Backend.Repo couldn't be created: killed
+#+end_example
+
+**** Objective
+
+Fix: [[ref:51ade351-7413-4355-9e56-55d1166380b5]]
+
 *** DONE Refine doc/*
 :PROPERTIES:
 :ID: 4b1ce0c9-2807-4772-a95b-9ca041b15dda
