@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 - You are executing in a Guix container started with: ./bin/env-start
+- All files ending with extension '.org' use the [OrgMode](https://orgmode.org/org.html) markup language.
 - Read ./README.org
 - Documentation lives in ./doc/ 
 - Use `fd` instead of `find`

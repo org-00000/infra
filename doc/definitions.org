@@ -1,63 +1,67 @@
-* Computer science
+* definitions
 
-- [[id:9ecfad51-ad7c-461a-ac44-4ea84c8414eb][Actor]] :≡ https://phfrohring.com/d1b5724d-434c-40a0-86e9-dfc81012ae43/html 
-  
-* SSH
+Represents a set of definitions.
+
+** Computer science
+
+- [[id:9ecfad51-ad7c-461a-ac44-4ea84c8414eb][Actor]] :≡ https://phfrohring.com/d1b5724d-434c-40a0-86e9-dfc81012ae43/html
+
+** SSH
 
 - [[id:97eca5fe-b140-44c7-81d9-51f2a3f4454f][Ed25519Pub]] :≡ SSH public key like: =ssh-ed25519 AAAAC3NzaC1…=
 
-* Python
+** Python
 
 - [[id:f6b072f6-6d3c-44c3-a1e8-47e22a23a3f1][FileObject]] :≡ https://docs.python.org/3/glossary.html#term-file-object
-  
-* Linux
+
+** Linux
 
 - [[id:563f7d83-88ec-4b3d-bf05-a8f42fe04028][Socket]] :≡ https://en.wikipedia.org/wiki/Unix_domain_socket
 - [[id:fc1bb285-c9ff-453d-beac-7a1bf1611ca4][PidFile]] :≡ https://en.wikipedia.org/wiki/Process_identifier
 
-* Git
+** Git
 
 - [[id:88356c79-513c-4651-b3b7-ccac82e11a68][ShortCommit]] :≡ TODO(2314)
 - [[id:8d611509-d83d-463a-add8-36e862c83f95][Commit]] :≡ TODO(6316)
 
-* Phoenix
+** Phoenix
 
 - [[id:0b6d8a58-28c7-4d29-891d-b8f879659688][PhoenixDistribution]] :≡ https://hexdocs.pm/phoenix/releases.html
 - [[id:4d0d3620-0e64-4095-9af9-34bf78e05509][BackendDistribution]] :≡ [[ref:0b6d8a58-28c7-4d29-891d-b8f879659688][PhoenixDistribution]]
 
-* Virtualization
+** Virtualization
 
 - [[id:2b855eac-c24c-4d19-a966-e8bf89be994c][DiskImage]] :≡ https://en.wikipedia.org/wiki/Disk_image
 - [[id:6ea36050-ce4a-44fe-b263-3ddb4a9e066c][VirtualMachine]] :≡ https://grokipedia.com/page/Virtual_machine
 
-* Web
+** Web
 
 - [[id:9f5eb7ae-fc62-4227-af9d-ffb0b93a9d9a][FrontendDistribution]] :≡ https://vite.dev/guide/cli#build
-  
-* systemd
+
+** systemd
 
 - [[id:fe5c4a72-2092-45e3-b2eb-31bc68db53bc][SysdUnitName]] :≡ https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
 
-* Internet
+** Internet
 
 - [[id:2e06869b-d68d-4683-a3e6-84357b245e3d][Ip]] :≡ TODO(8a23)
 - [[id:26ba86e3-8472-48b7-9701-00313fa7a030][Port]] :≡ TODO(a2f4)
 - [[id:56eb52ec-d0e8-4f03-8199-9ca69887c0c5][Authority]] :≡ https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_URL#basics_anatomy_of_a_url
 - [[id:d9112676-5f0e-41ac-908d-b48e1f923538][Bunny.net]] :≡ https://jola.dev/posts/dropping-cloudflare
-    
-* GNU Shepherd
+
+** GNU Shepherd
 
 - [[id:bcc97436-563a-4cde-afcd-4d414fda54c8][Shepherd]]           :≡ https://doc.guix.gnu.org/shepherd/latest/en/html_node/herd-and-shepherd.html
 - [[id:c12b81b0-eeeb-46de-9c1e-26d5113cbfdd][ShepherdService]]    :≡
   - https://doc.guix.gnu.org/shepherd/latest/en/html_node/Defining-Services.html
   - https://guix.gnu.org/manual/devel/en/guix.html#Shepherd-Services
-    
-* Guix
+
+** Guix
 :PROPERTIES:
 :ID:       01101480-8737-447a-8fe4-ab13e578b8b0
 :END:
 
-- [[id:4a69ece7-49dc-40b1-9ff3-419aadedf385][GuixCli]]            :≡ https://guix.gnu.org/manual/devel/en/guix.html#Getting-Started 
+- [[id:4a69ece7-49dc-40b1-9ff3-419aadedf385][GuixCli]]            :≡ https://guix.gnu.org/manual/devel/en/guix.html#Getting-Started
 - [[id:be4a5e39-7ec4-43ed-9d96-376db49ce782][OS]]                 :≡ https://guix.gnu.org/manual/devel/en/html_node/operating_002dsystem-Reference.html
 - [[id:a99835ae-90fb-4021-8d1b-a49f741c1152][Machine]]            :≡ https://guix.gnu.org/manual/devel/en/guix.html#index-machine
 - [[id:13542dc8-a522-48de-aed9-ea1b0b57a85a][postgresql-service]] :≡ https://guix.gnu.org/manual/devel/en/html_node/Database-Services.html#index-postgresql_002dservice_002dtype
@@ -72,9 +76,9 @@
 - [[id:818ad4b0-1363-437a-a4e0-3489dcee40a3][Module]]             :≡ https://www.gnu.org/software/guile/manual/html_node/Using-the-Guile-Module-System.html
 - [[id:ed4949c8-a698-4e37-8352-70311a396f9b][DATABASE_URL]]       :≡ https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING-URIS
 - [[id:15399cff-1673-44ae-9992-c767f9f081d9][UnixSocket]]         :≡ https://beej.us/guide/bgipc/html//index.html#unixsock
-- [[id:f2015c64-8e4c-440a-93cc-c5dffa89126a][GuixUserAccount]]    :≡ https://guix.gnu.org/manual/devel/en/html_node/User-Accounts.html   
+- [[id:f2015c64-8e4c-440a-93cc-c5dffa89126a][GuixUserAccount]]    :≡ https://guix.gnu.org/manual/devel/en/html_node/User-Accounts.html
 
-* PostgreSQL
+** PostgreSQL
 :PROPERTIES:
 :ID:       f059b54e-66e9-4090-b3c3-d68f08259458
 :END:
@@ -95,7 +99,7 @@ authentication]]. When "proc" tries to connect to "db", the following occurs:
 4. DB looks at [[https://www.postgresql.org/docs/current/auth-username-maps.html][pg_ident.conf]] and determines to which PG user "alice" should be identified with. We assume: =postgres=.
 5. By default, =postgres= is a PG /super user/, so "alice" acts as a super user.
 
-* User
+** User
 :PROPERTIES:
 :ID:       3e30b0f8-ba72-4fab-a6b0-a89a032fe634
 :END:
@@ -104,7 +108,7 @@ A user is an OS-level identity assigned to processes. Every process runs under
 exactly one user. That user determines what the process is allowed to do (file
 permissions, capabilities, etc.).
 
-* Group
+** Group
 :PROPERTIES:
 :ID:       88b55fd6-fd20-4b65-a00f-4c6d40c42122
 :END:
@@ -146,7 +150,7 @@ access). This is why `(supplementary-groups ...)` exists in the Guix `user-accou
 record — it lets you place `clocks` into additional groups if, say, it needs access
 to a shared resource owned by another group.
 
-* Linux OS as a collection of users
+** Linux OS as a collection of users
 :PROPERTIES:
 :ID:       1fd5d002-cfc2-4556-8859-f79bd94d08e3
 :END:
@@ -174,18 +178,18 @@ Pushing the abstraction to users only, we may simplify our understanding as foll
 4. Alice reads req, computes a reply, and asks Root to send it.
 5. Root sends the reply using its network card.
 
-* nologin
+** nologin
 :PROPERTIES:
 :ID:       adc94f2b-b7de-4784-8e88-a992b390683e
 :END:
 
-- =/sbin/nologin= is a tiny helper binary provided by the *Shadow tool suite*. 
+- =/sbin/nologin= is a tiny helper binary provided by the *Shadow tool suite*.
 - It shows a msg and exits with a status ≠ 0.
 - Acts as a *dummy login shell* for system/service accounts (e.g. =postgres=, =nginx=, build users, daemons).
 - Prevents any interactive login (SSH, console, =su=, =sudo -i=, etc.) while giving a clear, user-friendly msg.
 - [[https://man7.org/linux/man-pages/man8/nologin.8.html][nologin(8) — Linux man page]]
 
-* FHS
+** FHS
 :PROPERTIES:
 :ID:       ecbad34a-432d-43e1-91a3-429af5f0da56
 :END:
@@ -193,9 +197,9 @@ Pushing the abstraction to users only, we may simplify our understanding as foll
 The filesystem maps the computer memory into regular files and directories. The [[https://specifications.freedesktop.org/fhs/latest/index.html][FHS]]
 specifies a particular mapping.
 
-* Application and FHS
+** Application and FHS
 :PROPERTIES:
-:ID:       109bc638-0220-4f10-8b08-82d995bc1752 
+:ID:       109bc638-0220-4f10-8b08-82d995bc1752
 :END:
 
 An application that executes on Linux may have its state partitioned as a set of
@@ -230,7 +234,7 @@ If =app = postgresql=, then we have:
 | =/usr/lib/postgresql=   | =postgres=, =pg_dump=, =pg_ctl= and shared libraries           |
 |-----------------------+----------------------------------------------------------|
 
-* Service
+** Service
 
 An actor under the supervision of Shepherd is called a /service/. Shepherd knows
 how to start and stop it, and does so when appropriate. Given an executable =app=,
@@ -259,7 +263,7 @@ Example — activating FHS directories for an application:
 
 See: [[https://guix.gnu.org/manual/devel/en/html_node/Service-Types-and-Services.html][Service Types and Services (Guix manual)]]
 
-* Service type
+** Service type
 :PROPERTIES:
 :ID:       500290c0-845f-4db6-8220-a2182793385f
 :END:
@@ -278,7 +282,7 @@ the operating system.
 *** Hello service type
 
 =hello= is a non-extensible service type. To define such a type, we need a
-configuration type to call =service-type=. 
+configuration type to call =service-type=.
 
 **** Configuration
 
@@ -444,9 +448,9 @@ You may want to remap port of the host to the vm. For instance:
 #+begin_src bash :eval no
 $(guix system vm scheme/os-experiment/7.scm) \
   -nic user,model=virtio-net-pci,hostfwd=tcp::8080-:80,hostfwd=tcp::8443-:443
-#+end_src 
-    
-* activation-service-type
+#+end_src
+
+** activation-service-type
 
 #+begin_src scheme
 (define activation-service-type
@@ -476,7 +480,7 @@ Interpretation
    3. gexp :≡ gexps->activation-gexp(value')
    4. send gexp to the daemon
 
-* /etc* owned by root
+** /etc* owned by root
 :PROPERTIES:
 :ID:       15f603ef-6046-448d-a203-c8712313b8d1
 :END:
@@ -487,14 +491,14 @@ Interpretation
 - Some parts should only be readable by root: who wants someone else to read API keys
   without root permission?
 
-* Virtio
+** Virtio
 
 VirtIO is an open standard (OASIS) for paravirtualized I/O devices in virtual
 machines. It defines a standardized protocol (rings, queues, features) between a
 guest driver (frontend) and a hypervisor-provided device (backend). This enables
 efficient, low-overhead communication compared to fully emulated devices.
 
-* virtio_pci
+** virtio_pci
 
 It implements the transport layer that allows VirtIO devices to be discovered and
 accessed over a PCI bus. During PCI enumeration, the kernel matches devices with
@@ -502,7 +506,7 @@ vendor ID 0x1AF4 (Red Hat/Qumranet) and specific device IDs against the virtio_p
 driver. It handles PCI configuration space, legacy vs. modern VirtIO interfaces,
 MSI/MSI-X interrupts, and mapping of VirtIO queues.
 
-* virtio_scsi
+** virtio_scsi
 
 virtio_scsi is a VirtIO device type implementing a paravirtualized SCSI Host Bus Adapter (HBA).
 
@@ -517,7 +521,7 @@ Performance is comparable or better in many workloads due to reuse of the guest'
 
 In QEMU/KVM, you typically add a virtio-scsi-pci controller and then attach scsi-hd or scsi-block devices to it.
 
-* initrd
+** initrd
 
 initrd stands for initial ramdisk (sometimes used interchangeably with the more modern initramfs).
 
@@ -534,7 +538,7 @@ Then pivot_root (or switch_root) to the real root and exec the real init (system
 
 After switching, the initrd is usually discarded (unmounted) to free memory.
 
-* initrd module
+** initrd module
 
 "initrd modules" refers to loadable kernel modules (.ko files) that are included
 inside the initrd/initramfs image.
@@ -558,7 +562,7 @@ In virtualization (KVM/QEMU):
 A common minimal initrd for a VM using VirtIO storage will include virtio_pci +
 virtio_scsi (or virtio_blk) + sd_mod/scsi_mod + the root filesystem driver.
 
-* Hetzner deployment
+** Hetzner deployment
 
 ** Proposition
 :PROPERTIES:
@@ -597,14 +601,14 @@ key :≡ AAAAC3NzaC1lZDI1NTE5AAAAIM+fLy+tCy5ucoEOPyJmq21wPUy5toSWO/hTJhTPjLrg
 
 #+begin_src bash :eval no
 ,deploy-os INIT-HETZNER 168.119.224.132 AAAAC3NzaC1lZDI1NTE5AAAAIM+fLy+tCy5ucoEOPyJmq21wPUy5toSWO/hTJhTPjLrg
-#+end_src 
+#+end_src
 
 *** Implementation
 
 [[ref:28d9d785-4659-46b4-9383-4c25f470e16f]]
 
 
-* Cloud-init
+** Cloud-init
 
 cloud-init is the industry-standard mechanism for first-boot initialisation of cloud
 VMs. It is an agent that runs as a systemd service on the first boot of a new
@@ -630,23 +634,23 @@ runcmd:
   - chmod +x /tmp/guix-install.sh
   - yes '' | GUIX_ALLOW_OVERWRITE=1 /tmp/guix-install.sh
 
-#+end_src 
+#+end_src
 
-* Block device
+** Block device
 
 A device that can be read from and written to in fixed-size blocks (usually 512 bytes or 4096 bytes).
 Examples: hard disks, SSDs, NVMe drives, USB sticks, volumes.
 
-* Disk (or whole disk)
+** Disk (or whole disk)
 The entire physical or virtual storage device.
 In Linux naming convention: /dev/sda, /dev/nvme0n1, /dev/vda, etc.
 
-* Partition
+** Partition
 A contiguous, non-overlapping region of a disk that is treated as a separate logical block device.
 A partition is created by writing a partition table (GPT or MBR) at the beginning of the disk.
 Partitions allow you to divide one physical disk into multiple independent filesystems.
 
-* Partition device name
+** Partition device name
 Linux creates a separate block device node for each partition.
 Naming rule for SCSI/SATA/SAS/virtual disks:
 Whole disk: /dev/sda
@@ -656,11 +660,11 @@ Second partition: /dev/sda2
 10th partition would be /dev/sda10
 (For NVMe the naming is different: /dev/nvme0n1p1, /dev/nvme0n1p2, etc.)
 
-* Mountpoint
+** Mountpoint
 An empty directory in the existing filesystem tree where the content of a filesystem (residing on a partition or other block device) is made visible.
 Mounting is the act of attaching a filesystem to the directory tree.
 
-* Boot sequence
+** Boot sequence
 
 1. Power On
 2. Firmware starts
@@ -736,7 +740,7 @@ Mounting is the act of attaching a filesystem to the directory tree.
   (targets '("/dev/sda"))                ; ← install GRUB to MBR of /dev/sda
   ...))
 #+end_src
- 
+
 #+begin_src scheme
 (file-systems
  (cons (file-system
@@ -745,12 +749,12 @@ Mounting is the act of attaching a filesystem to the directory tree.
         (type "ext4"))
        %base-file-systems))
 #+end_src
- 
+
 - Partition 1 on /dev/sda (/dev/sda1) will be formatted ext4 and become the real root
   filesystem (/).
-  
+
 - The kernel, initramfs, grub.cfg, and all system files live on this same partition
   (no separate /boot partition in this minimal config).
-  
+
 - When the initramfs runs (step 9), it will mount exactly /dev/sda1 as the real root
   — this is what the root= kernel parameter (generated by Guix) will point to.
