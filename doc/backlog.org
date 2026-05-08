@@ -198,6 +198,14 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Fix link parsing
+:PROPERTIES:
+:ID: 2a217b20-2218-4f5f-8a72-cc0ff661d6bc
+:OWNER: phf
+:END:
+
+If a link name contains "#", then it is not parsed by lar, fix that.
+
 *** DONE Fix copy/paste error with Emacs
 :PROPERTIES:
 :ID: 00b8b1d2-fb2b-4df2-8b98-02a189621113
