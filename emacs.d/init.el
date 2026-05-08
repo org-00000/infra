@@ -47,10 +47,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Indentation uses spaces (never tabs), with a width of 2 columns.
-;; Lines wrap visually at 80 characters.
+;; Paragraph filling wraps at 90 characters (fill-column).
+;; Visual line wrapping occurs at the window edge (set by global-visual-line-mode below).
 (setq-default indent-tabs-mode nil
-        tab-width 2
-        fill-column 90)
+              tab-width 2
+              fill-column 90)
 
 ;; Typing over an active region replaces it (standard selection behaviour).
 (delete-selection-mode 1)
@@ -283,7 +284,7 @@
 (global-set-key (kbd "C-x 4 b") #'consult-buffer-other-window)
 (global-set-key (kbd "C-x r b") #'consult-bookmark)
 (global-set-key (kbd "M-y")     #'consult-yank-pop)
-(global-set-key (kbd "C-y") #'consult-yank-replace)
+(global-set-key (kbd "C-y")     #'yank)
 (global-set-key (kbd "C-s") #'consult-line)
 (global-set-key (kbd "M-g g")   #'consult-goto-line)
 (global-set-key (kbd "M-g M-g") #'consult-goto-line)
@@ -329,7 +330,7 @@
 (unless (display-graphic-p)
   (corfu-terminal-mode 1))
 
-;; Completion triggers automatically after 2 characters with a 200 ms delay.
+;; Completion triggers automatically after 2 characters with a 500 ms delay.
 ;; Exact single-match candidates are not committed automatically.
 (setq corfu-cycle t
       corfu-auto t
@@ -388,7 +389,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Eldoc documentation is always single-line (no multi-line echo area),
-;; and appears after a 200 ms idle delay.
+;; and appears after a 500 ms idle delay.
 (setq eldoc-echo-area-use-multiline-p nil
       eldoc-idle-delay 0.5)
 
@@ -399,6 +400,8 @@
 
 ;; Flymake checks for errors 500 ms after the last change.
 ;; M-n / M-p jump to the next / previous diagnostic in the buffer.
+;; Note: M-p is also bound in org-mode-map (see Org section). The Flymake
+;; local binding takes keymap precedence in any buffer where both are active.
 (setq flymake-no-changes-timeout 0.5)
 (add-hook 'flymake-mode-hook
     (lambda ()
@@ -487,8 +490,6 @@
 ;; Magit is the Git interface. C-x g opens magit-status.
 ;; All hunks are shown with word-level diff refinement.
 (require 'magit)
-(defun transient-prefix-object ()
-  (or transient--prefix transient-current-prefix))
 (setq magit-diff-refine-hunk 'all)
 (global-set-key (kbd "C-x g") #'magit-status)
 
@@ -539,6 +540,7 @@
 
 ;;; --- Outline appearance --------------------------------------------------
 
+;; org-startup-indented is nil (default): headings are not virtually indented.
 (setq org-startup-indented nil)
 
 ;; Every file opens fully expanded by default.
@@ -556,51 +558,29 @@
 (setq org-ellipsis " ⋯")
 
 
-;;; --- Editing behaviour ---------------------------------------------------
+;;; --- Editing behaviour + Babel + Display (consolidated) ------------------
 
-;; Return key follows links (no need for C-c C-o on [[...]] links).
-(setq org-return-follows-link t)
+(with-eval-after-load 'org
+  (setq org-return-follows-link t
+        org-list-use-circular-motion nil
+        org-footnote-section nil
+        org-hide-emphasis-markers t
+        org-edit-src-content-indentation 2
+        org-src-window-setup 'split-window-right
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+        org-confirm-babel-evaluate t
+        org-babel-results-keyword "RESULTS"
+        org-startup-with-inline-images t
+        org-startup-with-latex-preview nil)
 
-;; Hitting Return at the end of a list item creates a new item at the same
-;; level; hitting it on an empty item exits the list.
-(setq org-list-use-circular-motion nil)
-
-;; Footnote definitions are placed immediately below the paragraph that
-;; references them, not at the end of the file.
-(setq org-footnote-section nil)
-
-
-(setq org-hide-emphasis-markers t)
-
-;; Structural template expansion (e.g. <s TAB → #+begin_src … #+end_src)
-;; is enabled via org-tempo.
-(require 'org-tempo)
-
-;; Source blocks are indented by 2 spaces relative to the #+begin_src line,
-;; matching the global tab-width.
-(setq org-edit-src-content-indentation 2)
-
-;; C-c ' opens a source block in its native major mode in a separate window.
-;; The window is split horizontally (side by side) rather than vertically.
-(setq org-src-window-setup 'split-window-right)
-
-;; The language of a source block is fontified inside the Org buffer itself,
-;; so Python looks like Python, Scheme looks like Scheme, etc.
-(setq org-src-fontify-natively t)
-
-;; Tab in a source block uses the indentation rules of the block's language,
-;; not Org's own rules.
-(setq org-src-tab-acts-natively t)
-
-;; The trailing newline that Org inserts when editing a block is preserved,
-;; keeping diffs clean.
-(setq org-src-preserve-indentation nil)
+  (require 'org-tempo)
+  (add-hook 'org-babel-after-execute-hook #'org-display-inline-images))
 
 
-;;; --- Babel — code execution ----------------------------------------------
+;;; --- Babel languages -----------------------------------------------------
 
-;; The languages below are loaded into Babel so their blocks can be evaluated
-;; with C-c C-c.  Add or remove entries as needed.
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((emacs-lisp . t)
@@ -609,45 +589,16 @@
    (shell      . t)
    (sql        . t)))
 
-;; Babel asks for confirmation before executing any source block, preventing
-;; accidental evaluation of destructive code.
-(setq org-confirm-babel-evaluate t)
-
-;; Results of evaluated blocks are inserted inline, immediately below the
-;; block, as a #+RESULTS: section.
-(setq org-babel-results-keyword "RESULTS")
-
-;; Scheme blocks are evaluated via Geiser (already configured above),
-;; so the active Guile REPL is reused rather than a subprocess being spawned.
-(setq org-babel-scheme-implementation 'geiser)
-
-
-(global-set-key (kbd "M-m") #'string-rectangle)
-
-;;; --- Display of results --------------------------------------------------
-
-;; Inline images are shown automatically after a block produces one.
-(setq org-startup-with-inline-images t)
-(add-hook 'org-babel-after-execute-hook #'org-display-inline-images)
-
-;; LaTeX fragments ($ … $ and \[ … \]) are rendered as images on startup.
-(setq org-startup-with-latex-preview nil) ; set to t if latex is available
-
 
 ;;; --- Navigation keybindings ----------------------------------------------
 
-;; C-c C-j opens org-goto, a fast heading navigator for the current buffer.
-;; (consult-imenu bound to M-i above already covers the same need via
-;; completion; org-goto provides the built-in tree-browser alternative.)
 (global-set-key (kbd "C-c o j") #'org-goto)
-
-;; C-c o n / C-c o p jump to the next / previous heading at any level.
 (global-set-key (kbd "C-c o n") #'org-next-visible-heading)
 (global-set-key (kbd "C-c o p") #'org-previous-visible-heading)
 
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "READY(r)" "WAITING(w)" "DOING(o)" "REMOVE(m)" "|" "DONE(d)" "FAILED(f)" "CANCELED(c)")
-  (type "PUBLIC(p)")))
+      '((sequence "TODO(t)" "READY(r)" "WAITING(w)" "DOING(o)" "PLANNED(p)" "REMOVE(m)" "|" "DONE(d)" "FAILED(f)" "CANCELED(c)")
+        (type "PUBLIC(u)")))
 
 (setq org-todo-keyword-faces
       '(("TODO"     . (:foreground "red"     :weight bold))
@@ -664,10 +615,9 @@
 (define-key org-mode-map (kbd "C-c C-l") #'org-insert-link)
 (global-set-key (kbd "C-c l") #'org-store-link)
 (setq org-id-link-to-org-use-id t)
-(setq org-src-preserve-indentation t)
 (setq org-link-keep-stored-after-insertion t)
-(setq org-src-fontify-natively t)
 (setq org-fontify-emphasized-text t)
+
 
 ;;;;;;;;;;;;;;
 ;; Snippets ;;
@@ -675,16 +625,10 @@
 
 (require 'f)
 (require 'yasnippet)
-(setq yas--default-user-snippets-dir nil)
-(add-to-list 'yas-snippet-dirs (f-join user-emacs-directory "snippets"))
-(setq yas-new-snippet-default
-      "# -*- mode: snippet -*-
-# name: $1
-# key: ${2:${1:$(yas--key-from-desc yas-text)}}
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
-# --
-$0`(yas-escape-text yas-selected-text)`")
-(yas-global-mode)
+(setq yas-snippet-dirs
+      (list (f-join user-emacs-directory "snippets")
+            yas-snippet-dirs))
+(yas-global-mode 1)
 
 
 (setq enable-recursive-minibuffers t)
@@ -707,7 +651,7 @@ $0`(yas-escape-text yas-selected-text)`")
 With prefix argument (C-u), place it on the right half; otherwise left half.
 Height is set to the full usable monitor height."
   (interactive "P")
-  (let* ((workarea (frame-monitor-workarea))   ; (x y w h) usable pixels
+  (let* ((workarea (frame-monitor-workarea))
          (x (nth 0 workarea))
          (y (nth 1 workarea))
          (w (nth 2 workarea))
@@ -715,8 +659,10 @@ Height is set to the full usable monitor height."
          (half-w (floor (/ w 2)))
          (target-x (if right (+ x half-w) x)))
     (set-frame-position (selected-frame) target-x y)
-    (set-frame-size (selected-frame) half-w h t)))  ; t = pixelwise
-(my-frame-to-half-width)
+    (set-frame-size (selected-frame) half-w h t)))
+
+(when (display-graphic-p)
+  (my-frame-to-half-width))
 
 ;;;;;;;;;;;;;;;;;;
 ;; LSP for Bash ;;
@@ -730,6 +676,12 @@ Height is set to the full usable monitor height."
 ;; Copy path of heading to clipboard ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; FIX #9: M-p was also bound via the Flymake mode hook to
+;; flymake-goto-prev-error using local-set-key, which takes precedence over
+;; major-mode maps. In a pure Org buffer (no Flymake), M-p here works as
+;; intended. In an Org buffer with Flymake active, the Flymake local binding
+;; wins. This is documented explicitly; resolve by choosing a non-conflicting
+;; key if both bindings are needed simultaneously.
 (defun org-copy-outline-path-to-kill-ring ()
   "Copy current heading's full outline path (Org syntax) to kill ring."
   (interactive)

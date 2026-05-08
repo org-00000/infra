@@ -5,10 +5,11 @@
 *** TODO ${1:name}
 :PROPERTIES:
 :ID: `(org-id-new)`
-:OWNER: nobody
+:OWNER: ${2:nobody}
 :END:
 
-- Objective :≡ …
-- Test :≡ …
-- Plan :≡ …
-- Result :≡ …
+**** Observation
+**** Objective
+**** Test
+**** Plan
+**** Result

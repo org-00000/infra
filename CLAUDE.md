@@ -4,5 +4,7 @@
 - Read ./README.org
 - Documentation lives in ./doc/ 
 - Some files content are linked as defined in: ./emacs.d/elisp/lar/
+- Use `fd` instead of `find`
+- Use `ripgrep` instead of `grep`
 - If you find a reference ; then: you may find the matching content by searching for the
-  matching identifier using `ripgrep`
+  matching identifier.
