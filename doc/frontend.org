@@ -1,0 +1,4 @@
+* frontend
+
+It is a directory that defines the program received by a client after requesting the
+[[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]]'s URL.

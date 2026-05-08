@@ -1,0 +1,17 @@
+* db
+:PROPERTIES:
+:ID:       bd081aa0-8c23-4609-b49e-46cc6dd719a5
+:END:
+
+It represents the database in the current context. It is an instance PostgreSQL.
+
+** ,db-start
+:PROPERTIES:
+:ID:       87cf68ef-3011-46ad-8e8a-84d06cbbcc3c
+:END:
+
+Premises
+- ./,db-start
+
+Conclusion
+- The db is started
