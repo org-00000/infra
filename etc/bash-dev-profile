@@ -12,6 +12,13 @@ function _cmd_check() {
 _cmd_check git
 _cmd_check gpg
 
+####################
+# build essentials #
+####################
+
+CC="$(which gcc)"
+export CC
+
 ##########
 # Locale #
 ##########
