@@ -89,9 +89,8 @@ elif [[ "$MSG" == ",frontend-fetch" ]]; then
   if [[ ! -d "$FRONTEND" ]]; then
     git clone "$FRONTEND_REPO" "$FRONTEND"
   fi
-  cd "$FRONTEND"
-  git pull
-  npm install
+  git -C "$FRONTEND" pull
+  npm --prefix "$FRONTEND" install
 
 elif [[ "$MSG" == ",frontend-dist-mk" ]]; then
   # [[ref:5357e215-36ce-4592-839d-7032b21b5b62][Specification]]

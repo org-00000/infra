@@ -7,17 +7,35 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
+
+*** DONE Fix ,frontend-fetch
+:PROPERTIES:
+:ID: 71d2f17e-b9c2-49cc-9671-37dfe54cca20
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_example
+phf@pc1:infra [env]$ ,frontend-fetch https://github.com/TheYoungYankis/link-iliade-hub.git
+Already up to date.
+npm error code ENOENT
+npm error syscall open
+npm error path /home/phf/src/infra/package.json
+npm error errno -2
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/home/phf/src/infra/package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: /home/phf/.npm/_logs/2026-05-08T17_47_51_165Z-debug-0.log
+#+end_example
+
 *** TODO SquidLink integration
 :PROPERTIES:
 :ID: 57a32492-ef97-44d8-9c34-d3d6ea8a97a3
 :OWNER: phf
 :END:
 
-**** Observation
-**** Objective
-**** Test
-**** Plan
-**** Result
+https://github.com/TheYoungYankis/link-iliade-hub
 
 *** DONE Fix app-start
 :PROPERTIES:
