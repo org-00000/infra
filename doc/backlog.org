@@ -208,6 +208,18 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
 - Ensure that ./doc/* specifies what's necessary of the rest of the code base.
 - Explicit the invariant of a contributing cycle.
 
+*** DONE Update ./doc/actor.org
+:PROPERTIES:
+:ID: ecc17530-8fb7-48ea-9ccb-3737e03e153e
+:OWNER: phf
+:END:
+
+- Objective :: make [[ref:91c7ba77-bb5c-482a-93d2-3e1466a01e22][actor.org]] conform to [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].
+- Plan ::
+  1. read: [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] and use it as an example.
+  2. read: [[ref:119d5773-63cc-4add-b4d2-d5001b367677]]
+  3. update: [[ref:91c7ba77-bb5c-482a-93d2-3e1466a01e22][actor.org]]
+
 *** DONE Update init.el for Elixir
 :PROPERTIES:
 :ID: 61681f7c-bc1e-47f5-ba0e-678f048714a0
