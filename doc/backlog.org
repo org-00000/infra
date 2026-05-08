@@ -198,6 +198,36 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Fix corfu error
+:PROPERTIES:
+:ID: 18bb9a7b-ac54-4192-8945-80ddae7bc1e6
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_example
+Corfu detected an error:
+  backtrace-to-string()
+  corfu--debug((error "ispell-lookup-words: No plain word-list found at systemdefault locations.  Customize ‘ispell-alternate-dictionary’ to set yours."))
+  error("ispell-lookup-words: No plain word-list found at systemdefault locations.  Customize `ispell-alternate-dictionary' to set yours.")
+  ispell-lookup-words("Fix")
+  ispell-completion-at-point()
+  corfu--capf-wrapper(ispell-completion-at-point)
+  run-hook-wrapped(corfu--capf-wrapper ispell-completion-at-point)
+  #f(compiled-function () #<bytecode -0x8d3f3b21a8b679e>)()
+  #f(compiled-function () #<bytecode 0x17e3e060035d9dc5>)()
+  handler-bind-1(#f(compiled-function () #<bytecode 0x17e3e060035d9dc5>) (error) corfu--debug)
+  corfu--protect(#f(compiled-function () #<bytecode -0x8d3f3b21a8b679e>))
+  corfu--auto-complete-deferred((#<window 3 on backlog.org> #<buffer backlog.org> 2042 6887))
+  apply(corfu--auto-complete-deferred (#<window 3 on backlog.org> #<buffer backlog.org> 2042 6887))
+  timer-event-handler([t 27133 38669 288147 nil corfu--auto-complete-deferred ((#<window 3 on backlog.org> #<buffer backlog.org> 2042 6887)) nil 136000 nil])
+#+end_example
+
+**** Objective
+
+Fix this error
+
 *** DONE Fix ssh host
 :PROPERTIES:
 :ID: eccdb110-926c-4640-9612-348b64ed64f7
