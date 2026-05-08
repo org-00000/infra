@@ -198,6 +198,17 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Update ./doc/backend.org
+:PROPERTIES:
+:ID: c73f0444-7783-4ac9-86ea-0c17dda0f2da
+:OWNER: phf
+:END:
+
+- Objective :: make [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][./doc/backend.org]] conform to [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].
+- Plan ::
+  1. read: [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] and used it as an example.
+  2. update [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend]]
+
 *** DONE The backend implements the frontend OpenAPI contract
 :PROPERTIES:
 :ID: 1e052345-f693-47a6-8b3b-ccb9a6cef6ee
