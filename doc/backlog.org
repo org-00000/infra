@@ -7,16 +7,17 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
-*** DONE Add definitions
+*** TODO SquidLink integration
 :PROPERTIES:
+:ID: 57a32492-ef97-44d8-9c34-d3d6ea8a97a3
 :OWNER: phf
-:ID:       aef0d902-9aee-4099-a3be-395c1b4a94e0
 :END:
 
-- Objective :≡ Replace =TODO(2314)= in =doc/definitions.org= with a link to wikipedia of =ShortCommit=.
-- Objective :≡ Replace =TODO(6316)= in =doc/definitions.org= with a link to wikipedia of =Commit=.
-- Objective :≡ Replace =TODO(8a23)= in =doc/definitions.org= with a link to wikipedia of =Ip=.
-- Objective :≡ Replace =TODO(a2f4)= in =doc/definitions.org= with a link to wikipedia of =Port=.
+**** Observation
+**** Objective
+**** Test
+**** Plan
+**** Result
 
 *** TODO Add references to specification.org
 :PROPERTIES:
@@ -43,38 +44,6 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
-*** DONE Move certs/ under etc/
-:PROPERTIES:
-:OWNER: phf
-:ID:       b50c0b23-277e-4a87-843e-348a041a0623
-:END:
-
-- Objective :≡ Resolve =TODO(a4a3)= in =doc.org=: relocate the =certs/= directory under =etc/= and update all references.
-
-*** DONE Move ssh/ under etc/
-:PROPERTIES:
-:OWNER: phf
-:ID:       e45a3eb6-8ef5-4525-9c97-d2b5a79efd88
-:END:
-
-- Objective :≡ Resolve =TODO(6856)= in =doc.org=: relocate the =ssh/= directory under =etc/= and update all references.
-
-*** DONE Move vm/ under /run
-:PROPERTIES:
-:OWNER: phf
-:ID:       17b0ea19-a100-46ba-9ec7-deedd68ee191
-:END:
-
-- Objective :≡ Resolve =TODO(7990)= in =doc.org=: relocate the =vm/= directory to somewhere under =/run= and update all references.
-
-*** DONE Clean up backlog
-:PROPERTIES:
-:OWNER: phf
-:ID:       f9b74a3b-e391-450d-887a-22073811c979
-:END:
-
-- Objective :≡ Confirm that the hash-comparison logic in =bin/actor= (=image_mk= function) correctly skips copying when hashes are identical, then remove the stale =TODO 0d40= comment.
-
 *** TODO Handle frontend URL changes in ,frontend-fetch
 :PROPERTIES:
 :OWNER: nobody
@@ -82,14 +51,6 @@ we know what needs to be done, and who works on what.
 :END:
 
 - Objective :≡ Resolve =TODO(c783)= in =bin/actor=: make =,frontend-fetch= handle the case where the frontend git URL changes after the repository has already been cloned.
-
-*** DONE Add environment checks to bin/env-start
-:PROPERTIES:
-:OWNER: phf
-:ID:       0d1f4f9e-4c0a-4224-b007-eb1339555ab5
-:END:
-
-- Objective :≡ Resolve =TODO(55c8)= in =bin/env-start=: add checks for KVM availability, QEMU, and any other prerequisites before starting the container.
 
 *** TODO Write specification for Backend.Generic.Path
 :PROPERTIES:
@@ -135,6 +96,56 @@ we know what needs to be done, and who works on what.
   Since Claude uses =usr= API key, /i.e./ =~/.claude=, then this setup should allow any one
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
+
+*** DONE Add definitions
+:PROPERTIES:
+:OWNER: phf
+:ID:       aef0d902-9aee-4099-a3be-395c1b4a94e0
+:END:
+
+- Objective :≡ Replace =TODO(2314)= in =doc/definitions.org= with a link to wikipedia of =ShortCommit=.
+- Objective :≡ Replace =TODO(6316)= in =doc/definitions.org= with a link to wikipedia of =Commit=.
+- Objective :≡ Replace =TODO(8a23)= in =doc/definitions.org= with a link to wikipedia of =Ip=.
+- Objective :≡ Replace =TODO(a2f4)= in =doc/definitions.org= with a link to wikipedia of =Port=.
+
+*** DONE Add environment checks to bin/env-start
+:PROPERTIES:
+:OWNER: phf
+:ID:       0d1f4f9e-4c0a-4224-b007-eb1339555ab5
+:END:
+
+- Objective :≡ Resolve =TODO(55c8)= in =bin/env-start=: add checks for KVM availability, QEMU, and any other prerequisites before starting the container.
+*** DONE Move certs/ under etc/
+:PROPERTIES:
+:OWNER: phf
+:ID:       b50c0b23-277e-4a87-843e-348a041a0623
+:END:
+
+- Objective :≡ Resolve =TODO(a4a3)= in =doc.org=: relocate the =certs/= directory under =etc/= and update all references.
+
+*** DONE Move ssh/ under etc/
+:PROPERTIES:
+:OWNER: phf
+:ID:       e45a3eb6-8ef5-4525-9c97-d2b5a79efd88
+:END:
+
+- Objective :≡ Resolve =TODO(6856)= in =doc.org=: relocate the =ssh/= directory under =etc/= and update all references.
+
+*** DONE Move vm/ under /run
+:PROPERTIES:
+:OWNER: phf
+:ID:       17b0ea19-a100-46ba-9ec7-deedd68ee191
+:END:
+
+- Objective :≡ Resolve =TODO(7990)= in =doc.org=: relocate the =vm/= directory to somewhere under =/run= and update all references.
+
+*** DONE Clean up backlog
+:PROPERTIES:
+:OWNER: phf
+:ID:       f9b74a3b-e391-450d-887a-22073811c979
+:END:
+
+- Objective :≡ Confirm that the hash-comparison logic in =bin/actor= (=image_mk= function) correctly skips copying when hashes are identical, then remove the stale =TODO 0d40= comment.
 
 *** DONE ./doc is clean enough to map backend/
 :PROPERTIES:
