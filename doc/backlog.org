@@ -19,6 +19,17 @@ we know what needs to be done, and who works on what.
 **** Plan
 **** Result
 
+*** DONE Fix app-start
+:PROPERTIES:
+:ID: 61dbfede-1e29-4ba7-be96-4cf9d3f8b6b0
+:OWNER: phf
+:END:
+
+- Objective :: Add a step to ,app-start to copy the frontend dist into the backend.
+- Plan ::
+  1. Read: backend/lib/backend_web/controller.ex
+  2. Then: add a step to: [[ref:51ade351-7413-4355-9e56-55d1166380b5][app-start]] to copy the distribution of the frontend into the backed
+
 *** TODO Add references to specification.org
 :PROPERTIES:
 :OWNER: nobody
