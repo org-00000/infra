@@ -13,7 +13,11 @@ defmodule BackendWeb.AuthController do
         conn |> put_status(201) |> json(%{token: token, user: %{email: user.email}})
 
       {:error, changeset} ->
-        conn |> put_status(422) |> json(%{error: error_message(changeset)})
+        if email_taken?(changeset) do
+          conn |> put_status(409) |> json(%{error: "Email already registered"})
+        else
+          conn |> put_status(422) |> json(%{error: error_message(changeset)})
+        end
     end
   end
 
@@ -34,6 +38,13 @@ defmodule BackendWeb.AuthController do
   def me(conn, _params) do
     user = conn.assigns.current_user
     conn |> json(%{email: user.email})
+  end
+
+  defp email_taken?(changeset) do
+    Enum.any?(changeset.errors, fn
+      {:email, {_msg, opts}} -> opts[:constraint] == :unique
+      _ -> false
+    end)
   end
 
   defp error_message(changeset) do

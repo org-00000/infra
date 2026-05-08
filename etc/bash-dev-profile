@@ -108,17 +108,13 @@ export FRONTEND_DIST="$FRONTEND/dist"
 # Backend #
 ###########
 
-# Stores the backend
+# [[ref:9803cae7-58dd-496c-ba6b-685afca2271c][Specification]]
 export BACKEND="$ROOT/backend"
 
-# The address of the backend
-export BACKEND_URL="http://localhost:4000/api"
-
-# Where the backend distributions ends up
+# [[ref:3c58dca0-c23f-433c-aad4-a1c488a11146][Specification]]
 export BACKEND_DIST="$BACKEND/_build/prod/rel"
 
-# The Phoenix application is in dev mode. See:
-# https://hexdocs.pm/mix/Mix.html#module-environments
+# [[ref:14896dea-bad3-45d9-86d5-55aa0be89f90][Specification]]
 export MIX_ENV="dev"
 
 ############
