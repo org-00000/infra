@@ -1,4 +1,42 @@
 * frontend
+:PROPERTIES:
+:ID:       b3ac672a-faf5-4fdb-8942-46abace12dcf
+:END:
 
-It is a directory that defines the program received by a client after requesting the
-[[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]]'s URL.
+It represents the program received by a client after requesting the [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]]'s
+URL.
+
+** frontend#dir
+:PROPERTIES:
+:ID:       834f11b4-dcdf-46c2-8472-15884c46ed98
+:END:
+
+The directory where the frontend code lives.
+
+** frontend#fetch
+:PROPERTIES:
+:ID:       c6dfad7d-72df-4788-ac6f-97c297f6df94
+:END:
+
+Premises
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started
+- repo : A URL where to fetch the code of the front end from ; /e.g./ "git@github.com:phf-1/my-lovely-tasks.git"
+- frontend#fetch repo
+
+Conclusion
+- The last version of the frontend is fetched from repo into [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][frontend#dir]] as well as
+  its dependencies.
+
+** frontend#dist
+:PROPERTIES:
+:ID:       5357e215-36ce-4592-839d-7032b21b5b62
+:END:
+
+Premises
+- The last version of the frontend has been fetched.
+  - See: [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][frontend#fetch]]
+- backend : The URL of the [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend]] ; /e.g./ "http://localhost:4000/api"
+- frontend#dist backend
+
+Conclusion
+- A distribution is built such that requests are made by the frontend to backend

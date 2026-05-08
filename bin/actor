@@ -91,6 +91,13 @@ elif [[ "$MSG" == ",frontend-fetch" ]]; then
   cd "$FRONTEND"
   git pull
   npm install
+
+elif [[ "$MSG" == ",frontend-dist" ]]; then
+  # [[ref:5357e215-36ce-4592-839d-7032b21b5b62][Specification]]
+
+  inside_container_check
+  SERVER="$1"
+  cd "$FRONTEND"
   export VITE_API_BASE_URL="$SERVER"
   npm run build
 
