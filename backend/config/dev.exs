@@ -3,8 +3,7 @@ import Config
 # Configure your database
 config :backend, Backend.Repo,
   username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
+  socket_dir: System.get_env("DB_RUN") || raise("DB_RUN not set"),
   database: "backend_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
