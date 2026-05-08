@@ -126,9 +126,12 @@
            "tree-sitter-bash"
            "tree-sitter-elisp"
            "tree-sitter-elixir"
+           "tree-sitter-heex"
            "tree-sitter-python"
            "tree-sitter-scheme"
+           "unzip"
            "util-linux"
+           "wget"
            "which"
            )))))
 

@@ -4,6 +4,11 @@
 ;;; Each comment states *what* is true after the form below it runs.
 ;;; The file is linear: every section may rely on what came before it.
 
+;; Find additional elisp files if needed.
+(defvar local-elisp-dir (file-name-concat user-emacs-directory "elisp"))
+(add-to-list 'load-path local-elisp-dir)
+(defvar local-bin-dir (file-name-concat user-emacs-directory "bin"))
+
 ;; The startup screen, echo-area banner, and scratch-buffer message are
 ;; suppressed — Emacs opens directly to a clean state.
 (setq inhibit-startup-message t
@@ -475,6 +480,16 @@ Height is set to the full usable monitor height."
 ;; Bash indentation
 (setq sh-basic-offset 2)
 
+;; Elixir and HEEx — built-in tree-sitter modes
+(require 'eglot)
+(add-hook 'elixir-mode-hook 'eglot-ensure)
+(add-to-list 'eglot-server-programs `(elixir-mode ,(file-name-concat local-bin-dir "elixir-ls" "language_server.sh")))
+(add-to-list 'auto-mode-alist '("\\.ex\\'"   . elixir-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.exs\\'"  . elixir-ts-mode))
+(add-to-list 'auto-mode-alist '("\\.heex\\'" . heex-ts-mode))
+(add-to-list 'major-mode-remap-alist '(elixir-mode . elixir-ts-mode))
+(add-hook 'elixir-ts-mode-hook #'eglot-ensure)
+
 ;; Copy path of heading to clipboard
 (defun org-copy-outline-path-to-kill-ring ()
   "Copy current heading's full outline path (Org syntax) to kill ring."
@@ -497,10 +512,6 @@ Height is set to the full usable monitor height."
 (require 'expreg)
 (global-set-key (kbd "C-<") #'expreg-expand)
 
-;; Find additional elisp files if needed.
-(defvar local-elisp-dir (file-name-concat user-emacs-directory "elisp")) 
-(add-to-list 'load-path local-elisp-dir)
-
 (require 'auto-replace-characters)
 (add-hook 'org-mode-hook  #'auto-replace-characters-mode)
 (add-hook 'prog-mode-hook #'auto-replace-characters-mode)
@@ -515,5 +526,3 @@ Height is set to the full usable monitor height."
 (add-hook 'org-mode-hook #'lar-auto-reload)
 (add-hook 'prog-mode-hook #'lar-mode)
 (add-hook 'prog-mode-hook #'lar-auto-reload)
-
-
