@@ -27,13 +27,6 @@ To understand /what/ ~./bin/env-start~ is supposed to do, you may consult its /s
 /specification/, which is referenced from its source code. See: [[ref:b80c22c9-2eed-4eea-a469-136e7666ea96]]. To understand
 /how/ it does what it is supposed to do, read the source code.
 
-* Terms, definitions and refinements
-
-If a term has an id, then its definition may be refined by other contents that refers
-to it, providing different levels of descriptions details of the object referenced by
-the term: search for references to this id (you may just click on the id to list
-them).
-
 * The application
 
 The application is described here: [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]].
@@ -42,23 +35,6 @@ The application is described here: [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][a
 
 To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][fork-pr]].
 
-* Directory description
+* Adding a specification
 
-The remaining of the document describes or points to explanations regarding parts of the
-directory.
-
-- application :: The application is the program we are building.
-- frontend/ :: This directory stores the frontend of the application.
-- backend/ :: This directory stores the code for the backend of the application.
-- doc/ :: This directory stores various pieces of documentations.
-- bin/ :: This directory stores executables.
-- etc/ :: This directory stores various configuration files for Bash, Guix, …
-- certs/ :: This directory stores certificates used for testing purposes. TODO(a4a3): should be under etc/
-- deployment/ :: This directory stores ways to deploy operating systems to VPS.
-- emacs.d/ :: This directory stores Emacs configuration files, the main =$EDITOR=.
-- os/ :: This directory stores operating systems specifications.
-- image/ :: This directory stores various disk images of operating systems of operating
-  systems for testing purposes.
-- ssh/ :: This directory stores various SSH related files. TODO(6856): should be under etc/
-- vm/ :: This directory stores files necessary for VM execution. TODO(7990): should be
-  somewhere under /run.
+To add a specification, see: [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]], then add one under [[file:doc/][doc/]].

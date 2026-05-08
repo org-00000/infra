@@ -3,21 +3,21 @@
 :ID:       91681523-bbeb-4ee6-b795-c13752d447d0
 :END:
 
-represents the application.
+The term =application= represents the program we are developing. It can be viewed as
+[[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontend]] that executes in the client browser which makes requests to a [[ref:41190386-599d-4048-9b07-278ccbf2c785][backend]]. The
+requests an associated replies satisfy a [[ref:2bb30a99-0728-42e5-98a1-43cf31509420][contract]].
 
 ** application#frontend
 :PROPERTIES:
 :ID:       4c7a1158-f7d3-446c-a147-9603a1b61db6
 :END:
 
-Represents the program that executes client side and offers a GUI to the client.
+[[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]]
 
 ** application#backend
 :PROPERTIES:
 :ID:       41190386-599d-4048-9b07-278ccbf2c785
 :END:
-
-Represents the program that executes server side and replies to [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontends]] requests.
 
 ** application#contract
 :PROPERTIES:
@@ -38,6 +38,6 @@ Premises
 - application#start
 
 Conclusion
-- The application is serving requests made to http://localhost:4000.
+- The application is serving requests made to [[http://localhost:4000/api]].
 - The local bash session has been replaced by an interactive session allowing a REPL
   like workflow in the application backend context.
