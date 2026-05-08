@@ -38,3 +38,9 @@ To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][fork-pr]].
 * Adding a specification
 
 To add a specification, see: [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]], then add one under [[file:doc/][doc/]].
+
+* Tooling
+
+Many functionalities are available from the command line. They are prefixed with ~,~ so
+you can list them using ~<tab>~ as Bash will try to complete and list them as a
+consequence. Many of them are symbolic links to [[ref:119d5773-63cc-4add-b4d2-d5001b367677][./bin/actor]].
