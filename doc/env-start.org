@@ -14,6 +14,8 @@ Premises
 - git is installed
 - ssh-add is installed
 - guix is installed
+- qemu-system-x86_64 is installed
+- /dev/kvm exists and is accessible by the current user
 - env#start
 
 Conclusion
