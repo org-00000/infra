@@ -198,6 +198,14 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE ./doc is clean enough to map backend/
+:PROPERTIES:
+:ID: 408636eb-ab6e-4b5a-a27f-73e38cdc29cf
+:OWNER: phf
+:END:
+
+- Objective :: After review of doc/*, files should be "clean enough".
+
 *** DONE Simplify ./doc/*
 :PROPERTIES:
 :ID: 3b2dc36c-8217-4028-883e-374eb7497a7c
