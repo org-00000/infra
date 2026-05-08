@@ -198,6 +198,14 @@ Implement the =projectctl= tool described in [[ref:18351049-22e2-4f4e-ab27-50de6
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
+*** DONE Refine doc/*
+:PROPERTIES:
+:ID: 4b1ce0c9-2807-4772-a95b-9ca041b15dda
+:OWNER: phf
+:END:
+
+Refine doc/* an associated content so that Claude gets an easier time understanding the repo.
+
 *** DONE Fix link parsing
 :PROPERTIES:
 :ID: 2a217b20-2218-4f5f-8a72-cc0ff661d6bc
