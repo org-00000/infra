@@ -1,4 +1,7 @@
 * Module
+:PROPERTIES:
+:ID:       db4acf75-e5ba-4fc1-9579-8fac7ea999a7
+:END:
 
 1. a module identifier
 2. imported modules

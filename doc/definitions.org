@@ -1,4 +1,7 @@
 * definitions
+:PROPERTIES:
+:ID:       b076a6d5-8234-4883-9778-c9587ca969a5
+:END:
 
 Represents a set of definitions.
 

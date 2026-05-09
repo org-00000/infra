@@ -3,53 +3,34 @@
 :ID:       91c7ba77-bb5c-482a-93d2-3e1466a01e22
 :END:
 
-A program that implements development tooling via [[ref:928555e0-35c1-449b-919a-e08a06c29d94][invocation-as-message-passing]].
-Each command-line tool prefixed with =,= is a symbolic link to this actor; invoking one
-sends the corresponding message.
+A program providing tools to manipulate the files in the project.
 
-| Message                    | Specification                                              |
-|----------------------------+------------------------------------------------------------|
-| ,install-node-binaries     | [[ref:220179a9-aa3e-490d-ab6e-3ef02d759bee]]               |
-| ,frontend-fetch            | [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][frontend#fetch]]             |
-| ,frontend-dist-mk          | [[ref:5357e215-36ce-4592-839d-7032b21b5b62][frontend#dist-mk]]           |
-| ,db-start                  | [[ref:87cf68ef-3011-46ad-8e8a-84d06cbbcc3c][,db-start]]                  |
-| ,backend-deps-fetch        | [[ref:97be4e51-e157-424c-9ada-5a77ef7a6274][backend#deps-fetch]]         |
-| ,backend-db-migrate        | [[ref:e441c65a-8849-44d4-a4ba-343fbc1f0ada][backend#db-migrate]]         |
-| ,backend-iex-start         | [[ref:56e0e558-5ea0-4ca3-9f75-0129149aa702][backend#iex-start]]          |
-| ,app-start                 | [[ref:3a2b4174-ea2e-4ed2-97b3-23b562be59a2][application#start]]          |
-| ,image-init-build          | [[ref:ead19c86-d75c-45d6-8aa7-00cea2f049b0][,image-init-build]]          |
-| ,vm-init-start             | [[ref:518d54c7-3288-4b71-a951-e612dfab5cb2][,vm-init-start]]             |
-| ,vm-deploy                 | [[ref:62d66eb4-c006-4f3b-86a0-1675191325cb][,vm-deploy]]                 |
-| ,ca-build                  | [[ref:bdfdc0d0-6b2a-45a5-b4ca-17b224087d68][,ca-build]]                  |
-| ,synchronize-with-upstream | [[ref:c5d59ff9-cc78-4f98-a7f6-22d19c39caff][,synchronize-with-upstream]] |
-| ,todos                     | [[ref:a3f2c1d8-7e4b-4f9a-b6c5-2d1e8f3a5b9c][,todos]]                     |
-
-** ,install-node-binaries
+** actor#,install-node-binaries
 :PROPERTIES:
 :ID:       220179a9-aa3e-490d-ab6e-3ef02d759bee
 :END:
 
 Premises
 - The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
-- ,install-node-binaries
+- actor#,install-node-binaries
 
 Conclusion
-- =@anthropic-ai/claude-code= and =bash-language-server= are installed globally via npm.
+- npm dependencies are installed.
 
-** ,image-init-build
+** actor#,image-init-build
 :PROPERTIES:
 :ID:       ead19c86-d75c-45d6-8aa7-00cea2f049b0
 :END:
 
 Premises
-- The development environment is started. See: [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf]].
-- ./,image-init-build
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
+- actor#,image-init-build
 
 Conclusion
 - An initial VM image has been built configured to run on the local machine and ready to
   be deployed to.
 
-** ,vm-init-start
+** actor#,vm-init-start
 *** Private
 **** VM spec
 :PROPERTIES:
@@ -85,35 +66,35 @@ Conclusion
 
 Premises
 - The current shell runs OUTSIDE of the container
-- [[ref:ead19c86-d75c-45d6-8aa7-00cea2f049b0][init os image has been built]]
-- ,vm-init-start
+- [[ref:ead19c86-d75c-45d6-8aa7-00cea2f049b0][actor#,image-init-build]] has been run.
+- actor#,vm-init-start
 
 Conclusion
 - A VM is running locally as if it was a VPS ready to be deployed to in production.
 - An ssh connection to the VM is opened
 
-** ,vm-deploy
+** actor#,vm-deploy
 :PROPERTIES:
 :ID:       62d66eb4-c006-4f3b-86a0-1675191325cb
 :END:
 
 Premises
-- [[ref:518d54c7-3288-4b71-a951-e612dfab5cb2][,vm-init-start]]
-- [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf][./bin/env-start]]
+- [[ref:518d54c7-3288-4b71-a951-e612dfab5cb2][actor#,vm-init-start]] has been run.
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
 - os-name :≡ "init"
-- ,vm-deploy os-name
+- actor#,vm-deploy os-name
 
 Conclusion
 - The OS associated to the OS specification named os-name has been deployed to the
   VM.
 
-** ,ca-build
+** actor#,ca-build
 :PROPERTIES:
 :ID:       bdfdc0d0-6b2a-45a5-b4ca-17b224087d68
 :END:
 
 Premises
-- ,ca-build
+- actor#,ca-build
 
 Conclusion
 - A local CA key and self-signed CA certificate exist under =etc/certs/=.
@@ -121,7 +102,7 @@ Conclusion
 - The local CA has been registered in the NSS database so that Chrome accepts HTTPS
   connections to =localhost=.
 
-** ,synchronize-with-upstream
+** actor#,synchronize-with-upstream
 :PROPERTIES:
 :ID:       c5d59ff9-cc78-4f98-a7f6-22d19c39caff
 :END:
@@ -134,14 +115,14 @@ Conclusion
   - upstream/master branch,
   - origin/master branch.
 
-** ,todos
+** actor#,todos
 :PROPERTIES:
 :ID:       a3f2c1d8-7e4b-4f9a-b6c5-2d1e8f3a5b9c
 :END:
 
 Premises
-- The development environment is started [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf]]
-- ./,todos
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
+- actor#,todos
 
 Conclusion
 - All TODO comments in the project are listed.
