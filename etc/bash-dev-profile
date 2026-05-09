@@ -203,21 +203,34 @@ export APP_STORE_KEY="$KEY_STORE"
 # NPM #
 #######
 
-NPM="$ROOT/npm"
+export NPM="$ROOT/npm"
 
 # We want to persist installations accross container restarts but avoid to pollute host,
 # so we mount NPM global using this directory.
-NPM_ROOT="$NPM/npm-global"
+export NPM_ROOT="$NPM/npm-global"
 
 ##########
 # Claude #
 ##########
 
-CLAUDE="$HOME/.claude"
-CLAUDE_CONFIG="$HOME/.claude.json"
+export CLAUDE="$HOME/.claude"
+export CLAUDE_CONFIG="$HOME/.claude.json"
 
 #############
 # Elixir LS #
 #############
 
-EXS_LS="$EMACSD/bin/elixir-ls/language_server.sh"
+export EXS_LS="$EMACSD/bin/elixir-ls/language_server.sh"
+
+#######
+# Doc #
+#######
+
+export DOC="$ROOT/doc"
+
+###########
+# Backlog #
+###########
+
+export BACKLOG="$DOC/backlog.org"
+export BACKLOG_DATA="${BACKLOG%.org}"

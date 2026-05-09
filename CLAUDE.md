@@ -36,7 +36,7 @@
 
 ## Workflow
 
-- Given a task to do, you SHOULD follow: `doc/fork-pr.org`.
+- Given task : Task to do, you SHOULD follow: `doc/fork-pr.org`.
 
 - Workflow for any task: identify or create a task in `doc/backlog.org` → follow
   `doc/fork-pr.org` → verify the checklist at `fork-pr#pull-request` → mark DONE.
@@ -46,6 +46,8 @@
 
 - When compacting, preserve: the current task objective, any open `[[ref:UUID]]` chains
   being resolved, and the working state of `doc/backlog.org` items in progress.
+
+- If needed, write task data under task#data.
 
 ## Conventions
 
