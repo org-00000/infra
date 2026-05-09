@@ -5,10 +5,10 @@
 
 - A =Todo= represents local pending modifications.
 
-- What needs to be done is usually infered from the context and may be refined using a
+- What needs to be done is usually inferred from the context and may be refined using a
   short description.
 
-- To build a =Todo=, it is enough to insert a string of the form form =TODO(<id>)= where
+- To build a =Todo=, it is enough to insert a string of the form =TODO(<id>)= where
   =<id>= is usually just 4 characters long where appropriate.
 
 - If specified, the description follows the Todo: =TODO(<id>): <description>=.

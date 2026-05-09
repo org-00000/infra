@@ -7,54 +7,18 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
-
-*** DONE Fix ,frontend-fetch
+*** TODO Add Claude as a co-worker
 :PROPERTIES:
-:ID: 71d2f17e-b9c2-49cc-9671-37dfe54cca20
+:ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
 :OWNER: phf
 :END:
 
-**** Observation
+- Objective :≡ Let Claude live in a container started by the current user (=usr=) with
+  limited access to the underlying system.
 
-#+begin_example
-phf@pc1:infra [env]$ ,frontend-fetch https://github.com/TheYoungYankis/link-iliade-hub.git
-Already up to date.
-npm error code ENOENT
-npm error syscall open
-npm error path /home/phf/src/infra/package.json
-npm error errno -2
-npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/home/phf/src/infra/package.json'
-npm error enoent This is related to npm not being able to find a file.
-npm error enoent
-npm error A complete log of this run can be found in: /home/phf/.npm/_logs/2026-05-08T17_47_51_165Z-debug-0.log
-#+end_example
-
-*** FAILED SquidLink integration
-:PROPERTIES:
-:ID: 57a32492-ef97-44d8-9c34-d3d6ea8a97a3
-:OWNER: phf
-:END:
-
-Premises
-- https://github.com/TheYoungYankis/link-iliade-hub
-- https://windsurf.com/
-- infra
-
-Conclusion
-- Automatic integration failed.
-- Probably better to integrate end-to-end, adding functionalities in steps, actor
-  after actor.
-
-*** DONE Fix app-start
-:PROPERTIES:
-:ID: 61dbfede-1e29-4ba7-be96-4cf9d3f8b6b0
-:OWNER: phf
-:END:
-
-- Objective :: Add a step to ,app-start to copy the frontend dist into the backend.
-- Plan ::
-  1. Read: backend/lib/backend_web/controller.ex
-  2. Then: add a step to: [[ref:51ade351-7413-4355-9e56-55d1166380b5][app-start]] to copy the distribution of the frontend into the backed
+  Since Claude uses =usr= API key, /i.e./ =~/.claude=, then this setup should allow any one
+  to start his own instance of Claude Code as a co-worker in a containerized
+  environment.
 
 *** TODO Add references to specification.org
 :PROPERTIES:
@@ -121,18 +85,80 @@ Conclusion
 
 - Objective :≡ Resolve the =TODO References= heading in =doc/contributing.org=: add the reference to ZeroMQ (Pieter Hintjens) and any other relevant works.
 
-*** TODO Add Claude as a co-worker
+*** DONE Spelling and grammar
 :PROPERTIES:
-:ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
+:ID: fc167c68-0246-423f-add9-a1fdd19a4561
 :OWNER: phf
 :END:
 
-- Objective :≡ Let Claude live in a container started by the current user (=usr=) with
-  limited access to the underlying system.
+- Observation :: Some files have spelling and/or grammar errors.
+- Objective :: Spelling and grammar of all Org files are correct.
+- Plan ::
+  1. Read: ./etc/bash-dev-profile
+  2. for all files =f= with path that ends in '*.org' under $ROOT
+     1. correct spelling and grammar
 
-  Since Claude uses =usr= API key, /i.e./ =~/.claude=, then this setup should allow any one
-  to start his own instance of Claude Code as a co-worker in a containerized
-  environment.
+*** DONE Correct the documentation
+:PROPERTIES:
+:ID: 373e0f83-2e5f-4fa7-a71f-e43be2445585
+:OWNER: phf
+:END:
+
+- Observation :: Some files deviate from [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][specification]].
+- Objective :: Update these files so that the deviations are corrected.
+- Plan ::
+  1. Read: ./etc/bash-dev-profile
+  2. for all files =f= with path that ends in '*.org' under $ROOT
+     1. List all deviations in =f= content
+     2. For each deviation: correct it.
+
+*** DONE Fix ,frontend-fetch
+:PROPERTIES:
+:ID: 71d2f17e-b9c2-49cc-9671-37dfe54cca20
+:OWNER: phf
+:END:
+
+**** Observation
+
+#+begin_example
+phf@pc1:infra [env]$ ,frontend-fetch https://github.com/TheYoungYankis/link-iliade-hub.git
+Already up to date.
+npm error code ENOENT
+npm error syscall open
+npm error path /home/phf/src/infra/package.json
+npm error errno -2
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/home/phf/src/infra/package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: /home/phf/.npm/_logs/2026-05-08T17_47_51_165Z-debug-0.log
+#+end_example
+
+*** FAILED SquidLink integration
+:PROPERTIES:
+:ID: 57a32492-ef97-44d8-9c34-d3d6ea8a97a3
+:OWNER: phf
+:END:
+
+Premises
+- https://github.com/TheYoungYankis/link-iliade-hub
+- https://windsurf.com/
+- infra
+
+Conclusion
+- Automatic integration failed.
+- Probably better to integrate end-to-end, adding functionalities in steps, actor
+  after actor.
+
+*** DONE Fix app-start
+:PROPERTIES:
+:ID: 61dbfede-1e29-4ba7-be96-4cf9d3f8b6b0
+:OWNER: phf
+:END:
+
+- Objective :: Add a step to ,app-start to copy the frontend dist into the backend.
+- Plan ::
+  1. Read: backend/lib/backend_web/controller.ex
+  2. Then: add a step to: [[ref:51ade351-7413-4355-9e56-55d1166380b5][app-start]] to copy the distribution of the frontend into the backed
 
 *** DONE Add definitions
 :PROPERTIES:
@@ -276,7 +302,7 @@ Into: ./doc/actor.org
 
 - Objective :: make [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][./doc/backend.org]] conform to [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].
 - Plan ::
-  1. read: [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] and used it as an example.
+  1. read: [[ref:b3ac672a-faf5-4fdb-8942-46abace12dcf][frontend]] and use it as an example.
   2. update [[ref:43703ca8-74e9-454e-95c6-566ca4f8bbc7][backend]]
 
 *** DONE The backend implements the frontend OpenAPI contract

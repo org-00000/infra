@@ -7,14 +7,14 @@
   clear, unambiguous and efficient way: we should know what a program does and at
   what cost.
 
-- For this reason, we /what/ a piece of code is supposed to do by writing its
+- For this reason, we specify /what/ a piece of code is supposed to do by writing its
   specification. A specification in this context is not totally explicit: it conveys
-  just enough information so that *we* have a *reasonnable* idea of what is being done.
+  just enough information so that *we* have a *reasonable* idea of what is being done.
 
-- *reasonnable* means that we are convinced to share a common understanding and that we
+- *reasonable* means that we are convinced to share a common understanding and that we
   can reason using the definitions introduced without having to deal with excessive
   formalism. In case of disagreement, it is always possible to refine such and such
-  definitions or reasonning step; or even aknowledge an inconsistency.
+  definitions or reasoning step; or even acknowledge an inconsistency.
 
 - The code itself tells /how/ the program does /what/ it is supposed to do, we say that
   /the program implements its specification/.
@@ -23,7 +23,7 @@
   think in terms of specifications instead of implementations.
 
 - A specification is usually orders of magnitudes shorter than an implementation.
-  Note that a specification is also independant from any particular programming
+  Note that a specification is also independent from any particular programming
   language.
 
 - A specification is also useful because it allows A.I. to generate code more
@@ -172,7 +172,7 @@ necessary as shown by the =Point= example.
         6. ■
 
 - A /procedure/ is a sequence of instructions. We denote p : A B … ⇝ Z the procedures
-  that starts from instances of A, B and other specifications an ends with an
+  that starts from instances of A, B and other specifications and ends with an
   instance of Z. So: z : Z :≡ p(a b …). If p has side effects, then they are
   documented using [[ref:8b8c3d71-19de-4632-b96e-62734e7160ac][Premises and conclusion]].
 
@@ -210,7 +210,7 @@ necessary as shown by the =Point= example.
   used at runtime depends on the particular runtime context.
 
 - When implementing a specification, it is useful to have the specification on the
-  left and the implementation on the right using your favorite editor. I practice,
+  left and the implementation on the right using your favorite editor. In practice,
   editing one usually implies modifying the other. It takes practice and careful
   thinking to choose what should be written where.
 
