@@ -75,15 +75,13 @@ host_key() {
 
 if [[ "$MSG" == ",install-node-binaries" ]]; then
   # [[ref:220179a9-aa3e-490d-ab6e-3ef02d759bee][Specification]]
-
   inside_container_check
-  npm install -g @anthropic-ai/claude-code bash-language-server
+  npm install -g @anthropic-ai/claude-code \
+    bash-language-server
 
 elif [[ "$MSG" == ",frontend-fetch" ]]; then
   # [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][Specification]]
-
   inside_container_check
-
   FRONTEND_REPO="$1"
   # TODO(c783): take into account the fact that URL may change
   if [[ ! -d "$FRONTEND" ]]; then
@@ -165,9 +163,7 @@ elif [[ "$MSG" == ",app-start" ]]; then
 
 elif [[ "$MSG" == ",image-init-build" ]]; then
   # [[ref:ead19c86-d75c-45d6-8aa7-00cea2f049b0][Specification]]
-
   inside_container_check
-
   image_mk "$OS_PATH_INIT"
 
 elif [[ "$MSG" == ",vm-init-start" ]]; then

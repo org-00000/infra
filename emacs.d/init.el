@@ -4,6 +4,8 @@
 ;;; Each comment states *what* is true after the form below it runs.
 ;;; The file is linear: every section may rely on what came before it.
 
+(setq this-root (project-root (project-current)))
+
 ;; Find additional elisp files if needed.
 (defvar local-elisp-dir (file-name-concat user-emacs-directory "elisp"))
 (add-to-list 'load-path local-elisp-dir)
@@ -359,6 +361,12 @@
 ;; org-mode is loaded explicitly so all subsequent setq forms affect the
 ;; real org variables rather than auto-load stubs.
 (require 'org)
+
+;; org-cite: doc/reference.bib is the global bibliography source for all
+;; Org files, so citation keys resolve without a per-file #+BIBLIOGRAPHY:.
+(with-eval-after-load 'oc
+  (setq org-cite-global-bibliography
+        (list (expand-file-name "doc/reference.bib" this-root))))
 
 
 ;;; --- Outline appearance --------------------------------------------------

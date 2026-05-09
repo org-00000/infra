@@ -85,6 +85,15 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve the =TODO References= heading in =doc/contributing.org=: add the reference to ZeroMQ (Pieter Hintjens) and any other relevant works.
 
+*** DONE Add reference as a bib file
+:PROPERTIES:
+:ID: 14b5179e-533e-433d-8f08-a5dd23e05660
+:OWNER: phf
+:END:
+
+- Objective :: Update $ROOT/emacs.d/init.el so that Emacs takes into account $ROOT/doc/reference.bib
+- Test :: References in $ROOT/doc/actor-model.org are resolved using $ROOT/doc/reference.bib
+
 *** DONE Spelling and grammar
 :PROPERTIES:
 :ID: fc167c68-0246-423f-add9-a1fdd19a4561
