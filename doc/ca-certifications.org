@@ -1,4 +1,7 @@
 * Simple Explanation of HTTPS
+:PROPERTIES:
+:ID:       d1717ec5-8ab4-42bd-94b0-4e73ccebe090
+:END:
 
 Chrome looks up ~example.com~ in DNS and gets an IP address (192.1.2.3). It connects to that
 IP over TCP.

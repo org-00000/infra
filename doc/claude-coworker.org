@@ -153,111 +153,111 @@ To make =umask 022= the default for all shell sessions writing to
 - see: [[ref:ed93e2a0-e5fb-44ae-8114-3e765337c23f][Claude coworker watcher]]
 
 ** TODO Configure User Namespace UID/GID Mapping for =owner=
-   TODO
-=guTODO ix shell -C= uses unprivileged Linux user namespaces. The kernel
-reqTODO uires that the invoking user (=owner=) have subordinate UID and GID
-ranTODO ges declared in =/etc/subuid= and =/etc/subgid=. These ranges allow
-=owTODO ner= to map UIDs inside the namespace without requiring root.
-   TODO
-CheTODO ck whether entries already exist:
-   TODO
-#+bTODO egin_src sh
-greTODO p "^owner:" /etc/subuid
-greTODO p "^owner:" /etc/subgid
-#+eTODO nd_src
-   TODO
-If TODO absent, add them:
-   TODO
-#+bTODO egin_src sh
-sudTODO o usermod --add-subuids 100000-165535 owner
-sudTODO o usermod --add-subgids 100000-165535 owner
-#+eTODO nd_src
-   TODO
-VerTODO ify:
-   TODO
-#+bTODO egin_src sh
-catTODO  /etc/subuid
-# oTODO wner:100000:65536
-   TODO
-catTODO  /etc/subgid
-# oTODO wner:100000:65536
-#+eTODO nd_src
-   TODO
-TheTODO  range =100000-165535= (65536 entries) is the Debian convention. It
-musTODO t not overlap with any existing system UIDs.
-   TODO
+
+=guix shell -C= uses unprivileged Linux user namespaces. The kernel
+requires that the invoking user (=owner=) have subordinate UID and GID
+ranges declared in =/etc/subuid= and =/etc/subgid=. These ranges allow
+=owner= to map UIDs inside the namespace without requiring root.
+
+Check whether entries already exist:
+
+#+begin_src sh
+grep "^owner:" /etc/subuid
+grep "^owner:" /etc/subgid
+#+end_src
+
+If absent, add them:
+
+#+begin_src sh
+sudo usermod --add-subuids 100000-165535 owner
+sudo usermod --add-subgids 100000-165535 owner
+#+end_src
+
+Verify:
+
+#+begin_src sh
+cat /etc/subuid
+# owner:100000:65536
+
+cat /etc/subgid
+# owner:100000:65536
+#+end_src
+
+The range =100000-165535= (65536 entries) is the Debian convention. It
+must not overlap with any existing system UIDs.
+
 ** TODO Create the XDG Runtime Directory for =claude=
-   TODO
-TheTODO  container command references =/run/user/$UID=. Since =claude= is a
-sysTODO tem user with no login session, the =systemd-logind= daemon never
-creTODO ates this directory automatically. It must be created manually:
-   TODO
-#+bTODO egin_src sh
-sudTODO o mkdir -p /run/user/${CLAUDE_UID}
-sudTODO o chown claude:claude /run/user/${CLAUDE_UID}
-sudTODO o chmod 700 /run/user/${CLAUDE_UID}
-   TODO
-# VTODO erify
-ls TODO -ld /run/user/${CLAUDE_UID}
-# dTODO rwx------ 2 claude claude ... /run/user/999
-#+eTODO nd_src
-   TODO
-NotTODO e: this directory lives on a =tmpfs= and is lost on reboot. If the
-conTODO tainer is started after a reboot, re-run the above three commands, or
-addTODO  them to a systemd =tmpfiles.d= rule for persistence:
-   TODO
-#+bTODO egin_src sh
-# /TODO etc/tmpfiles.d/claude-runtime.conf
-echTODO o "d /run/user/${CLAUDE_UID} 0700 claude claude -" \
-  |TODO  sudo tee /etc/tmpfiles.d/claude-runtime.conf
-   TODO
-# ATODO pply immediately without rebooting
-sudTODO o systemd-tmpfiles --create /etc/tmpfiles.d/claude-runtime.conf
-#+eTODO nd_src
-   TODO
+
+The container command references =/run/user/$UID=. Since =claude= is a
+system user with no login session, the =systemd-logind= daemon never
+creates this directory automatically. It must be created manually:
+
+#+begin_src sh
+sudo mkdir -p /run/user/${CLAUDE_UID}
+sudo chown claude:claude /run/user/${CLAUDE_UID}
+sudo chmod 700 /run/user/${CLAUDE_UID}
+
+# Verify
+ls -ld /run/user/${CLAUDE_UID}
+# drwx------ 2 claude claude ... /run/user/999
+#+end_src
+
+Note: this directory lives on a =tmpfs= and is lost on reboot. If the
+container is started after a reboot, re-run the above three commands, or
+add them to a systemd =tmpfiles.d= rule for persistence:
+
+#+begin_src sh
+# /etc/tmpfiles.d/claude-runtime.conf
+echo "d /run/user/${CLAUDE_UID} 0700 claude claude -" \
+  | sudo tee /etc/tmpfiles.d/claude-runtime.conf
+
+# Apply immediately without rebooting
+sudo systemd-tmpfiles --create /etc/tmpfiles.d/claude-runtime.conf
+#+end_src
+
 ** TODO Configure =sudo= to Allow =owner= to Invoke the Container as =claude=
-   TODO
-=clTODO aude= has =/usr/sbin/nologin= as its shell, so it cannot be switched
-to TODO with =su= or =su -=. The correct mechanism is =sudo -u claude=.
-   TODO
-DetTODO ermine the exact path to =guix=:
-   TODO
-#+bTODO egin_src sh
-whiTODO ch guix
-# eTODO .g. /usr/local/bin/guix
-#+eTODO nd_src
-   TODO
-AddTODO  a sudoers rule granting =owner= the right to run =guix= as =claude=
-witTODO hout a password:
-   TODO
-#+bTODO egin_src sh
-sudTODO o visudo -f /etc/sudoers.d/claude-container
-#+eTODO nd_src
-   TODO
-InsTODO ert:
-   TODO
-#+bTODO egin_src text
-# ATODO llow owner to start the guix container as claude
-ownTODO er ALL=(claude) NOPASSWD: /usr/local/bin/guix
-#+eTODO nd_src
-   TODO
-AdjTODO ust the path if =guix= is installed elsewhere (e.g. =/usr/bin/guix=).
-=viTODO sudo= validates the syntax before saving; a syntax error will be
-cauTODO ght and rejected.
-   TODO
-VerTODO ify:
-   TODO
-#+bTODO egin_src sh
-sudTODO o -u claude -l
-# STODO hould list: (claude) NOPASSWD: /usr/local/bin/guix
-#+eTODO nd_src
-   TODO
+
+=claude= has =/usr/sbin/nologin= as its shell, so it cannot be switched
+to with =su= or =su -=. The correct mechanism is =sudo -u claude=.
+
+Determine the exact path to =guix=:
+
+#+begin_src sh
+which guix
+# e.g. /usr/local/bin/guix
+#+end_src
+
+Add a sudoers rule granting =owner= the right to run =guix= as =claude=
+without a password:
+
+#+begin_src sh
+sudo visudo -f /etc/sudoers.d/claude-container
+#+end_src
+
+Insert:
+
+#+begin_src text
+# Allow owner to start the guix container as claude
+owner ALL=(claude) NOPASSWD: /usr/local/bin/guix
+#+end_src
+
+Adjust the path if =guix= is installed elsewhere (e.g. =/usr/bin/guix=).
+=visudo= validates the syntax before saving; a syntax error will be
+caught and rejected.
+
+Verify:
+
+#+begin_src sh
+sudo -u claude -l
+# Should list: (claude) NOPASSWD: /usr/local/bin/guix
+#+end_src
+
 ** TODO ■
 
 Premises
 - ./claude-coworker owner ai workdir
 - cd $workdir
-- sudo -u $ai [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf][./env-start]]
+- sudo -u $ai [[ref:d8afe12e-f756-4c33-a7dd-f380004f91bf][env#start]]
 
 Conclusion
 - An AI agent owned by owner can execute in a container rooted at workdir under the
