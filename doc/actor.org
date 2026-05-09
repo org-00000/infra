@@ -126,3 +126,25 @@ Premises
 
 Conclusion
 - All TODO comments in the project are listed.
+
+** actor#,find-references
+:PROPERTIES:
+:ID:       e307bf91-92a9-4c32-8a1e-b779733fb0f2
+:END:
+
+Premises
+- actor#,find-references UUID
+
+Conclusion
+- All occurrences of [[ref:UUID]] in the project are listed with file and line number.
+
+** actor#,find-identifiers
+:PROPERTIES:
+:ID:       95fd3870-a36d-491b-9273-f578a5ea5d12
+:END:
+
+Premises
+- actor#,find-identifiers UUID
+
+Conclusion
+- All occurrences of [[id:UUID]] in the project are listed with file and line number.
