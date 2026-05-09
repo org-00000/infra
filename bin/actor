@@ -81,13 +81,22 @@ if [[ "$MSG" == ",install-node-binaries" ]]; then
 
 elif [[ "$MSG" == ",frontend-fetch" ]]; then
   # [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][Specification]]
+  # [[id:d53d5526-93ba-4a87-b58e-e67d32893f92]]
   inside_container_check
   FRONTEND_REPO="$1"
-  # TODO(c783): take into account the fact that URL may change
-  if [[ ! -d "$FRONTEND" ]]; then
+  if [[ -d "$FRONTEND" ]]; then
+    CURRENT_URL="$(git -C "$FRONTEND" remote get-url origin 2>/dev/null)"
+    if [[ "$CURRENT_URL" != "$FRONTEND_REPO" ]]; then
+      read -r -p "Replace '$FRONTEND' (cloned from '$CURRENT_URL') with '$FRONTEND_REPO'? [y/N] " REPLY
+      [[ "$REPLY" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+      rm -rf "$FRONTEND"
+      git clone "$FRONTEND_REPO" "$FRONTEND"
+    else
+      git -C "$FRONTEND" pull
+    fi
+  else
     git clone "$FRONTEND_REPO" "$FRONTEND"
   fi
-  git -C "$FRONTEND" pull
   npm --prefix "$FRONTEND" install
 
 elif [[ "$MSG" == ",frontend-dist-mk" ]]; then

@@ -52,9 +52,18 @@ Premises
 - repo : A URL where to fetch the code of the front end from ; /e.g./ "git@github.com:phf-1/my-lovely-tasks.git"
 - frontend#fetch repo
 
+Algorithm
+- cond
+  - [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][frontend#dir]] does not exist ↦ repo cloned into it
+  - _ ↦ cond
+    - remote = repo ↦ git#pull ■
+    - remove ≠ repo ↦ match user#confirmation
+      - y ↦ delete(frontend#dir) frontend#fetch(repo) fetch(npm dependencies) ■
+      - _ ↦ ■
+
 Conclusion
-- The last version of the frontend has been fetched from repo into [[ref:834f11b4-dcdf-46c2-8472-15884c46ed98][frontend#dir]] as
-  well as its dependencies.
+- operation aborted or repo has been cloned under frontend#dir and npm dependencies
+  have been fetched
 
 ** frontend#dist
 :PROPERTIES:

@@ -26,6 +26,12 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
+*** DONE frontend-fetch refined
+:PROPERTIES:
+:ID: 4a00f4ce-2557-4193-a82e-1ac3259095dc
+:OWNER: phf
+:END:
+
 *** DONE Introduce pseudo language
 :PROPERTIES:
 :ID: b44e9ee2-8667-4063-8b8b-f0a20db04e8b
