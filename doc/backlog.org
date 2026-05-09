@@ -26,6 +26,35 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
+*** DONE Introduce pseudo language
+:PROPERTIES:
+:ID: b44e9ee2-8667-4063-8b8b-f0a20db04e8b
+:OWNER: phf
+:END:
+
+- Objective :: Attempt to guide generated code by AI as well as keeping intent clear
+  for humans using a pseudo language.
+- Result ::
+  - [[ref:4a1f8c2e-7b3d-4e9a-b5f0-2c6d8e1a4b7f][Pseudo-language]] tracks introduced notations and associate concepts as well as
+    adding just enough notations and concepts so that =#+begin_src pseudo … #+end_src=
+    blocks can be introduced.
+  - [[ref:2c0bf03a-0099-45e8-b773-bc96e309f24b][pseudo-language.el]] introduced so that Emacs can display pseudo code and ease
+    parsing for AI.
+  - =CLAUDE.md= updated so that this pseudo language is taken into account.
+  - [[ref:8b8c3d71-19de-4632-b96e-62734e7160ac][Natural deduction]] updated to include an Algorithm block if needed.
+
+*** DONE ,frontend-fetch refined
+:PROPERTIES:
+:ID: 72637f3d-ea86-4f5b-8ea1-15beb9502ef3
+:OWNER: phf
+:END:
+
+- Objective :: Given that a frontend exists pulled from url, and url' an other
+  frontend (url ≠ url') ; then: [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][frontend#fetch]] url' replaces the existing frontend by
+  the new one.
+
+- Result :: [[ref:c6dfad7d-72df-4788-ac6f-97c297f6df94][frontend#fetch]] and [[ref:d53d5526-93ba-4a87-b58e-e67d32893f92]] have been updated.
+
 *** DONE Refine Task definition
 :PROPERTIES:
 :ID: 662248e3-0166-4d54-92a1-7fdf01dac15c
@@ -95,6 +124,7 @@ Then:
 *** DONE Introduce the Actor Model
 :PROPERTIES:
 :OWNER: phf
+:ID:       4250edc5-1f14-489d-a0b0-bcf724c8f4d8
 :END:
 
 - Objective :: Introduce the Actor Model.
@@ -167,7 +197,7 @@ npm error A complete log of this run can be found in: /home/phf/.npm/_logs/2026-
 :END:
 
 Premises
-- https://github.com/TheYoungYankis/link-iliade-hub
+- git@github.com:TheYoungYankis/link-iliade-hub.git
 - https://windsurf.com/
 - infra
 

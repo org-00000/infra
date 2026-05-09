@@ -114,6 +114,8 @@ necessary as shown by the =Point= example.
 - To convey a meaning of the form /if X; then: Y/, we use Gentzen-style [[https://en.wikipedia.org/wiki/Natural_deduction][natural
   deduction]] format. We write:
   - a /Premises/ section,
+  - an optional /Algorithm/ section describing step-by-step conditional logic that guides
+    the implementation (see [[ref:4a1f8c2e-7b3d-4e9a-b5f0-2c6d8e1a4b7f][pseudo-language]]),
   - a /Conclusion/ section stating what holds if all premises are satisfied.
   - The Conclusion is a *partial correctness* statement: it specifies what is supposed to
     have happened *IF EVERYTHING WENT AS PLANNED*, /i.e./ premises executions terminate
@@ -132,12 +134,77 @@ necessary as shown by the =Point= example.
     - z = 3
     #+end_example
 
+- When Premises and Conclusion alone leave the implementation path unspecified, an
+  Algorithm section is added to resolve the ambiguity. Different paths satisfy the
+  same Premises and Conclusion yet carry different time, space, safety, or liveness
+  properties; the Algorithm section states which path is intended.
+
+  Consider sorting a list of natural numbers. Without an Algorithm section:
+
+  #+begin_example
+  Premises
+  - xs : List ℕ
+  - ys :≡ sort xs
+
+  Conclusion
+  - ys is a permutation of xs
+  - ys is sorted in non-decreasing order
+  #+end_example
+
+  Both bubble sort (O(n²) time, O(1) space) and merge sort (O(n log n) time, O(n)
+  space) satisfy this specification. When the choice matters, an Algorithm section
+  pins down the intended implementation path:
+
+  Premises
+  - xs : List ℕ
+  - ys :≡ sort xs
+
+  Algorithm
+  #+begin_src pseudo
+  pass : List(ℕ) → List(ℕ) × Boolean :≡
+    zs ↦ cond
+      length(zs) ≤ 1        ↦ <zs, false> ■
+      head(zs) ≤ second(zs) ↦
+        <zs', swapped> :≡ pass(tail zs)
+        <cons(head zs, zs'), swapped> ■
+      _ ↦
+        <zs', _> :≡ pass(tail zs)
+        <cons(second zs, cons(head zs, tail zs')), true> ■
+
+  loop : List(ℕ) → List(ℕ) :≡
+    zs ↦
+      <zs', swapped> :≡ pass(zs)
+      cond
+        ¬ swapped ↦ zs' ■
+        _         ↦ loop(zs') ■
+
+  ys :≡ loop(xs)
+  #+end_src
+
+  Conclusion
+  - ys is a permutation of xs
+  - ys is sorted in non-decreasing order
+  - Time: O(n²) worst case; O(n) if xs is already sorted (no swap on first pass)
+  - Space: O(1) auxiliary — no structure proportional to n is allocated
+
+  The Conclusion now documents properties that follow specifically from the bubble-sort
+  path. A specification using merge sort would share the first two bullets but differ
+  on time and space. Naming the algorithm in the Conclusion without an Algorithm
+  section would leave "how" implicit; the Algorithm section makes it precise and
+  checkable.
+
 ** Notation
+:PROPERTIES:
+:ID:       e1eca37b-a2dc-4916-b455-d5791109282a
+:END:
 
 - "x : X" means: "x is a X". For instance, "x : ℕ" means that x is an instance of ℕ ;
   /i.e./ a natural number.
 
-- "x :≡ 2" means: "x is a symbol for 2", the definition of "x" is "2".
+- =≡= and =:≡= are used as defined in [cite:@HoTT2013] and recalled in
+  [[ref:1309a276-6591-4588-b742-33e2d4a13e15][pseudo-language §Definitional equality]]. In short: "=x :≡ 2=" introduces the
+  definition of =x= as =2=; "=a ≡ b=" is the meta-level judgment that =a= and =b= are
+  definitionally equal (equal by unfolding definitions, algorithmically decidable).
 
 - Assume that "T" is a specification. Then, we may define an algorithm to build
   something that is a T. We call this algorithm a /constructor/ of T.

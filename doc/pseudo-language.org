@@ -1,0 +1,230 @@
+* Pseudo-language
+:PROPERTIES:
+:ID:       4a1f8c2e-7b3d-4e9a-b5f0-2c6d8e1a4b7f
+:END:
+
+A structured pseudo-language used throughout =./doc/= to write specifications and
+algorithms. It is language-agnostic: it says /what/ a piece of code must do, not /how/.
+
+Source blocks containing this language are tagged =pseudo=:
+
+#+begin_example
+#+begin_src pseudo
+  … pseudo-language expressions …
+#+end_src
+#+end_example
+
+For an AI assistant: when you encounter =#+begin_src pseudo=, parse its content using
+the rules in this file. If a construct appears that is not defined here, warn the
+user and ask whether it should be added to this document.
+
+Concepts are introduced in dependency order: each section uses only what was defined
+before it.
+
+** Comment
+:PROPERTIES:
+:ID:       2a7f4c1e-8b3d-4e9a-c5f0-3d6b8e2a7f4c
+:END:
+
+=%= introduces an inline comment to the end of the line. Comments are ignored when
+interpreting the pseudo-language.
+
+#+begin_src pseudo
+x y ↦ x + y   % adds two numbers
+#+end_src
+
+** Logic
+:PROPERTIES:
+:ID:       b4e8c2f0-9a5d-4b6e-e1c3-8f0d2b5a9e4c
+:END:
+
+Standard mathematical notation is used without further definition:
+
+| Symbol | Meaning     |
+|--------+-------------|
+| =∧=      | logical and |
+| =∨=      | logical or  |
+| =¬=      | logical not |
+| =⇒=      | implication |
+
+** ∅
+:PROPERTIES:
+:ID:       f2c6a0e8-7d3b-4f4c-c9e5-6b1d4a8f2c7e
+:END:
+
+Defined in [[ref:a9e4b7c2-3f1d-4a8e-b5c0-7d2f9e6b3a4c][actor-model.org]].
+
+** Symbols
+:PROPERTIES:
+:ID:       e1b5f9d7-6c2a-4e3b-b8f4-5d0c7a3e9b6f
+:END:
+
+Defined in [[ref:f2e5c8d4-0a3b-4f9e-c7d1-4b8e6f3a0c2d][actor-model.org]].
+
+** ≡ and :≡
+:PROPERTIES:
+:ID:       1309a276-6591-4588-b742-33e2d4a13e15
+:END:
+
+Defined in: [[ref:e1eca37b-a2dc-4916-b455-d5791109282a][Notation]]
+
+** Type and definition notation
+:PROPERTIES:
+:ID:       c3f9d5b2-8a1e-4c7f-b0d4-6e2a5f9c1b3e
+:END:
+
+Defined in [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].
+
+** id and ref
+:PROPERTIES:
+:ID:       d0a4e8c6-5b1f-4d2a-a7e3-4c6b9f2d0e5a
+:END:
+
+| Convention   | Meaning                                              |
+|--------------+------------------------------------------------------|
+| =[[ref:UUID]]= | Reference to a spec node identified by UUID          |
+| =[[id:UUID]]=  | Inline anchor; declares the UUID of the current node |
+
+** Lambda and function definition
+:PROPERTIES:
+:ID:       d4a2e6c1-9b3f-4d8a-a1e5-7f3b2c9e6d4a
+:END:
+
+Defined in [[ref:e1d4b7c3-9f2a-4e8d-b6c0-3a7f5e2d9b1c][actor-model.org]].
+
+** Pattern matching
+:PROPERTIES:
+:ID:       e5b3f7d2-0c4a-4e9b-b2f1-8d4e7c2b5a1f
+:END:
+
+Defined in [[ref:b3c7d1e8-5a2f-4b9c-a4d7-8e1f6b3c9a2d][actor-model.org]].
+
+** Sequential composition
+:PROPERTIES:
+:ID:       3b8e5f2a-9c4d-4a7b-d1e6-5f2c9b4a8e3d
+:END:
+
+Within a branch or function body, expressions written on consecutive lines are
+executed top to bottom. Each line may bind names that are visible to all subsequent
+lines in the same scope.
+
+#+begin_src pseudo
+a :≡ f(x)   % execute f(x), bind result to a
+b :≡ g(a)   % execute g(a) — a is in scope
+h(b)        % value of the sequence is h(b)'s result
+#+end_src
+
+The value of a sequence is the value of its last expression.
+
+** Bindings and destructuring
+:PROPERTIES:
+:ID:       4c9f6a3b-0d5e-4b8c-e2f1-6a3d7c0f5b9e
+:END:
+
+=:≡= is used for both global definitions and local bindings; context determines scope:
+
+- *Global definition* — at the top level of a specification block, =name :≡ expr=
+  introduces =name= as a permanent, globally visible definition.
+
+- *Local binding* — inside a function body or Algorithm branch, =name :≡ expr=
+  introduces =name= only within the enclosing scope. It is not visible outside.
+
+Tuple destructuring is allowed on the left-hand side:
+
+#+begin_src pseudo
+<a, b> :≡ f(x)   % bind a to the first element, b to the second
+#+end_src
+
+Local definitions may be recursive: a name bound with =:≡= may appear in its own
+definition (including mutual recursion between names in the same scope).
+
+** ■
+:PROPERTIES:
+:ID:       c8e2f6a4-3b7d-4c0e-e5a1-2f9b7e4c6a3d
+:END:
+
+Defined in [[ref:c3d6a8e1-7f2b-4c9d-b0e5-4a7f3c1d8b2e][actor-model.org]].
+
+** cond
+:PROPERTIES:
+:ID:       f6c4a8e3-1d5b-4f0c-c3a2-9e7b5d4c2f8a
+:END:
+
+=cond= is a conditional dispatch on boolean conditions (not a value pattern). Branches
+are tried top to bottom; the first branch whose condition holds is taken. =_= is the
+default (always-true) branch.
+
+#+begin_src pseudo
+cond
+  condition₁ ↦ expr₁
+  condition₂ ↦ expr₂
+  _ ↦ default
+#+end_src
+
+Branches may be nested:
+
+#+begin_src pseudo
+cond
+  condition₁ ↦ expr₁
+  _ ↦ cond
+    condition₂ ↦ expr₂
+    _ ↦ expr₃
+#+end_src
+
+** match
+:PROPERTIES:
+:ID:       a7d5b9f4-2e6c-4a1d-d4b3-0f8e6c5a3b9d
+:END:
+
+=match= dispatches on the value of an expression using [[ref:e5b3f7d2-0c4a-4e9b-b2f1-8d4e7c2b5a1f][patterns]]. Use it when the
+branch depends on the shape or value of a specific term; use =cond= when the branches
+depend on arbitrary boolean conditions.
+
+#+begin_src pseudo
+match expr
+  pattern₁ ↦ expr₁
+  pattern₂ ↦ expr₂
+  _ ↦ default
+#+end_src
+
+** Parallel execution
+:PROPERTIES:
+:ID:       a3d7b1f9-8e4c-4a5d-d0f2-7c9e3b6a1d4f
+:END:
+
+Defined in [[ref:a588c790-daae-465c-b7ce-5b3ab8894fbd][Actor Model]].
+
+** Built-in operations
+:PROPERTIES:
+:ID:       5d0a7e4b-1c6f-4b9d-f3e2-7b4a0d5e1c6f
+:END:
+
+Standard operations on common types are assumed available without further definition.
+They follow conventional mathematical or functional-programming meaning:
+
+| Operation      | Type                | Meaning                                   |
+|----------------+---------------------+-------------------------------------------|
+| =head(xs)=       | =List T → T=          | First element of =xs=                       |
+| =tail(xs)=       | =List T → List T=     | =xs= without its first element              |
+| =second(xs)=     | =List T → T=          | Second element of =xs=                      |
+| =cons(x, xs)=    | =T × List T → List T= | Prepend =x= to =xs=                           |
+| =length(xs)=     | =List T → ℕ=          | Number of elements in =xs=                  |
+| =xs[i]=          | =List T × ℕ → T=      | Element at zero-based index =i=             |
+| =swap(xs, i, j)= | =List T × ℕ × ℕ ⇝ ∅=  | Swap elements at indices =i= and =j= in place |
+
+When a necessary operation is not in this table, define it in the specification
+before using it.
+
+** Actor model primitives
+:PROPERTIES:
+:ID:       b9f3c7d5-4a2e-4b8f-f6c0-3d5a8e2b7c4f
+:END:
+
+All actor primitives are defined in [[ref:e2b9d7f3-5c4a-4e8b-b1d6-7f3e9a2c8b4d][Actor Model]].
+
+** Specification blocks
+:PROPERTIES:
+:ID:       b2e7f4a1-3c8d-4b0e-a9f2-5d1e6c3b8a2f
+:END:
+
+The general shape of a specification is defined in [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].

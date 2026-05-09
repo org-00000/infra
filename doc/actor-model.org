@@ -437,6 +437,9 @@ print("t2: #{t2} seconds")
 #+end_example
 
 ** Parallel execution
+:PROPERTIES:
+:ID:       a588c790-daae-465c-b7ce-5b3ab8894fbd
+:END:
 
 A smart compiler or runtime may execute independent parts in parallel:
 
