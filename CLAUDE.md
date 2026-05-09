@@ -28,6 +28,10 @@
 - `[[ref:UUID]]` references a spec node; `[[id:UUID]]` anchors one. To navigate:
   `,find-references UUID` lists usages; `,find-identifiers UUID` finds the anchor.
 
+- `#+begin_src pseudo … #+end_src` blocks contain the project pseudo-language. Read
+  `doc/pseudo-language.org` to parse them. If a construct appears that is not defined
+  there, warn the user and ask whether it should be added to that file.
+
 - Task definition: `doc/task.org` — Backlog: `doc/backlog.org`
 
 - Project commands are sent as messages to `bin/actor`. See `doc/actor.org` for the

@@ -528,6 +528,8 @@ Height is set to the full usable monitor height."
 (add-hook 'org-mode-hook  #'auto-replace-characters-mode)
 (add-hook 'prog-mode-hook #'auto-replace-characters-mode)
 
+(require 'pseudo-language)
+
 (add-to-list 'load-path (file-name-concat local-elisp-dir "lar"))
 (require 'lar)
 
