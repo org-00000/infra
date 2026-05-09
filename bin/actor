@@ -281,6 +281,7 @@ elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
   if [[ "$force" == "false" ]]; then
     if [[ -n "$(git status --porcelain)" ]]; then
       echo "ERROR | The current directory is not clean"
+      git status
       exit 1
     fi
     echo "WARNING | the objective is to have an exact copy of upstream"
@@ -292,7 +293,7 @@ elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
     [Yy]*) ;;
     *)
       echo "Aborted."
-      return 1
+      exit 1
       ;;
     esac
     echo "INFO | You may remove this warning using the -f flag"
