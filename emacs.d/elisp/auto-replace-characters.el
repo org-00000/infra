@@ -84,7 +84,8 @@ with completions and special minibuffer behavior."
      (",eg"  . "/e.g./")
      (",k"   . "⇝")
      ("or!" . "∨")
-     ("and!" . "∧"))
+     ("and!" . "∧")
+     ("U," . "∪"))
   "Alist of (TRIGGER . REPLACEMENT).
 When TRIGGER appears immediately before point, it is replaced by REPLACEMENT.
 Rules are automatically sorted so that longer triggers take precedence over

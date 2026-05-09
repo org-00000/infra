@@ -1,0 +1,89 @@
+* Formal Development Methodology
+:PROPERTIES:
+:ID: b7e3f1a5-2c9d-4e8b-a6f0-3d1c5e7a9b4f
+:END:
+
+A methodology for developing algorithms where correctness matters and the implementation
+must be verifiable against a formal specification.
+
+** Motivation
+
+Iterative trial-and-error between natural language description and code leads to
+implementations that drift from intent, accumulate workarounds, and are hard to
+verify. The methodology below anchors each step in a formal artifact that can be
+reviewed independently before the next step begins.
+
+** Steps
+
+*** 1. Natural deduction rule
+
+Write the inference rule(s) that define the algorithm's output in terms of its inputs.
+Use standard natural deduction notation:
+
+#+begin_src
+  premise_1   premise_2   ...
+  ─────────────────────────── RuleName
+          conclusion
+#+end_src
+
+Each rule is a self-contained logical statement. Together they define what is true,
+not how to compute it.
+
+*Goal*: reach agreement that the rules are correct before writing any algorithm.
+
+*** 2. Algorithm block in pseudo language
+
+Translate the natural deduction rules into an executable algorithm using the project
+pseudo language (=#+begin_src pseudo … #+end_src=, see =doc/pseudo-language.org=).
+
+The algorithm must:
+- use only constructs defined in =doc/pseudo-language.org=,
+- be unambiguous enough that two independent implementors produce the same result,
+- reference the rule(s) it implements.
+
+*Goal*: reach agreement that the algorithm faithfully implements the rules.
+
+*** 3. Review (Claude Code)
+
+Claude Code reads the rules and the algorithm and checks for:
+- inconsistencies between rules and algorithm,
+- undefined or ambiguous constructs,
+- edge cases not covered by any rule,
+- missing base cases in recursive definitions.
+
+Claude Code produces a written review. The human must address every issue before
+proceeding.
+
+*Goal*: independent verification that steps 1 and 2 are consistent.
+
+*** 4. Tests in pseudo language
+
+Write test cases in pseudo language. Each test is a concrete input paired with the
+expected output, derived directly from the natural deduction rules (not from the
+algorithm).
+
+#+begin_src pseudo
+test "<name>" :≡
+  input  :≡ <concrete value>
+  expect :≡ <concrete value derived from the rules>
+#+end_src
+
+*Goal*: a suite of cases that will falsify a wrong implementation.
+
+*** 5. Implementation (Claude Code)
+
+Claude Code implements the algorithm in the target language, guided by:
+- the pseudo algorithm (structure),
+- the natural deduction rules (correctness criterion),
+- the test cases (acceptance criterion).
+
+Implementation is considered done when all pseudo tests pass and Claude Code can
+argue (with reference to the rules) that no rule is violated.
+
+** Conventions
+
+- Steps proceed strictly in order; a step is not started until the previous one is
+  agreed to be complete.
+- If a later step reveals a problem in an earlier step, return to that step and
+  correct it before continuing.
+- All artifacts live under =task#data= for the relevant task.

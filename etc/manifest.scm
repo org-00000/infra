@@ -134,6 +134,7 @@
            "util-linux"
            "wget"
            "which"
+           "xdot"
            )))))
 
 ;; So that: 'guix time-machine -m manifest.scm' works

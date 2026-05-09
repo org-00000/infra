@@ -1,0 +1,210 @@
+* doc-graph
+:PROPERTIES:
+:ID:       a8f3c2e1-5d7b-4f9a-b6c4-1e8d3b0a7f2e
+:END:
+
+A Python program that scans =.org= files under =$ROOT/doc=, extracts org-mode
+identifiers and references, and produces a directed graph in DOT format where nodes
+are identifiers and edges are references.
+
+** Private
+
+*** Identifier
+
+An /Identifier/ is a UUIDv4 string that appears as:
+- the value of a =:ID:= property in an org-mode property drawer: =:ID: uuid=, or
+- an inline anchor: =[[id:uuid]]=.
+
+*** Reference
+
+A /Reference/ is an occurrence of =[[ref:uuid]]= or =[[ref:uuid][description]]= in
+an org-mode file.
+
+*** Level
+
+A /Level/ is a natural number equal to the number of leading =*= characters in an
+OrgMode heading line.
+
+*** Section
+
+A /Section/ is a =Level × Name × Option(UUID) × List(Section)=: its heading depth,
+heading text, optional =:ID:=, and ordered list of direct child sections.
+
+*** ownRefs
+
+=ownRefs(s)= is the set of UUIDs appearing as =[[ref:uuid]]= in =s='s body — the lines
+belonging to =s= that precede any child section.
+
+*** nearest-uuid
+
+The /nearest-uuid/ of a section =s= (given a stack of ancestors) is the UUID of the
+innermost ancestor with an =:ID:=, or /none/ if no ancestor has one.
+
+*** reachable
+
+#+begin_src pseudo
+reachable(seeds : Set(UUID), edges : Set(UUID × UUID)) : Set(UUID)
+
+adj : Map(UUID, Set(UUID)) :≡ {}
+for (src, dst) in edges:
+  adj[src] :≡ adj[src] ∪ {dst}
+  adj[dst] :≡ adj[dst] ∪ {src}
+
+visited : Set(UUID) :≡ seeds
+queue   : List(UUID) :≡ list(seeds)
+while queue ≠ []:
+  node :≡ queue.pop()
+  for nbr in adj[node]:
+    if nbr ∉ visited:
+      visited :≡ visited ∪ {nbr}
+      queue   :≡ queue ++ [nbr]
+
+return visited
+#+end_src
+
+** Public
+
+*** Filter
+:PROPERTIES:
+:ID:       f7e3d1b5-9c2a-4e8f-a4d6-3b0c7e1f5d9a
+:END:
+
+A /Filter/ selects which nodes to include in the graph:
+- =tasks= — only nodes defined in =backlog.org=
+- =defs= — only nodes connected to =README.org= (undirected reachability via =[[ref:uuid]]= edges)
+- /none/ — all nodes
+
+Edges are restricted to pairs where both endpoints belong to the selected node set.
+
+*** doc-graph#mk
+:PROPERTIES:
+:ID:       c9e1f3a5-7b2d-4f8c-b4e6-3d1a9f0c7e2b
+:END:
+
+Premises
+- root : Path
+- filter : Filter
+- g :≡ doc-graph#mk root filter
+
+Algorithm
+
+#+begin_src pseudo
+files :≡ { root/README.org } ∪ all .org files under root/doc (recursive)
+sources : Map(UUID, (String × Path)) :≡ {}   -- uuid ↦ (heading, filepath)
+edges   : Set(UUID × UUID) :≡ {}
+
+for file in files:
+  scan(file)
+
+scan(file) :≡
+  stack : List([Level × Name × Option(UUID) × List(UUID)]) :≡ []
+
+  close(frame) :≡
+    [_, _, uuid, own_refs] :≡ frame
+    parent :≡ nearest-uuid(stack)
+    if uuid ≠ none:
+      if uuid ∉ sources: sources[uuid] :≡ (frame.name, file)
+      if parent ≠ none: edges :≡ edges ∪ {(parent, uuid)}
+      edges :≡ edges ∪ { (uuid, ref) | ref ∈ own_refs }
+    elif parent ≠ none:
+      edges :≡ edges ∪ { (parent, ref) | ref ∈ own_refs }
+
+  for line in lines(file):
+    if line matches "^(\\*+) heading-text":
+      level :≡ number of leading *
+      while stack ≠ [] ∧ stack.top.level ≥ level:
+        close(stack.pop())
+      stack.push([level, heading-text, none, []])
+
+    if line matches ":ID: uuid":
+      stack.top.uuid :≡ uuid
+
+    for each uuid where line matches "[[id:uuid]]":
+      if uuid ∉ sources: sources[uuid] :≡ (stack.top.name, file)
+
+    for each uuid where line matches "[[ref:uuid]]":
+      stack.top.own_refs :≡ stack.top.own_refs ++ [uuid]
+
+  while stack ≠ []: close(stack.pop())
+
+backlog        :≡ root/doc/backlog.org
+readme         :≡ root/README.org
+readme_uuids   :≡ { uuid | sources[uuid].path = readme }
+reached        :≡ reachable(readme_uuids, edges)
+nodes :≡ cond
+  filter = tasks ↦ { uuid | sources[uuid].path = backlog } ■
+  filter = defs  ↦ { uuid | uuid ∈ reached } ■
+  _              ↦ domain(sources) ■
+
+g :≡ DOT digraph with:
+  one node per uuid in nodes, labelled with sources[uuid].heading
+  one edge (src, dst) per (src, dst) ∈ edges where src ∈ nodes ∧ dst ∈ nodes
+#+end_src
+
+Conclusion
+- g : DOTGraph
+
+** emacs-server
+:PROPERTIES:
+:ID:       f1e3b5d7-9c2a-4e8f-a4d6-3b0c7e1f5d9a
+:END:
+
+The Emacs instance started by [[ref:e529b076-4540-4c26-97f9-d42e4a2ef30e][env#session]] starts an Emacs server (via
+=(server-start)= in =emacs.d/init.el=) so that external tools can reuse the session.
+
+** doc-graph-view
+:PROPERTIES:
+:ID:       b9e3f1c5-2d8a-4b7f-a5d3-7c0e4f2b9d1e
+:END:
+
+A Python program that displays the DOT graph produced by [[ref:a8f3c2e1-5d7b-4f9a-b6c4-1e8d3b0a7f2e][doc-graph]] and opens the
+corresponding org-mode node in Emacs when a graph node is clicked.
+
+*** Private
+
+**** URL scheme
+
+Each DOT node carries a =URL= attribute with the value =org-id://UUID=. Clicking a
+node emits xdot's =clicked= signal with this URL as the argument.
+
+*** Public
+
+**** doc-graph-view#mk
+
+Premises
+- dotfile : Path
+- doc-graph-view#mk dotfile
+
+Algorithm
+
+#+begin_src pseudo
+win :≡ DotWindow with dotwidget.clicked connected to _on_clicked
+win.open_file(dotfile)
+Gtk.main()
+
+_on_clicked(url) :≡
+  if url starts with "org-id://":
+    uuid :≡ url[9:]
+    emacsclient --no-wait --eval "(org-id-open UUID t)"
+#+end_src
+
+Conclusion
+- The graph is displayed in an interactive window.
+- Clicking a node opens the org-mode entry with that ID in the running
+  [[ref:f1e3b5d7-9c2a-4e8f-a4d6-3b0c7e1f5d9a][Emacs server]].
+
+** actor#,doc-graph
+:PROPERTIES:
+:ID:       d5b1f7c3-9e2a-4d8f-b3c6-7a0e5f1d9b2c
+:END:
+
+Premises
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
+- filter : Filter (optional, defaults to /none/)
+- actor#,doc-graph [filter]
+
+Conclusion
+- The reference graph produced by [[ref:a8f3c2e1-5d7b-4f9a-b6c4-1e8d3b0a7f2e][doc-graph]] for =$ROOT/doc= filtered by =filter= is
+  displayed using [[ref:b9e3f1c5-2d8a-4b7f-a5d3-7c0e4f2b9d1e][doc-graph-view]].
+- Clicking a node opens the corresponding org-mode entry in the running
+  [[ref:f1e3b5d7-9c2a-4e8f-a4d6-3b0c7e1f5d9a][Emacs server]].

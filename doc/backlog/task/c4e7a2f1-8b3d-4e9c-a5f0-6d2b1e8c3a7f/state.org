@@ -1,0 +1,70 @@
+* State at end of session 2026-05-09
+:PROPERTIES:
+:ID: a3f1d7e2-8b4c-4f9a-b5e0-2c6d4f8b1a3e
+:END:
+
+** What was done
+
+The following subtasks were completed and merged into this task:
+
+- Build doc reference graph :: =bin/doc-graph.py= + =bin/doc-graph-view.py= + =bin/,doc-graph=
+  symlink + =doc/doc-graph.org= spec. Displays the org-mode reference graph via xdot.
+- Add filter argument :: =,doc-graph tasks= (backlog nodes only), =,doc-graph defs= (nodes
+  connected to README.org via undirected reachability), =,doc-graph= (all nodes).
+- Open node in Emacs on click :: =doc-graph-view.py= intercepts xdot =clicked= signal,
+  calls =emacsclient --no-wait --eval "(org-id-open UUID t)"=.
+- Emacs server socket :: Socket stored at =$EMACSD/run/server= (=$EMACSD_SOCKET= env var
+  defined in =etc/bash-dev-profile=). =emacs.d/init.el= sets =server-socket-dir= from
+  =EMACSD_SOCKET=. =etc/bash-dev-session= passes =--socket-name= to all =emacsclient= calls.
+- Rewrite in Python :: Original Guile implementation replaced by Python.
+- PyGObject import fix :: =bin/actor= sources =GUIX_PYTHONPATH= and =GI_TYPELIB_PATH= from
+  the xdot wrapper before invoking =doc-graph-view.py=.
+
+** Current state of the implementation
+
+*** Files modified
+
+| File                        | Role                                              |
+|-----------------------------+---------------------------------------------------|
+| =bin/doc-graph.py=          | Graph generator; outputs DOT to stdout            |
+| =bin/doc-graph-view.py=     | xdot viewer; handles node clicks                  |
+| =bin/actor= (=,doc-graph=)  | Orchestrates the two above; sources xdot env vars |
+| =bin/,doc-graph=            | Symlink → actor                                   |
+| =doc/doc-graph.org=         | Specification                                     |
+| =etc/bash-dev-profile=      | Exports =EMACSD_SOCKET=                           |
+| =etc/bash-dev-session=      | =emacs= shell function uses =--socket-name=       |
+| =emacs.d/init.el=           | Sets =server-socket-dir=, starts server           |
+| =README.org=                | Added =:ID: 0493fd15-8aeb-45cb-b8d9-2046ccfab2da= |
+
+*** What works
+
+- =,doc-graph= displays all nodes and edges.
+- =,doc-graph tasks= filters to backlog nodes.
+- =,doc-graph defs= filters to nodes connected to README.org (undirected BFS).
+- Clicking a node opens the org entry in Emacs via =emacsclient=.
+- Emacs server socket is isolated to the container at =$EMACSD_SOCKET=.
+
+*** Known issues
+
+1. *Duplicate edges*: =scan_file= uses lists, not sets. The same =(src, dst)= pair can
+   appear multiple times in =all_edges= and =kept_edges=, producing duplicate arrows in
+   the DOT output. Fix: use sets throughout, or deduplicate before output.
+
+2. *Algorithm not formally derived*: the =section#graph= algorithm in =bin/doc-graph.py=
+   was written iteratively and has not been verified against natural deduction rules or
+   tested with pseudo-language test cases. It may have edge cases that are wrong.
+
+3. *=,doc-graph defs= unverified*: the undirected BFS and README seeding logic has not
+   been tested systematically.
+
+** Where to resume
+
+1. Follow the methodology in =methodology.org=:
+   a. Write natural deduction rules for =section#graph= (especially =ownRefs= and
+      the implicit/explicit edge cases).
+   b. Write the algorithm block in pseudo language.
+   c. Have Claude Code review for inconsistencies.
+   d. Write pseudo-language test cases.
+   e. Re-implement =scan_file= from the verified spec; deduplicate edges.
+2. Test =,doc-graph defs= end to end once step 1 is done.
+3. Consider adding =,doc-graph= to the env#session description in =doc/env-start.org=.

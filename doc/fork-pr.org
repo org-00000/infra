@@ -19,7 +19,7 @@ PR
 
 ** fork-pr#ruleset
 
-[[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][Fork and pull]] is enforced by a rule set:
+Fork and pull is enforced by a rule set:
 - https://github.com/org-00000/infra/settings/rules/16035411
 
 ** fork-pr#pull-request

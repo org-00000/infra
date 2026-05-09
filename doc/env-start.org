@@ -34,3 +34,18 @@ Conclusion
 - A set of packages are installed.
 - Installed packages have a fixed version.
 - The README is displayed using the default editor.
+
+** env#session
+:PROPERTIES:
+:ID:       e529b076-4540-4c26-97f9-d42e4a2ef30e
+:END:
+
+Premises
+- The [[ref:6612d34b-e5e7-4d42-b1bf-d73bb1ed9906][environment]] is started.
+- =source etc/bash-dev-session= has been evaluated.
+
+Conclusion
+- Shell conveniences are active:
+  - =emacs= opens a new frame in the running Emacs server via =emacsclient -c=, or
+    starts a new Emacs instance (which will itself start a server via [[ref:f1e3b5d7-9c2a-4e8f-a4d6-3b0c7e1f5d9a][emacs-server]]).
+  - The README is displayed in Emacs at session start.
