@@ -7,6 +7,17 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
+*** DONE Introduce ,find-references and ,find-identifiers
+:PROPERTIES:
+:OWNER: phf
+:ID:       4087c364-89be-464f-b04d-2f194c7172e1
+:END:
+
+- Objective :: Introduce two actor commands: ,find-references <UUID> which uses rg to find
+  instances of [[ref:<UUID>]], and ,find-identifiers <UUID> to find instances of [[id:<UUID>]].
+- Reason :: Allow resolving OrgMode references from the command line.
+- Result :: [[ref:e307bf91-92a9-4c32-8a1e-b779733fb0f2][actor#,find-references]], [[ref:95fd3870-a36d-491b-9273-f578a5ea5d12][actor#,find-identifiers]]
+
 *** TODO Add Claude as a co-worker
 :PROPERTIES:
 :ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
@@ -37,15 +48,14 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
-*** DONE ,synchronize-with-upstream refined
+*** DONE Optimize CLAUDE.md
 :PROPERTIES:
 :OWNER: phf
 :ID:       11f426b5-a949-41b7-bf21-5621bf262ee0
 :END:
 
-- Objective :: unless -f, refuse to execute if the current directory is not clean.
-- Reason :: Risk of data loss.
-- Result :: [[ref:61e5914d-eb8d-46cf-8b7c-31b68079c83e]]
+- Objective :: Provide tools and guidance to optimize Claude usage.
+- Result :: See associated commit content.
 
 *** DONE Backlog is cleaned
 :PROPERTIES:

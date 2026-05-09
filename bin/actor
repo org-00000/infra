@@ -306,6 +306,18 @@ elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
 
   echo "INFO | DONE: Your local master and origin/master are now exact copy of upstream/master."
 
+elif [[ "$MSG" == ",find-references" ]]; then
+  # [[ref:e307bf91-92a9-4c32-8a1e-b779733fb0f2][Specification]]
+  inside_container_check
+  UUID="$1"
+  rg --with-filename --line-number "\[\[ref:$UUID" "$ROOT" || true
+
+elif [[ "$MSG" == ",find-identifiers" ]]; then
+  # [[ref:95fd3870-a36d-491b-9273-f578a5ea5d12][Specification]]
+  inside_container_check
+  UUID="$1"
+  rg --with-filename --line-number "\[\[id:$UUID" "$ROOT" || true
+
 elif [[ "$MSG" == ",todos" ]]; then
   # [[ref:a3f2c1d8-7e4b-4f9a-b6c5-2d1e8f3a5b9c][Specification]]
 
