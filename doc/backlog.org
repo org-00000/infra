@@ -20,14 +20,6 @@ we know what needs to be done, and who works on what.
   to start his own instance of Claude Code as a co-worker in a containerized
   environment.
 
-*** TODO Add references to specification.org
-:PROPERTIES:
-:OWNER: nobody
-:ID:       58480e83-1ec1-46ff-9691-afd0673c9202
-:END:
-
-- Objective :≡ Resolve =TODO(1789)= in =doc/specification.org=: add references to literate programming, Leslie Lamport, Alan Kay, Joe Armstrong, Liskov, Gerald Sussman, Martin Löf, and others.
-
 *** TODO Restrict CORS to specific origin in production
 :PROPERTIES:
 :OWNER: nobody
@@ -45,47 +37,15 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
-*** TODO Handle frontend URL changes in ,frontend-fetch
+*** DONE Backlog is cleaned
 :PROPERTIES:
-:OWNER: nobody
-:ID:       f40aa992-5456-421b-ae0b-df8058b1a26d
+:OWNER: phf
 :END:
-
-- Objective :≡ Resolve =TODO(c783)= in =bin/actor=: make =,frontend-fetch= handle the case where the frontend git URL changes after the repository has already been cloned.
-
-*** TODO Write specification for Backend.Generic.Path
-:PROPERTIES:
-:OWNER: nobody
-:ID:       186af674-889e-484f-b603-eb0da8a21c33
-:END:
-
-- Objective :≡ Resolve =TODO(409e)= in =backend/lib/backend/generic/path.ex=: write the specification that =Backend.Generic.Path= implements and link it in the =@moduledoc=.
-
-*** TODO Write specification for Backend.Generic.Nothing
-:PROPERTIES:
-:OWNER: nobody
-:ID:       2a7cff33-19c1-4275-84e9-8ecbc2b405e1
-:END:
-
-- Objective :≡ Resolve =TODO(ffbc)= in =backend/lib/backend/generic/nothing.ex=: write the specification that =Backend.Generic.Nothing= implements and link it in the =@moduledoc=.
-
-*** TODO Write specification for Backend.Generic.Sha256
-:PROPERTIES:
-:OWNER: nobody
-:ID:       4abacc8f-4bf3-40e6-b5c4-269932fe9375
-:END:
-
-- Objective :≡ Resolve =TODO(f7bb)= in =backend/lib/backend/generic/sha256.ex=: write the specification that =Backend.Generic.Sha256= implements and link it in the =@moduledoc=.
-
-*** TODO Add references to contributing.org
-:PROPERTIES:
-:OWNER: nobody
-:ID:       ad0c1b63-7715-4558-9770-fbc331c19287
-:END:
-
-- Objective :≡ Resolve the =TODO References= heading in =doc/contributing.org=: add the reference to ZeroMQ (Pieter Hintjens) and any other relevant works.
 
 *** DONE Introduce the Actor Model
+:PROPERTIES:
+:OWNER: phf
+:END:
 
 - Objective :: Introduce the Actor Model.
 - Reason :: We want to write the specification first then generate Elixir/Erlang
