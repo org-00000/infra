@@ -7,30 +7,6 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
-*** DONE Introduce ,find-references and ,find-identifiers
-:PROPERTIES:
-:OWNER: phf
-:ID:       4087c364-89be-464f-b04d-2f194c7172e1
-:END:
-
-- Objective :: Introduce two actor commands: ,find-references <UUID> which uses rg to find
-  instances of [[ref:<UUID>]], and ,find-identifiers <UUID> to find instances of [[id:<UUID>]].
-- Reason :: Allow resolving OrgMode references from the command line.
-- Result :: [[ref:e307bf91-92a9-4c32-8a1e-b779733fb0f2][actor#,find-references]], [[ref:95fd3870-a36d-491b-9273-f578a5ea5d12][actor#,find-identifiers]]
-
-*** TODO Add Claude as a co-worker
-:PROPERTIES:
-:ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
-:OWNER: phf
-:END:
-
-- Objective :≡ Let Claude live in a container started by the current user (=usr=) with
-  limited access to the underlying system.
-
-  Since Claude uses =usr= API key, /i.e./ =~/.claude=, then this setup should allow any one
-  to start his own instance of Claude Code as a co-worker in a containerized
-  environment.
-
 *** TODO Restrict CORS to specific origin in production
 :PROPERTIES:
 :OWNER: nobody
@@ -47,6 +23,58 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
+
+*** DONE Refine Task definition
+:PROPERTIES:
+:ID: 662248e3-0166-4d54-92a1-7fdf01dac15c
+:OWNER: phf
+:END:
+
+- Objective :: Test if Claude Code understands specification precisely.
+- Result :: [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][Task]]
+
+*** DONE Plan to make Claude as a co-worker
+:PROPERTIES:
+:ID:       0a2774dd-11eb-4163-b00b-80582bc0fbd3
+:OWNER: phf
+:END:
+
+Consider the workflow:
+
+#+begin_src org
+Premises
+- Let =current system= represents the current system, for instance Debian 12.
+- Let =usr= represents the current user which is a sudoer on the current system.
+- The current system has Guix +v1.15 installed.
+- usr is positionned in a directory of a project, for instance =~/src/infra=.
+- usr has a Claude Code pro account installed and associated =~/.claude= directory.
+- usr executes: =$ ,ai-coworker ~/.claude=
+
+Conclusion
+- A Guix containers (=$ guix shell -C …=) rooted in the current directory has started,
+  (something like [[ref:b80c22c9-2eed-4eea-a469-136e7666ea96][env-start]]). A Claude Code instance which references =~/.claude=
+  starts in the container and starts working: it chooses a task in the backlog,
+  implements it, sends a PR to the relevant upstream directory (maybe github), reads
+  replies (if any) of the reviewer , waits for the PR to be merged, then chooses a
+  task and so on.
+#+end_src
+
+Then:
+1) Review the workflow, is it practical?
+2) If it is the case, then: write a plan to implement =,a-coworker= under
+   =$ROOT/doc/backlog/task/0a2774dd-11eb-4163-b00b-80582bc0fbd3/=
+4) Ask me clarifications if needed.
+
+*** DONE Introduce ,find-references and ,find-identifiers
+:PROPERTIES:
+:OWNER: phf
+:ID:       4087c364-89be-464f-b04d-2f194c7172e1
+:END:
+
+- Objective :: Introduce two actor commands: ,find-references <UUID> which uses rg to find
+  instances of [[ref:<UUID>]], and ,find-identifiers <UUID> to find instances of [[id:<UUID>]].
+- Reason :: Allow resolving OrgMode references from the command line.
+- Result :: [[ref:e307bf91-92a9-4c32-8a1e-b779733fb0f2][actor#,find-references]], [[ref:95fd3870-a36d-491b-9273-f578a5ea5d12][actor#,find-identifiers]]
 
 *** DONE Optimize CLAUDE.md
 :PROPERTIES:

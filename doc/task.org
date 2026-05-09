@@ -3,12 +3,28 @@
 :ID:       3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc
 :END:
 
-A =Task= describes what needs to be done and is used to track the associated work
-allowing to compare the result and its specification.
+=task : Task= represents something that needs to be done.
+- =task#id= a string representation of a UUIDv4.
+- =task#objective= is an Org Mode formatted content that describes what needs to be done.
+- =task#state= may be one of:
+  - TODO :: meaning that the task is not implemented and no-one is working on it.
+  - DOING :: meaning that the task is not implemented and someone is working on it.
+  - DONE :: meaning that the task is implemented.
+  - FAILED :: meaning that the task is not implemented for some reason described within
+    the task and no one is working on it.
+- =task#result= (optional) is an Org Mode formatted content that describes what has been done.
+- =task#test= (optional) is an Org Mode formatted content that describes a way to test that
+  =task#result= (optinal) satisfies =task#objective=.
+- =task#owner= (optional) is string that identifies who's responsible which defaults to =nobody=.
+- =task#why= (optional) is an Org Mode formatted content that describes why =task#objective= is worth pursuing.
+- =task#reason= (optional) is an Org Mode formatted content that describes why =task#objective= failed.
+- =task#data= (optional) a directory where where additional files may be associated
+  with the task, /e.g./ a result. If it exists, then it is: =$BACKLOG_DATA/task#id=.
+- =task#name= (optional) Additional Org Mode content that may be named =name= and
+  specific to =task=.
 
-** Example
-
-An example of a Task is:
+** Org Mode representation
+*** Example
 
 #+begin_src org
 ,* TODO Dark theme
@@ -27,46 +43,8 @@ Once logged in, the user may click on a dark them icon in the upper-right corner
 profile to activate it.
 #+end_src
 
-** State
+*** ■
 
-The =TODO= above is a =State=. A =State= may be one of:
-- TODO :: meaning that the task is not implemented and no-one is working on it.
-- DOING :: meaning that the task is not implemented and someone is working on it.
-- DONE :: meaning that the task is implemented.
-- FAILED :: meaning that the task is not implemented for some reason described within the task and no one is working on it.
-
-** Objective
-
-A task specifies at least an =Objective= which describes what should be accomplished.
-
-** Additional content
-
-Other content may be added depending on the task at hand, maybe: =Plan=, =Test=, =Why=,
-=Discussion=, =Result=, and so on.
-
-** Owner
-
-A task may have an owner which is referenced by its identifier. =nobody= means that
-no-one is the owner.
-
-** Structure
-
-So, the structure of a Task may be viewed as follows:
-
-|-----------+---------+--------------------------------------|
-| Property  | Type    | Example                              |
-|-----------+---------+--------------------------------------|
-| name      | String  | Dark theme                           |
-| id        | UUIDv4  | 70b6d0d4-20b1-44bd-ba93-d793339d6a3d |
-| state     | State   | TODO                                 |
-| owner     | OwnerId | nobody                               |
-| Objective | Section | see above.                           |
-| …         | Section | …                                    |
-|-----------+---------+--------------------------------------|
-
-** Assign a task to someone
-
-For Alice to assign Bob to a task, it is enough for Alice to fork the repository, set
-Bob as the owner of the task, /i.e./ set the property =:OWNER:= to =bob= or whatever
-identifier is used by Bob and its state to =DOING=, and send a PR. Most likely, Bob
-will assign himself to tasks.
+The general Org Mode representation just needs a section to be present with the
+appropriate id and owner: parsing the various properties should be obvious because of
+the use of sections or other formatting options offered by org-mode.
