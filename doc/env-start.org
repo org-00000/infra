@@ -27,8 +27,8 @@ Conclusion
   - Guix daemon access to share build capabilities with the host,
   - read access to /etc/guix to sign builds,
   - access to the underlying ssh agent in order to push commits to the remote repository,
-  - /tmp is whared with the host,
-  - can lunch graphical applications (Wayland),
+  - /tmp is shared with the host,
+  - can launch graphical applications (Wayland),
   - Host Guix archive keys are accessible in order to send builds to external resources /e.g./ VPS.
   - Host SSH agent can be used in order to connect to external resources.
 - A set of packages are installed.

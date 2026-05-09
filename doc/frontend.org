@@ -4,7 +4,7 @@
 :END:
 
 Represents a program that executes in the client's browser which offers a GUI as long
-as the backend represented by [[ref:acb3d22f-5b93-4e95-b73c-f1715523877e][url]] satifies [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][this contract]].
+as the backend represented by [[ref:acb3d22f-5b93-4e95-b73c-f1715523877e][url]] satisfies [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][this contract]].
 
 ** frontend#dir
 :PROPERTIES:
@@ -40,7 +40,7 @@ Premises
 
 Conclusion
 - url is an URL of a program ; /e.g./ "http://localhost:4000/api".
-- This program is supposed to statisfy [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][this contract]].
+- This program is supposed to satisfy [[ref:e58ffb29-988b-4423-a5d7-2d5c41b58ff1][this contract]].
 
 ** frontend#fetch
 :PROPERTIES:

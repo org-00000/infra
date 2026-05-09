@@ -3,7 +3,7 @@
 :ID:       631ab476-0770-4049-94df-32e7c3197a0c
 :END:
 
-Represents an approximation of a production operating system intented to be deployed
+Represents an approximation of a production operating system intended to be deployed
 locally for testing purposes.
 
 Premises

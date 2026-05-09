@@ -5,7 +5,7 @@
 
 The term =application= represents the program we are developing. It can be viewed as
 [[ref:4c7a1158-f7d3-446c-a147-9603a1b61db6][frontend]] that executes in the client browser which makes requests to a [[ref:41190386-599d-4048-9b07-278ccbf2c785][backend]]. The
-requests an associated replies satisfy a [[ref:2bb30a99-0728-42e5-98a1-43cf31509420][contract]].
+requests and associated replies satisfy a [[ref:2bb30a99-0728-42e5-98a1-43cf31509420][contract]].
 
 ** application#frontend
 :PROPERTIES:

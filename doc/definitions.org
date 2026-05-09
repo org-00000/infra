@@ -96,7 +96,7 @@ To build an [[ref:be4a5e39-7ec4-43ed-9d96-376db49ce782][OS]] that offers a Postg
 For a process "proc" owned by a local user named "alice" to use "db", we can use [[https://www.postgresql.org/docs/current/auth-peer.html][peer
 authentication]]. When "proc" tries to connect to "db", the following occurs:
 
-1. =psql -U postgres= which means: "Someone pretending to be Alice requests a connection to the database and act as the role postegres"
+1. =psql -U postgres= which means: "Someone pretending to be Alice requests a connection to the database and acts as the role postgres"
 2. DB asks the OS /who/ is trying to connect. Namely "alice".
 3. DB looks at [[https://www.postgresql.org/docs/18/auth-pg-hba-conf.html][pg_hba.conf]] and determines which authentication method applies. We assume: =map=alicemap=.
 4. DB looks at [[https://www.postgresql.org/docs/current/auth-username-maps.html][pg_ident.conf]] and determines to which PG user "alice" should be identified with. We assume: =postgres=.
@@ -176,7 +176,7 @@ asks the kernel (via a system call) to send it back over the network.
 Pushing the abstraction to users only, we may simplify our understanding as follows:
 
 1. A client on the internet sends an HTTP request "req" to =domain.com=.
-2. The network card send a notification to Root.
+2. The network card sends a notification to Root.
 3. Root may send req to Alice; we assume it is the case.
 4. Alice reads req, computes a reply, and asks Root to send it.
 5. Root sends the reply using its network card.
@@ -582,7 +582,7 @@ that can be deployed to using ~guix deploy …~.
    2. Nuremberg
    3. Debian 12
    4. IPv4 & IPv6
-   5. SSH key choosen so that can be connected as root
+   5. SSH key chosen so that it can be connected as root
    6. Attach a volume (/dev/sdb)
    7. i : ℕ, name = deployment-target-i
    8. ip : IPv4
