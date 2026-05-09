@@ -85,6 +85,14 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve the =TODO References= heading in =doc/contributing.org=: add the reference to ZeroMQ (Pieter Hintjens) and any other relevant works.
 
+*** DONE Introduce the Actor Model
+
+- Objective :: Introduce the Actor Model.
+- Reason :: We want to write the specification first then generate Elixir/Erlang
+  code: so we need a language from which our intent is expressed and that can be used
+  by AIs to generate the relevante implementation.
+- Result :: [[ref:d1b5724d-434c-40a0-86e9-dfc81012ae43][Actor Model]]
+
 *** DONE Add reference as a bib file
 :PROPERTIES:
 :ID: 14b5179e-533e-433d-8f08-a5dd23e05660
