@@ -1,5 +1,9 @@
-#+ID: 0493fd15-8aeb-45cb-b8d9-2046ccfab2da
 #+STARTUP: overview
+
+* README
+:PROPERTIES:
+:ID: 0493fd15-8aeb-45cb-b8d9-2046ccfab2da
+:END:
 
 Start the development environment with:
 
@@ -9,7 +13,7 @@ Start the development environment with:
 
 Once started, an editor opens this very file.
 
-* Editor's basic commands
+** Editor's basic commands
 
 Its basic commands are:
 - Move the point using the arrows.
@@ -21,25 +25,25 @@ Its basic commands are:
 - Quit the editor using C-x C-c.
 - It means: press on <control> and "x", then: press on <control> and "c".
 
-* Specifications and programs
+** Specifications and programs
 
 To understand /what/ ~./bin/env-start~ is supposed to do, you may consult its /spec/, /i.e./
 /specification/, which is referenced from its source code. See: [[ref:b80c22c9-2eed-4eea-a469-136e7666ea96]]. To understand
 /how/ it does what it is supposed to do, read the source code.
 
-* The application
+** The application
 
 The application is described here: [[ref:91681523-bbeb-4ee6-b795-c13752d447d0][application]].
 
-* Contributing
+** Contributing
 
 To contribute, see: [[ref:5513764b-8595-4e2d-bcf9-8e8214ee901b][fork-pr]].
 
-* Adding a specification
+** Adding a specification
 
 To add a specification, see: [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]], then add one under [[file:doc/][doc/]].
 
-* Tooling
+** Tooling
 
 Many functionalities are available from the command line. They are prefixed with ~,~ so
 you can list them using ~<tab>~ as Bash will try to complete and list them as a

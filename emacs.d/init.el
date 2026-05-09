@@ -540,3 +540,22 @@ Height is set to the full usable monitor height."
 (add-hook 'org-mode-hook #'lar-auto-reload)
 (add-hook 'prog-mode-hook #'lar-mode)
 (add-hook 'prog-mode-hook #'lar-auto-reload)
+
+;; org-id: make org-id-open resolve IDs across all doc/ files without
+;; requiring the user to visit them first.
+(with-eval-after-load 'org-id
+  (setq org-id-track-globally t)
+  (setq org-id-extra-files
+        (when (file-directory-p (expand-file-name "doc" this-root))
+          (directory-files-recursively
+           (expand-file-name "doc" this-root) "\\.org\\'"))))
+
+;; Start Emacs server so emacsclient (and node clicks in doc-graph-view.py)
+;; can reuse this session. The socket lives in emacs.d/run/ so it stays
+;; inside the container and never conflicts with a host Emacs server.
+(require 'server)
+(setq server-socket-dir (file-name-directory (getenv "EMACSD_SOCKET")))
+(make-directory server-socket-dir t)
+(set-file-modes server-socket-dir #o700)
+(unless (server-running-p)
+  (server-start))

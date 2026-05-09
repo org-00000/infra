@@ -11,7 +11,17 @@ source $ROOT/etc/bash-dev-profile
 
 alias ls='ls -p --color=auto'
 alias ll='ls -l'
-alias emacs="$EDITOR"
+
+# Use an existing Emacs server if one is running; otherwise start a new
+# Emacs instance (which will itself start a server via init.el).
+function _editor() {
+  if emacsclient --socket-name="$EMACSD_SOCKET" -e '()' 2>/dev/null; then
+    emacsclient --socket-name="$EMACSD_SOCKET" -c "$@"
+  else
+    emacs --init-dir "$EMACSD" "$@" &
+  fi
+}
+alias emacs='_editor'
 
 PS1='\u@\h \w${GUIX_ENVIRONMENT:+ [env]}\$ '
 

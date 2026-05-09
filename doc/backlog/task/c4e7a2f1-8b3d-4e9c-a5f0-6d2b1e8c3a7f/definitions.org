@@ -1,0 +1,68 @@
+* doc-graph Definitions
+:PROPERTIES:
+:ID: e5f2a1b7-3c8d-4e9f-b0a6-2d4c6e8f1b3a
+:END:
+
+Refined formal definitions for the doc-graph tool, as agreed at the end of the session
+on 2026-05-09. These are the input to step 1 (natural deduction) of the methodology.
+
+** Agreed definitions
+
+1. UUID :≡ String that represents a UUIDv4
+2. Name :≡ Human readable string associated to a UUID, e.g. name of a section with an :ID: property
+3. Content :≡ OrgMode string
+4. Level :≡ ℕ — number of =*= in an OrgMode heading
+5. Identifier :≡ =:ID: uuid= | =[[id:uuid]]= | =[[id:uuid][name]]=
+6. Reference :≡ =[[ref:uuid]]= | =[[ref:uuid][name]]=
+7. Node :≡ Name × UUID × Content
+8. identifier->node : Identifier → Node :≡ id ↦ match id
+   - =:ID: uuid= ↦ =<heading, uuid, content>= where heading and content are those of the enclosing section
+   - =[[id:uuid][name]]= ↦ =<name, uuid, "">=
+   - =[[id:uuid]]= ↦ =<"", uuid, "">=
+9. Section :≡ Level × Name × Option(UUID) × List(Section) — a parsed OrgMode section: depth, heading name, optional :ID:, ordered child sections
+10. ownRefs(s : Section) : Set(UUID) — UUIDs of all References found in s's body, excluding the content of any child section
+11. Edge :≡ UUID × UUID — resolved to Node × Node via the nodes set at the graph level
+12. File :≡ { README.org } ∪ { f | f ∈ $DOC }
+13. Graph :≡ Set(Node) × Set(Edge)
+14. File#sections : File → List(Section) — parses f into a top-level list of sections
+15. section#graph(s : Section, parent_id : Option(UUID)) : Graph :≡
+    - own_id    :≡ s.uuid if s.uuid ≠ none, else parent_id
+    - own_node  :≡ { identifier->node(:ID: s.uuid) } if s.uuid ≠ none, else {}
+    - implicit  :≡ { <parent_id, s.uuid> } if parent_id ≠ none ∧ s.uuid ≠ none, else {}
+    - ref_edges :≡ { <own_id, ref> | ref ∈ ownRefs(s) } if own_id ≠ none, else {}
+    - children  :≡ ⋃{ section#graph(c, own_id) | c ∈ s.children }
+    - nodes :≡ own_node ∪ children.nodes
+    - edges :≡ implicit ∪ ref_edges ∪ children.edges
+    - =<nodes, edges>=
+16. File#graph : File → Graph :≡ f ↦ ⋃{ section#graph(s, none) | s ∈ File#sections(f) }
+17. File#nodes : File → Set(Node) :≡ f ↦ File#graph(f).nodes
+18. File#edges : File → Set(Edge) :≡ f ↦ File#graph(f).edges
+19. nodes : Set(Node) :≡ ⋃{ File#nodes(f) | f ∈ File }
+20. select : Edge → Boolean :≡ =<start, end>= ↦ start ∈ nodes ∧ end ∈ nodes
+21. edges : Set(Edge) :≡ ⋃{ { e ∈ File#edges(f) | select(e) } | f ∈ File }
+22. graph : Graph :≡ =<nodes, edges>=
+23. Path(a, z) :≡ Set of paths in graph connecting a, z ∈ nodes, no matter the direction
+24. PathToReadme(a) :≡ ⋃{ Path(a, n) | n ∈ File#nodes(README.org) }
+25. readme-nodes : Set(Node) :≡ { node ∈ nodes | node ∈ File#nodes(README.org) ∨ PathToReadme(node) ≠ {} }
+26. readme-edges : Set(Edge) :≡ { =<start, end>= ∈ edges | start ∈ readme-nodes ∧ end ∈ readme-nodes }
+27. readme : Graph :≡ =<readme-nodes, readme-edges>=
+28. =,doc-graph= displays graph
+29. =,doc-graph defs= displays readme
+30. =,doc-graph tasks= displays tasks
+
+where:
+- backlog :≡ $DOC/backlog.org
+- task-nodes :≡ { n ∈ nodes | n ∈ File#nodes(backlog) }
+- task-edges :≡ { =<s, e>= ∈ edges | s ∈ task-nodes ∧ e ∈ task-nodes }
+- tasks :≡ =<task-nodes, task-edges>=
+
+** Open questions
+
+- Definition 11 uses UUID × UUID for Edge internally; it is resolved to Node × Node
+  via the =nodes= set. The exact resolution mechanism (and what happens when a UUID has
+  no corresponding node) should be made precise in step 1 (natural deduction).
+- Definition 15 (=section#graph=) uses sets so duplicates are excluded by construction.
+  The current Python implementation uses lists and does not deduplicate — this is the
+  known bug to fix.
+- =ownRefs(s)= is defined conceptually but not yet given a natural deduction rule.
+  This is the primary target for step 1.

@@ -96,6 +96,7 @@ export HOST_ETC_GUIX="/etc/guix"
 ##########
 
 export EMACSD="$ROOT/emacs.d"
+export EMACSD_SOCKET="$EMACSD/run/server"
 export EDITOR="emacs --init-dir $EMACSD"
 
 ############

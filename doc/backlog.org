@@ -7,6 +7,39 @@ A backlog is a list of [[ref:3427d8a4-4fc0-4d98-a8f7-59ac1399a9dc][tasks]] organ
 we know what needs to be done, and who works on what.
 
 ** Tasks
+*** TODO Integrate formal development methodology into CLAUDE.md
+:PROPERTIES:
+:ID:       d8f3b1e5-2a7c-4f9e-b4d0-3c6a1f8b2e5d
+:OWNER:    phf
+:END:
+
+**** Objective
+
+The formal development methodology agreed during the doc-graph session (natural
+deduction → pseudo algorithm → review → tests → implementation) should be documented
+in =CLAUDE.md= so that it is applied by default for non-trivial algorithmic tasks.
+
+**** Why
+
+Without guidance in =CLAUDE.md=, Claude Code defaults to iterative trial-and-error
+which drifts from the formal spec and produces unverified implementations.
+
+**** Plan
+
+1. Read =doc/backlog/task/c4e7a2f1-8b3d-4e9c-a5f0-6d2b1e8c3a7f/methodology.org=.
+2. Decide where in =CLAUDE.md= the methodology fits (likely under a new =## Algorithm
+   development= section, or as an extension of the existing =## Conventions= section).
+3. Write a concise summary of the 5-step methodology in =CLAUDE.md=.
+4. Link to =methodology.org= for the full description.
+
+*** TODO Claude Code executes in its container
+:PROPERTIES:
+:ID: f7dc917f-59de-43a5-bb9a-8b676d734965
+:OWNER: phf
+:END:
+
+- see: [[ref:0a2774dd-11eb-4163-b00b-80582bc0fbd3][Plan to make Claude as a co-worker]]
+
 *** TODO Restrict CORS to specific origin in production
 :PROPERTIES:
 :OWNER: nobody
@@ -25,6 +58,44 @@ we know what needs to be done, and who works on what.
 
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
+
+*** FAILED doc-graph
+:PROPERTIES:
+:ID:       c4e7a2f1-8b3d-4e9c-a5f0-6d2b1e8c3a7f
+:OWNER:    phf
+:END:
+
+**** Objective
+
+Build a complete, formally correct [[ref:a8f3c2e1-5d7b-4f9a-b6c4-1e8d3b0a7f2e][doc-graph]] tool:
+- Parse OrgMode files under =$ROOT/doc= and =README.org=.
+- Build a directed graph using section hierarchy (implicit parent→child edges) and
+  explicit =[[ref:uuid]]= references, attributing each reference to the nearest ancestor
+  section with an =:ID:=.
+- Display the graph with xdot; clicking a node opens it in Emacs via =emacsclient=.
+- Support =defs= (nodes connected to README.org) and =tasks= (backlog nodes) filters.
+- Implementation derived from natural deduction rules via the formal methodology.
+
+**** Reason
+
+The tool partially works but two known issues remain unresolved:
+
+1. *Duplicate edges*: the implementation uses lists, not sets; the same edge can appear
+   multiple times in the DOT output.
+2. *Algorithm not formally derived*: =scan_file= was written iteratively without natural
+   deduction rules or pseudo-language tests; correctness is unverified.
+
+The session ended when the methodology for addressing these was agreed upon but not yet
+applied. See task#data for full state, definitions, and the agreed methodology.
+
+**** Result
+
+- =bin/doc-graph.py= — graph generator (DOT output).
+- =bin/doc-graph-view.py= — xdot viewer with node-click → Emacs integration.
+- =bin/,doc-graph= symlink; =bin/actor= handler sourcing xdot env vars.
+- =doc/doc-graph.org= — specification.
+- =EMACSD_SOCKET= exported from =etc/bash-dev-profile=; used in =etc/bash-dev-session=
+  and =emacs.d/init.el= to isolate the Emacs server socket inside the container.
 
 *** DONE frontend-fetch refined
 :PROPERTIES:

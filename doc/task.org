@@ -20,6 +20,10 @@
 - =task#reason= (optional) is an Org Mode formatted content that describes why =task#objective= failed.
 - =task#data= (optional) a directory where where additional files may be associated
   with the task, /e.g./ a result. If it exists, then it is: =$BACKLOG_DATA/task#id=.
+- =task#lifecycle= rule: if =task#state= is =FAILED=, only the task entry itself and its
+  =task#data= directory may be modified. No other files in the codebase may be changed as
+  part of a failed task. Any work-in-progress changes to other files must be reverted
+  before marking a task FAILED.
 - =task#name= (optional) Additional Org Mode content that may be named =name= and
   specific to =task=.
 

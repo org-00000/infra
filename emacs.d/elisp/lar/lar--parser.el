@@ -38,39 +38,40 @@
    (with-peg-rules (lar--link-grammar)
      (peg-run (peg link)))))
 
+;; TODO(975z): log the errors instead of letting them crash execution
 (defun lar--parser (msg)
   "Actor for parsing links and generating regexes."
   (pcase msg
     (`(:links ,buffer)
-     (lar--buffer #'lar--Check buffer)
-     (with-current-buffer buffer
-       (let (links)
-         (save-excursion
-           (goto-char (point-min))
-           (while (not (eobp))
-             (pcase (lar--parser-peg-parse)
-               (`(,start ,tag ,id ,end)
-                (push
-                 (lar--mk #'lar--Link (buffer-file-name) start end tag id "")
-                 links))
-               (`(,start ,tag ,id ,name ,end)
-                (push
-                 (lar--mk #'lar--Link (buffer-file-name) start end tag id name)
-                 links))
-               (_ (forward-char 1)))))
-         (nreverse links))))
+      (lar--buffer #'lar--Check buffer)
+      (with-current-buffer buffer
+        (let (links)
+          (save-excursion
+            (goto-char (point-min))
+            (while (not (eobp))
+              (pcase (lar--parser-peg-parse)
+                (`(,start ,tag ,id ,end)
+                  (push
+                    (lar--mk #'lar--Link (buffer-file-name) start end tag id "")
+                    links))
+                (`(,start ,tag ,id ,name ,end)
+                  (push
+                    (lar--mk #'lar--Link (buffer-file-name) start end tag id name)
+                    links))
+                (_ (forward-char 1)))))
+          (nreverse links))))
 
     (`(:regex ,tag ,id)
-     (lar--check #'lar--Tag tag)
-     (lar--string #'lar--Check id)
-     (let ((tag-str (lar--string #'lar--Tag tag)))
-       (rxt-elisp-to-pcre
-        (rx-to-string
-         `(or
-           (seq bol "#+" (or ,tag-str ,(upcase tag-str)) ":" (* space) ,id)
-           (seq bol ":" (or ,tag-str ,(upcase tag-str)) ":" (* space) ,id)
-           (seq "[[" (or ,tag-str ,(upcase tag-str)) ":" ,id "]" (opt "[" (* (not (any "]"))) "]") "]"))
-         t))))
+      (lar--check #'lar--Tag tag)
+      (lar--string #'lar--Check id)
+      (let ((tag-str (lar--string #'lar--Tag tag)))
+        (rxt-elisp-to-pcre
+          (rx-to-string
+            `(or
+               (seq bol "#+" (or ,tag-str ,(upcase tag-str)) ":" (* space) ,id)
+               (seq bol ":" (or ,tag-str ,(upcase tag-str)) ":" (* space) ,id)
+               (seq "[[" (or ,tag-str ,(upcase tag-str)) ":" ,id "]" (opt "[" (* (not (any "]"))) "]") "]"))
+            t))))
 
     (_ (lar--unexpected #'lar--Error msg))))
 
