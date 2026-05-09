@@ -37,6 +37,16 @@ we know what needs to be done, and who works on what.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
+*** DONE ,synchronize-with-upstream refined
+:PROPERTIES:
+:OWNER: phf
+:ID:       11f426b5-a949-41b7-bf21-5621bf262ee0
+:END:
+
+- Objective :: unless -f, refuse to execute if the current directory is not clean.
+- Reason :: Risk of data loss.
+- Result :: [[ref:61e5914d-eb8d-46cf-8b7c-31b68079c83e]]
+
 *** DONE Backlog is cleaned
 :PROPERTIES:
 :OWNER: phf

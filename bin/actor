@@ -279,6 +279,10 @@ elif [[ "$MSG" == ",synchronize-with-upstream" ]]; then
   fi
 
   if [[ "$force" == "false" ]]; then
+    if [[ -n "$(git status --porcelain)" ]]; then
+      echo "ERROR | The current directory is not clean"
+      exit 1
+    fi
     echo "WARNING | the objective is to have an exact copy of upstream"
     echo "WARNING | this operation will delete any local commits"
     echo "WARNING | as well as on origin/master that are not on upstream/master"
