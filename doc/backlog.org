@@ -29,13 +29,21 @@ npm error enoent
 npm error A complete log of this run can be found in: /home/phf/.npm/_logs/2026-05-08T17_47_51_165Z-debug-0.log
 #+end_example
 
-*** TODO SquidLink integration
+*** FAILED SquidLink integration
 :PROPERTIES:
 :ID: 57a32492-ef97-44d8-9c34-d3d6ea8a97a3
 :OWNER: phf
 :END:
 
-https://github.com/TheYoungYankis/link-iliade-hub
+Premises
+- https://github.com/TheYoungYankis/link-iliade-hub
+- https://windsurf.com/
+- infra
+
+Conclusion
+- Automatic integration failed.
+- Probably better to integrate end-to-end, adding functionalities in steps, actor
+  after actor.
 
 *** DONE Fix app-start
 :PROPERTIES:
