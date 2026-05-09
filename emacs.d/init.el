@@ -4,6 +4,7 @@
 ;;; Each comment states *what* is true after the form below it runs.
 ;;; The file is linear: every section may rely on what came before it.
 
+(require 'project)
 (setq this-root (project-root (project-current)))
 
 ;; Find additional elisp files if needed.
@@ -19,6 +20,9 @@
 
 ;; The audible/visible bell is silenced entirely.
 (setq ring-bell-function 'ignore)
+
+;; Multicursor editing
+(global-set-key (kbd "M-m") #'string-rectangle)
 
 ;; The toolbar, menu bar, and scroll bar are hidden, leaving only the buffer.
 (tool-bar-mode -1)

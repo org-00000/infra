@@ -13,7 +13,9 @@ we know what needs to be done, and who works on what.
 :ID:       9cb912ad-32a5-45d8-ab77-166adffde37f
 :END:
 
-- Objective :≡ Resolve =TODO(de80)= in =backend/lib/backend_web/endpoint.ex=: enable the restrictive CORS plug in production and disable the wildcard =origin: "*"= configuration used in dev.
+- Objective :≡ Resolve =TODO(de80)= in =backend/lib/backend_web/endpoint.ex=: enable the
+  restrictive CORS plug in production and disable the wildcard =origin: "*"=
+  configuration used in dev.
 
 *** TODO Determine if port field is needed in application-conf
 :PROPERTIES:
