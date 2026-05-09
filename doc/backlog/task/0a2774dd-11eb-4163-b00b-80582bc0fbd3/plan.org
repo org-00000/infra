@@ -1,0 +1,236 @@
+#+STARTUP: overview
+
+* ,ai-coworker — Implementation Plan
+:PROPERTIES:
+:ID:       9f3b2a1d-8c4e-4f7a-b5d0-1e6f2a3b4c5d
+:END:
+
+** Current state
+
+The following already exists:
+
+- =bin/claude-coworker= :: Sets up the =claude= system user and starts
+  =claude-coworker-watcher= as a root systemd unit. ACL sync from
+  =owner= to =claude= over =workdir= is operational.
+- =bin/claude-coworker-watcher= :: Watches =workdir= with =inotifywait=
+  and mirrors =owner= permissions to =claude= via =setfacl=.
+- =doc/claude-coworker.org= :: Specification with four TODOs blocking
+  the final step (■): running the Guix container as =claude=.
+
+The final step (■) in the spec reads:
+
+#+begin_example
+./claude-coworker owner ai workdir
+cd $workdir
+sudo -u $ai env-start
+#+end_example
+
+=,ai-coworker= wraps this into a single command that, instead of
+dropping into an interactive shell, runs Claude Code non-interactively
+in a loop over backlog tasks.
+
+** Design decisions
+
+| Question            | Decision                                            |
+|---------------------+-----------------------------------------------------|
+| Task ownership      | =OWNER: claude= in =doc/backlog.org=                |
+| After PR is sent    | Immediately pick next task (parallel branches)      |
+| Session persistence | systemd user unit (=claude-ai-coworker.service=)    |
+
+** Security model
+
+=--dangerously-skip-permissions= bypasses Claude Code's own permission
+prompts — it does /not/ bypass OS-level ACLs or the container's
+filesystem namespace.  Three layers bound the blast radius:
+
+1. *Guix container (-C)*: Only explicitly shared paths are visible in
+   the container.  What =env-start= shares: current directory (=ROOT=),
+   =~/.claude=, =~/.claude.json=, SSH auth socket, npm global dir.
+   System files, other users' home directories, and anything not listed
+   are simply absent from the container's view.
+
+2. *=claude= system user*: A nologin user with no sudo.  Even if Claude
+   Code runs a shell command, that command runs as =claude=, limited by
+   its ACL-granted permissions.  No privilege escalation is possible.
+
+3. *ACL watcher*: =claude='s effective permissions over =workdir= track
+   =owner='s permissions (via =claude-coworker-watcher=). Claude
+   cannot access anything =owner= cannot access.
+
+Consequence: =--dangerously-skip-permissions= inside this container is
+acceptable because the container is already a restricted environment.
+The permissive flag trades some defence-in-depth (Claude Code's own
+prompt layer) for full autonomy, while the three layers above prevent
+system-level damage.
+
+Optional tightening: configure =allowedTools= in =.claude/settings.json=
+to enumerate exactly the tools Claude needs (=Bash=, =Read=, =Edit=,
+=Write=). Tools outside the list will still be blocked even with
+=--dangerously-skip-permissions=.  Use the =fewer-permission-prompts=
+skill on real Claude transcripts to build the initial list.
+
+** Gaps to close
+
+*** G1 — System prerequisites (one-time, per host)
+
+Already documented as TODOs in =doc/claude-coworker.org=; must be
+completed before the container can run as =claude=.
+
+1. UID/GID subordinate range for =phf= in =/etc/subuid= / =/etc/subgid=
+   (required by =guix shell -C= for user-namespace mapping).
+2. XDG runtime directory for =claude=: =/run/user/${CLAUDE_UID}=,
+   persisted via a =systemd-tmpfiles.d= rule.
+3. =sudoers= rule: =phf= may invoke =guix= (exact path) as =claude=
+   without a password.
+4. *(new)* GitHub CLI credentials for =claude=: expose =phf='s
+   =~/.config/gh/= read-only into the container and set
+   =GH_CONFIG_DIR= so =gh= finds it when running as =claude=.
+   Add this to =doc/claude-coworker.org=.
+
+*** G2 — Backlog convention: =OWNER: claude=
+
+Add =claude= as a valid owner value in =doc/task.org= with its
+semantics: a task that Claude picks up autonomously without human
+assignment.
+
+*** G3 — Autonomous prompt: =etc/ai-coworker-prompt.md=
+
+Read by Claude Code on each invocation (=-p= flag).  The prompt must:
+
+1. Read =doc/backlog.org=.
+2. Find the first TODO with =OWNER: claude=.
+3. If none is found: print a message and exit 0 (the outer loop retries
+   after a short delay).
+4. Otherwise: update the task's heading to =IN-PROGRESS=, then follow
+   =doc/fork-pr.org= through to =gh pr create=.
+5. After the PR is created: exit 0.  The outer loop immediately
+   re-invokes Claude for the next task on a fresh branch.
+
+*** G4 — Inner container script: =etc/ai-coworker-inner=
+
+Runs inside the Guix container (as =claude=).  Provides the retry loop:
+
+#+begin_src bash
+#!/usr/bin/env bash
+set -euo pipefail
+MAX_FAILURES=5
+failures=0
+while true; do
+  claude \
+    --dangerously-skip-permissions \
+    -p "$(cat "$ROOT/etc/ai-coworker-prompt.md")"
+  exit_code=$?
+  if [[ $exit_code -ne 0 ]]; then
+    failures=$((failures + 1))
+    echo "WARN | claude exited $exit_code (failure $failures/$MAX_FAILURES)"
+    if [[ $failures -ge $MAX_FAILURES ]]; then
+      echo "ERROR | too many consecutive failures, stopping"
+      exit 1
+    fi
+    sleep $((failures * 60))
+  else
+    failures=0
+  fi
+done
+#+end_src
+
+The exponential back-off (1 min, 2 min, …) avoids busy-spinning on
+persistent errors.  The service's =Restart=on-failure= restarts the
+whole process if the inner loop exits with 1.
+
+*** G5 — Container invocation wrapper: =bin/ai-coworker-container=
+
+Mirrors =env-start= but:
+
+- Invokes =guix time-machine ... shell -C= via =sudo -u claude=.
+- Replaces =bash --init-file "$DEV_SESSION" -i= with
+  =bash "$ROOT/etc/ai-coworker-inner"=.
+- Adds =--expose="$HOME/.config/gh"= and sets
+  =GH_CONFIG_DIR= / =HOME= for =claude= to appropriate values inside
+  the container.
+- Sets =TimeoutStartSec=infinity= equivalent via =systemd-run= flags
+  (guix build may take a long time on first run).
+
+*** G6 — systemd user unit: =etc/ai-coworker.service=
+
+Installed by =bin/ai-coworker= into =~/.config/systemd/user/=:
+
+#+begin_src ini
+[Unit]
+Description=Claude AI autonomous co-worker
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/src/infra
+ExecStart=%h/src/infra/bin/ai-coworker-container
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=default.target
+#+end_src
+
+Logs: =journalctl --user -u ai-coworker -f=
+
+*** G7 — PR review responder: timer units
+
+Two files installed alongside the main unit:
+
+=etc/ai-coworker-review.service=: runs Claude Code with
+=etc/ai-coworker-review-prompt.md= (check =gh pr list --author @me=
+for unresponded review comments; push a fixup commit and reply).
+
+=etc/ai-coworker-review.timer=:
+
+#+begin_src ini
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=30min
+
+[Install]
+WantedBy=timers.target
+#+end_src
+
+*** G8 — Top-level entry point: =bin/ai-coworker=
+
+Runs outside the container.  Usage: =,ai-coworker [claude_config_path]=
+(default: =$HOME/.claude=).
+
+Steps:
+1. Validate prerequisites (=guix=, =gh=, =setfacl=, =inotifywait=,
+   =systemctl=, =/etc/subuid= entry for =phf=, sudo rule for =claude=).
+2. Call =./claude-coworker phf claude "$(git rev-parse --show-toplevel)"=
+   if the watcher unit is not already active.
+3. Install =etc/ai-coworker.service= and review units into
+   =~/.config/systemd/user/=.
+4. =systemctl --user daemon-reload=.
+5. =systemctl --user enable --now ai-coworker.service=.
+6. =systemctl --user enable --now ai-coworker-review.timer=.
+7. Print status and log pointers.
+
+*** G9 — Symlink
+
+#+begin_src bash
+ln -sf ai-coworker bin/,ai-coworker
+#+end_src
+
+Direct symlink (not via =actor=) because this command runs outside the
+container.
+
+** Implementation sequence
+
+| # | Gap | Deliverable                                  |
+|---+-----+----------------------------------------------|
+| 1 | G2  | Update =doc/task.org=                        |
+| 2 | G1  | Add G1.4 to =doc/claude-coworker.org=        |
+| 3 | G3  | =etc/ai-coworker-prompt.md=                  |
+| 4 | G7  | =etc/ai-coworker-review-prompt.md=           |
+| 5 | G4  | =etc/ai-coworker-inner=                      |
+| 6 | G5  | =bin/ai-coworker-container=                  |
+| 7 | G6  | =etc/ai-coworker.service=                    |
+| 7 | G7  | =etc/ai-coworker-review.{service,timer}=     |
+| 8 | G8  | =bin/ai-coworker=                            |
+| 9 | G9  | =bin/,ai-coworker= symlink                   |
+|10 | G1  | Complete host prerequisites (documented)     |
