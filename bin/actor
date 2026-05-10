@@ -162,11 +162,29 @@ elif [[ "$MSG" == ",backend-iex-start" ]]; then
   cd "$BACKEND"
   iex --dbg pry -S mix phx.server
 
+elif [[ "$MSG" == ",contract-checker-start" ]]; then
+  # [[id:e1f2a3b4-c5d6-7890-ef12-345678901234]]
+  inside_container_check
+  cd "$CONTRACT_CHECKER"
+  mix deps.get
+  if [[ -f "$CONTRACT_CHECKER_PID" ]]; then
+    kill -- -"$(cat "$CONTRACT_CHECKER_PID")" 2>/dev/null || kill "$(cat "$CONTRACT_CHECKER_PID")" 2>/dev/null || true
+    rm -f "$CONTRACT_CHECKER_PID"
+    sleep 2
+  fi
+  BACKEND_URL="http://localhost:4000" \
+  CONTRACT_CHECKER_PORT="$CONTRACT_CHECKER_PORT" \
+  MIX_ENV=dev \
+    setsid mix phx.server &>/dev/null &
+  echo $! > "$CONTRACT_CHECKER_PID"
+  echo "INFO | Contract checker started on port $CONTRACT_CHECKER_PORT (pid $(cat "$CONTRACT_CHECKER_PID"))"
+
 elif [[ "$MSG" == ",app-start" ]]; then
   # [[ref:3a2b4174-ea2e-4ed2-97b3-23b562be59a2][Specification]]
   # [[id:51ade351-7413-4355-9e56-55d1166380b5]]
   inside_container_check
-  ,frontend-dist-mk "http://localhost:4000/api"
+  ,contract-checker-start
+  ,frontend-dist-mk "http://localhost:${CONTRACT_CHECKER_PORT}/api"
   cp -r "$FRONTEND_DIST/." "$BACKEND/priv/static/"
   ,backend-iex-start
 

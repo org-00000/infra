@@ -1,7 +1,7 @@
 defmodule Backend.Application do
-  @moduledoc """
-  [[id:b47fa002-6ace-46bd-8821-1fdd5838d939][Id]]
-  """
+  # See https://hexdocs.pm/elixir/Application.html
+  # for more information on OTP Applications
+  @moduledoc false
 
   use Application
 
@@ -12,15 +12,14 @@ defmodule Backend.Application do
       Backend.Repo,
       {DNSCluster, query: Application.get_env(:backend, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Backend.PubSub},
-      {Finch, name: Backend.Finch},
-
-      # [[id:af9ca75f-9047-4e0a-a76a-d71a07af880a]]
-      {Registry, keys: :unique, name: Backend.Registry},
-
-      # [[id:d229871a-95ee-4a49-8a40-44332fa8977d][Id]]
+      # Start a worker by calling: Backend.Worker.start_link(arg)
+      # {Backend.Worker, arg},
+      # Start to serve requests, typically the last entry
       BackendWeb.Endpoint
     ]
 
+    # See https://hexdocs.pm/elixir/Supervisor.html
+    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Backend.Supervisor]
     Supervisor.start_link(children, opts)
   end

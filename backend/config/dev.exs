@@ -3,7 +3,8 @@ import Config
 # Configure your database
 config :backend, Backend.Repo,
   username: "postgres",
-  socket_dir: System.get_env("DB_RUN") || raise("DB_RUN not set"),
+  hostname: "",
+  socket_dir: System.get_env("DB_RUN", "/tmp"),
   database: "backend_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
@@ -18,12 +19,11 @@ config :backend, Backend.Repo,
 config :backend, BackendWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  # [[id:d4a51e4e-d5a1-403c-940e-07f520fc531c]]
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "5pu/xSez821gmMY1DfpbYrynLn6e9Ijcj1eeclv753LgU1Qz+FjqOMU5aRrZwtH9",
+  secret_key_base: "nRLYxaYdmlwI8MgLvzIZCtMDS00C/7X3DrOCjZ8yQxXrRbFoHVblegNjIMZcf19l",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:backend, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:backend, ~w(--watch)]}
@@ -52,13 +52,18 @@ config :backend, BackendWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-# Watch static and templates for browser reloading.
+# Reload browser tabs when matching files change.
 config :backend, BackendWeb.Endpoint,
   live_reload: [
+    web_console_logger: true,
     patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/backend_web/(controllers|live|components)/.*(ex|heex)$"
+      # Static assets, except user uploads
+      ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$"E,
+      # Gettext translations
+      ~r"priv/gettext/.*\.po$"E,
+      # Router, Controllers, LiveViews and LiveComponents
+      ~r"lib/backend_web/router\.ex$"E,
+      ~r"lib/backend_web/(controllers|live|components)/.*\.(ex|heex)$"E
     ]
   ]
 
@@ -66,7 +71,7 @@ config :backend, BackendWeb.Endpoint,
 config :backend, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :default_formatter, format: "[$level] $message\n"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
@@ -76,8 +81,10 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view,
-  # Include HEEx debug annotations as HTML comments in rendered markup
+  # Include debug annotations and locations in rendered markup.
+  # Changing this configuration will require mix clean and a full recompile.
   debug_heex_annotations: true,
+  debug_attributes: true,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 

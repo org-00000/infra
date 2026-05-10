@@ -83,6 +83,7 @@
            "emacs-marginalia"
            "emacs-markdown-mode"
            "emacs-modus-themes"
+           "emacs-olivetti"
            "emacs-orderless"
            "emacs-org"
            "emacs-paredit"

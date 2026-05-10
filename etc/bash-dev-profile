@@ -235,3 +235,16 @@ export DOC="$ROOT/doc"
 
 export BACKLOG="$DOC/backlog.org"
 export BACKLOG_DATA="${BACKLOG%.org}"
+
+####################
+# Contract Checker #
+####################
+
+# [[ref:600c0600-1bc9-4c31-9fde-c0f1cb497a05][Specification]]
+export CONTRACT_CHECKER="$ROOT/contract_checker"
+
+# [[ref:a22f473d-5fd2-4430-b832-37984dd3097e][Specification]]
+export CONTRACT_CHECKER_DOC="$CONTRACT_CHECKER/doc"
+
+export CONTRACT_CHECKER_PORT=4001
+export CONTRACT_CHECKER_PID="$CONTRACT_CHECKER/contract_checker.pid"

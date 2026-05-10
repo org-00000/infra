@@ -1,0 +1,213 @@
+* Contract Checker
+:PROPERTIES:
+:ID:       89b903f8-bf96-4bdc-b54f-75ab13f363f0
+:END:
+
+** Origin and Context
+
+The concept was introduced by Armstrong in his 2002 ACM SIGPLAN Erlang Workshop
+paper, [[https://erlang.org/workshop/2002/Armstrong.pdf]["Getting Erlang to talk to the outside world"]] (Pittsburgh, PA, October 7,
+2002). The broader motivation was building reliable distributed systems composed
+of heterogeneous components — written in different languages, running on
+different OSes — that communicate by exchanging messages. Armstrong wanted a
+principled, language-neutral alternative to the XML/SOAP/WSDL stack, which he
+criticized as overly verbose and complex.
+
+** The Core Problem
+
+Client and server interaction should be regulated by some kind of contract that
+is independent of both the client and the server. If the client–server
+interaction fails, it should be evident by examining the contract which of the
+parts in the system has failed.
+
+The central engineering question: in a system of multiple black-box components,
+if the whole fails despite each component passing its individual tests, how do
+you isolate /which/ component violated the protocol?
+
+** The Architecture: Contract Checker as an Intermediary Process
+
+Between the components, Armstrong places an entity called a /contract checker/.
+The contract checker checks the legality of the flow of messages between the
+components. It is parameterised with a contract that specifies the ordering and
+types of the allowed message sequences between the client and the server.
+
+The contract is written using a simple non-deterministic finite state machine and
+a simple type language. It is modelled as a set of *four-tuples* of the form:
+
+#+BEGIN_EXAMPLE
+{Sin, Tin, Tout, Sout}
+#+END_EXAMPLE
+
+Meaning: if the server is in state ~Sin~ and receives a message of type ~Tin~,
+it may respond with a message of type ~Tout~ and transition to state ~Sout~.
+
+Operationally:
+
+- The checker assumes the server starts in state ~start~.
+- When the client sends a message ~X~, the checker verifies that rules exist
+  where ~S = Sin~ and ~typeof(X) = Tin~. If so, the client /follows the
+  contract/ and the message is forwarded. If not, the client has /broken the
+  contract/ and both parties are informed.
+- When the server responds with a ~{Msg, State}~ tuple, the checker validates it
+  against the allowed response set. If valid, ~Msg~ is sent to the client and
+  the global state is updated to ~State~.
+- In normal (compliant) operation, the checker is *completely transparent* — no
+  changes are made to messages; the only overhead is a slight timing difference.
+
+** The UBF Framework
+
+The contract checker is embedded in a broader framework Armstrong called *UBF
+(Universal Binary Format)*, with three distinct layers:
+
+| Layer    | Description                                                                  |
+|----------+------------------------------------------------------------------------------|
+| ~UBF(a)~ | Language-neutral data transport format (~≈~ well-formed XML)                 |
+| ~UBF(b)~ | Programming language for describing types and protocols ("protocol contract") |
+| ~UBF(c)~ | Meta-level protocol used between a UBF client and a UBF server               |
+
+~UBF(b)~ is roughly equivalent to Verified XML, XML-schemas, SOAP, and WSDL.
+The contract checker is implemented as an Erlang process (the "Contract Manager")
+on the server side. All data sent by both parties is verified by this process;
+any data violating the contract is rejected.
+
+See the [[https://ubf.github.io/ubf/ubf-user-guide.en.html][UBF 2.2 User's Guide]] and the (now unmaintained) [[https://github.com/ubf/ubf][ubf/ubf GitHub repository]]
+for the full specification and implementation.
+
+** Later Evolution: JSON Protocols (2009)
+
+Armstrong revisited the idea in 2009, recasting contracts over JSON messages on
+his blog ([[http://armstrongonsoftware.blogspot.com/2009/02/json-protocols-part-1.html]["JSON Protocols (part 1)"]]):
+
+#+BEGIN_QUOTE
+In 2002, Armstrong published a contract system called UBF for defining
+protocols. This scheme was never widely adopted — perhaps it was just too
+strange. He revised UBF and recast it in a form he called /JSON Protocols/ —
+since JSON is widely implemented, this method of describing protocols might be
+more acceptable.
+#+END_QUOTE
+
+In this formulation, the state machine syntax is explicit:
+
+#+BEGIN_EXAMPLE
+StateIn x MessageIn -> MessageOut x StateOut
+#+END_EXAMPLE
+
+Given the state of the finite machine and the next message, one can check whether
+the client and server are correctly responding to protocol messages as required
+by the specification. Each message has a data type specification that can easily
+be checked.
+
+** Key Properties
+
+| Property              | Description                                                              |
+|-----------------------+--------------------------------------------------------------------------|
+| Fault isolation       | Identifies /which/ party (client or server) broke the protocol           |
+| Language neutrality   | Contracts are independent of implementation language                     |
+| Runtime enforcement   | Checking is dynamic, at message-passing time                             |
+| FSM semantics         | Legal conversations are sequences accepted by a typed FSM                |
+| Transparency          | In compliant operation, the checker is invisible — zero semantic overhead |
+
+** Relationship to Other Ideas
+
+Armstrong's contract checker is a concrete, runtime instantiation of ideas
+adjacent to:
+
+- *Design by Contract* (Bertrand Meyer / Eiffel) — but applied to
+  /inter-process protocols/ rather than intra-module function calls.
+- *Session types* (Honda et al.) — a type-theoretic formalization of the same
+  intuition.
+- *Process algebras* (CSP, CCS) — the FSM formalism is essentially a subset of
+  these.
+
+The distinguishing feature is the /architectural placement/: the checker sits as
+an independent, observable intermediary between components, making protocol
+violations detectable and attributable at runtime without modifying either
+component.
+
+-----
+
+* OpenAPI as a Contract: Formal Correspondence
+
+** Mapping Armstrong's Schema onto OpenAPI
+
+An [[https://www.openapis.org/][OpenAPI specification]] provides exactly the information needed to instantiate
+Armstrong's schema:
+
+| Armstrong's element        | OpenAPI equivalent                                                          |
+|----------------------------+-----------------------------------------------------------------------------|
+| States ~Sin~, ~Sout~       | HTTP method + path (e.g. ~POST /orders~); stateless → single self-looping state |
+| Input type ~Tin~           | Request schema: path params, query params, headers, request body (JSON Schema) |
+| Output type ~Tout~         | Response schema: per status code, headers, response body (JSON Schema)      |
+| FSM transition relation    | Set of ~(method, path, requestSchema, statusCode, responseSchema)~ tuples   |
+
+The stateless nature of HTTP means the FSM is degenerate (a single state,
+self-looping on every operation), but the *type-checking* and *fault-attribution*
+dimensions are fully preserved.
+
+** A Concrete Implementation
+
+The contract checker is realised as a *validating reverse proxy* (or middleware),
+sitting between client and server:
+
+#+BEGIN_EXAMPLE
+Client → [Contract Checker] → Server
+               ↑
+         OpenAPI spec
+#+END_EXAMPLE
+
+*On each request:*
+1. Parse the incoming HTTP request.
+2. Match it to the corresponding OpenAPI ~path + method~ entry.
+3. Validate request parameters and body against the OpenAPI request schema.
+4. If *invalid* → reject; attribute violation to the *client*; return an error.
+5. If *valid* → forward to the server transparently.
+
+*On each response:*
+6. Validate the response body and status code against the OpenAPI response schema
+   for that operation.
+7. If *invalid* → attribute violation to the *server*; return an error to the client.
+8. If *valid* → forward to the client transparently.
+
+** Existing Tools Implementing This Pattern
+
+These tools are direct (if independently derived) implementations of Armstrong's idea:
+
+| Tool           | Description                                              | Link                                          |
+|----------------+----------------------------------------------------------+-----------------------------------------------|
+| Stoplight Prism | Validating proxy and mock server from OpenAPI specs     | [[https://stoplight.io/open-source/prism][stoplight.io/open-source/prism]]                |
+| Schemathesis   | Property-based testing that validates against OpenAPI    | [[https://schemathesis.io][schemathesis.io]]                               |
+| openapi-validator-middleware | Express/Koa middleware for request/response validation | [[https://github.com/PayU/openapi-validator-middleware][github.com/PayU/openapi-validator-middleware]] |
+
+** Caveats and Limitations
+
+Two honest limitations must be stated precisely:
+
+*** 1. Statefulness is not captured
+
+Armstrong's full FSM model tracks /sequences/ of messages across time. OpenAPI
+describes individual request/response pairs in isolation. A contract checker
+built on OpenAPI *cannot* verify ordering constraints such as:
+
+#+BEGIN_QUOTE
+"A ~DELETE /resource/{id}~ must be preceded by a successful ~GET /resource/{id}~."
+#+END_QUOTE
+
+Such properties are outside OpenAPI's expressive power. Capturing them would
+require an explicit FSM overlay (as in UBF(b)) or a session-type system.
+
+*** 2. Semantic correctness is not captured
+
+Type and schema validity is /necessary but not sufficient/ for protocol
+correctness. A response can be schema-valid yet semantically wrong (e.g.,
+returning the wrong resource). Armstrong's checker has the same limitation: it
+enforces structure, not meaning. This is an inherent bound of any type-based
+contract system.
+
+** Conclusion
+
+Given an OpenAPI specification as the contract, a valid implementation of
+Armstrong's contract checker exists — concretely, a validating proxy that
+enforces request and response schemas at runtime and attributes violations to the
+appropriate party. The correspondence is not accidental: OpenAPI and UBF(b)
+solve the same fundamental problem (typed protocol description), with OpenAPI
+restricted to the stateless HTTP request/response model.

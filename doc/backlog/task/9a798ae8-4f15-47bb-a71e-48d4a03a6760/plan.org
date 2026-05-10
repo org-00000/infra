@@ -1,0 +1,129 @@
+* Plan design
+:PROPERTIES:
+:ID:       1c6ccc0d-a57a-4083-8020-6ffac7599aa2
+:END:
+
+** Objective
+:PROPERTIES:
+:ID:       5dd0c850-21a8-421d-8d66-f3ee8cb92982
+:END:
+
+Define =plan= :≡ [[ref:bedb11b5-31bc-46c8-81bb-6a5617ebbd92][Plan]] such that:
+
+Premises
+- url : URL to a Lovable-generated frontend git repository
+  - /e.g./ git@github.com:phf-1/my-lovely-tasks.git
+- contract :≡ $FRONTEND_OPENAPI — an OpenAPI 3.x spec shipped with the frontend,
+  listing every endpoint the frontend calls and the expected request/response shapes.
+- The frontend uses =VITE_API_BASE_URL= to configure the backend base URL at build time.
+- $BACKEND : directory of a Phoenix/Elixir application configured to use PostgreSQL.
+- =plan= is followed by Claude; developers are used only as a last resort.
+- [[ref:51ade351-7413-4355-9e56-55d1166380b5][,app-start]] is executed at the end.
+
+Conclusion
+- The backend serves every request described in =contract= and implements the expected
+  behaviour.
+- Developer time used for the integration has been minimized.
+
+** Plan
+:PROPERTIES:
+:ID:       bedb11b5-31bc-46c8-81bb-6a5617ebbd92
+:END:
+
+1. Fetch the frontend
+   - If $FRONTEND already contains a clone of url, run =,frontend-fetch url= anyway (it
+     will just pull).
+
+2. Read the contract
+   - Read =$FRONTEND_OPENAPI=.
+   - Extract all =(method, path, auth-required)= triples.
+
+3. Contract Checker
+   1. [[id:600c0600-1bc9-4c31-9fde-c0f1cb497a05][CONTRACT_CHECKER]] :≡ A path to a directory where the contract checker code lives.
+
+   2. If $CONTRACT_CHECKER is not defined, initialize a [[id:89b903f8-bf96-4bdc-b54f-75ab13f363f0][Contract Checker]] under
+      $CONTRACT_CHECKER using:
+      - =mix phx.new contract_checker --no-ecto --no-html --no-assets --no-mailer --no-dashboard --no-live=
+      - dependencies:
+        - =open_api_spex= — OpenAPI spec parsing and request/body validation.
+        - =req= — HTTP client for proxying to =$BACKEND=.
+        - =yaml_elixir= — YAML parsing
+
+   3. To test the contract checker, simulate a client and a server that send/receive
+      pre-defined sequences of messages using ExUnit tests with =Plug.Test= conns.
+
+      These sequences of messages are defined to validate the behaviour of the
+      contract checker, given $FRONTEND_OPENAPI.
+
+      Given $FRONTEND_OPENAPI, some sequences of messages must fail while others pass
+      through.
+
+   4. Define test suites that execute these sequences of messages and show if the
+      $CONTRACT_CHECKER behaves as expected.
+
+   5. When the $CONTRACT_CHECKER detects an invalid sequence of message, then:
+      - The *developer / AI* receives a =Logger.warning= line with the same detail.
+      - A =400= JSON response with an =error= field describing the contract violation
+        is sent to the user if the error originated from the client, a =500= if it was
+        a contract violation by the server.
+
+   6. Before implementing any module, write its [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][specification]] in
+      [[id:a22f473d-5fd2-4430-b832-37984dd3097e][CONTRACT_CHECKER_DOC]].
+
+   7. Update $CONTRACT_CHECKER and its tests until it covers $FRONTEND_OPENAPI and
+      the $CONTRACT_CHECKER can verify the $FRONTEND_OPENAPI contract at runtime. All
+      (method, path, required-body-fields) triples in the spec are validated; unknown
+      paths return 400.
+
+4. Server
+   1. If $BACKEND is not defined, then initialize $BACKEND using standard tools: ~mix
+      phx…~
+
+   2. To define the tests for the server, re-use the tests from the $CONTRACT_CHECKER
+      except that instead of a simulated server, you use $BACKEND. The same ExUnit
+      test module is parameterised with a server URL (simulated or real).
+
+   3. When executing the tests, the requests must be made to the $CONTRACT_CHECKER
+      which forwards to the backend as it would be the case in production.
+
+   4. Update $BACKEND until it behaves as prescribed by $FRONTEND_OPENAPI
+      1. Gap analysis
+         - Read =$BACKEND/lib/backend_web/router.ex=.
+         - For each =(method, path)= in the contract:
+           - If absent from the router: record as a gap.
+
+      2. Close each gap
+         - For each =(method, path, auth-required)= gap:
+           - Add the route to =router.ex= — inside the =:authenticated= pipeline if
+             auth-required, outside otherwise.
+         - Identify or create the controller for the resource (named by the path
+           prefix).
+         - Add the controller action: parse params, call the context module, render
+           JSON.
+         - Add the corresponding function in =$BACKEND/lib/backend/<resource>.ex=.
+         - If the action requires new persisted data: create an Ecto schema and
+           migration.
+         - After all gaps are closed: Execute: =mix ecto.create && mix ecto.migrate=
+
+      3. Verify
+         - Execute: =cd $BACKEND && mix test=
+         - All tests must pass before proceeding.
+
+      4. Start
+         - Execute: =,app-start=
+
+** Test
+:PROPERTIES:
+:ID:       584e9314-1504-462a-87c1-b0ff6ab2300a
+:END:
+
+Premises
+- start with a french install of a Phoenix app in $BACKEND.
+- The application uses a PostgreSQL instance using peer authentication as it is
+  already configured in the current state of $BACKEND.
+- Execute the plan
+
+Conclusion
+- The conclusion stated in the objective section should be reached.
+- In addition, since the application is simple (just a TODO app), no developer time
+  should have been consumed.
