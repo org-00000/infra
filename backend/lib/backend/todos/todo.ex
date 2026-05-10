@@ -1,9 +1,9 @@
 defmodule Backend.Todos.Todo do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
-
   schema "todos" do
     field :text, :string
     field :completed, :boolean, default: false

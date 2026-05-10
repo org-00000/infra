@@ -1,17 +1,12 @@
 defmodule BackendWeb.ErrorJSONTest do
   use BackendWeb.ConnCase, async: true
 
-  # [[id:cd391604-848b-4375-ae67-f44fb98d09f9]]
-  describe "unmatched api routes" do
-    @describetag id: "cd391604"
+  test "renders 404" do
+    assert BackendWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
+  end
 
-    test "GET unknown path returns 404 json", %{conn: conn} do
-      conn =
-        conn
-        |> put_req_header("accept", "application/json")
-        |> get("/nonexistent")
-
-      assert %{"errors" => %{"detail" => "Not Found"}} = json_response(conn, 404)
-    end
+  test "renders 500" do
+    assert BackendWeb.ErrorJSON.render("500.json", %{}) ==
+             %{errors: %{detail: "Internal Server Error"}}
   end
 end

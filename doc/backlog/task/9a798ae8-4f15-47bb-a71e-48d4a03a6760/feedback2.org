@@ -1,0 +1,101 @@
+#+title: Feedback — Second Plan Execution
+#+date: 2026-05-10
+
+* Issues encountered during second execution of [[ref:bedb11b5-31bc-46c8-81bb-6a5617ebbd92]]
+
+** 1. Wrong working directory for =mix phx.new backend=
+
+Step 4.1 runs =mix phx.new backend= from inside =$CONTRACT_CHECKER=.  Because the
+shell's working directory was already =$CONTRACT_CHECKER= after completing step 3, the
+generated project landed at =$CONTRACT_CHECKER/backend= instead of =$ROOT/backend=.
+
+Fix applied: =mv "$CONTRACT_CHECKER/backend" "$ROOT/backend"=.
+
+Plan fix needed: make step 4.1 explicit — "=cd $ROOT && mix phx.new backend=".
+
+** 2. Test database not created
+
+=mix test= failed with "database backend_test does not exist".  Step 4.4.3 only says
+"=cd $BACKEND && mix test=" but the plan never calls =MIX_ENV=test mix ecto.create= and
+=MIX_ENV=test mix ecto.migrate= first.
+
+Fix applied: ran both commands before =mix test=.
+
+Plan fix needed: add a sub-step before 4.4.3 — "=MIX_ENV=test mix ecto.create &&
+MIX_ENV=test mix ecto.migrate=".
+
+** 3. Auto-generated =page_controller_test.exs= fails
+
+The test asserts =html_response(conn, 200) =~ "Peace of mind from prototype to
+production"= against =GET /=.  Our SPA controller calls =send_file= on
+=priv/static/index.html= which does not exist in the test build.
+
+Fix applied: deleted =test/backend_web/controllers/page_controller_test.exs=.
+
+Plan fix needed: note that the generated page controller test must be removed because the
+SPA endpoint serves a static file that is only present after =,frontend-dist-mk= runs.
+
+** 4. =mix test= inherits =MIX_ENV= from the shell
+
+Running =mix test= without =MIX_ENV=test= used the dev config and hit the Sandbox pool
+error.  Setting =MIX_ENV=test mix test= fixed it.
+
+Plan fix needed: step 4.4.3 should read "=MIX_ENV=test mix test=".
+
+** 5. =systemd-run= not available in the Guix container
+
+,contract-checker-start used =systemd-run= which is not installed.  The command failed
+at runtime (not caught during the first context).
+
+Fix applied: replaced =systemd-run= with a PID-file background process —
+=mix phx.server &>/dev/null & echo $! > "$CONTRACT_CHECKER_PID"=, and added
+=$CONTRACT_CHECKER_PID= to =etc/bash-dev-profile=.  Also removed
+=$CONTRACT_CHECKER_UNIT= (no longer needed).
+
+Plan fix needed: the plan (step 3.8 / ,contract-checker-start spec) should specify the
+PID-file pattern, not systemd units, so the implementation matches the container
+environment from the start.
+
+** 6. Phoenix router scope with no routes matches nothing
+
+The generated =ContractCheckerWeb.Router= had a scope with a pipeline but no route
+entries, so all requests fell through to Phoenix's 404 handler.  =GET /= returned 404.
+
+Fix applied: removed the router entirely and plugged =ProxyPlug= directly in the
+endpoint after =Plug.RequestId= and =Plug.Telemetry=.
+
+Plan fix needed: the plan says "implement ProxyPlug" but doesn't specify where to plug
+it.  Step 3.6 should state that the endpoint plugs ProxyPlug directly — no Phoenix
+router needed for a pure proxy.
+
+** 7. Req auto-decodes JSON response bodies
+
+=Req.request/1= decodes JSON responses into Elixir maps.  Passing the map to
+=Plug.Conn.send_resp/3= raised =FunctionClauseError= (expects a binary).
+
+Fix applied: added =decode_body: false= to the Req call so the raw binary is forwarded.
+
+Plan fix needed: step 3.6 (ProxyPlug spec) should note that =decode_body: false= is
+required so the raw response bytes are forwarded unchanged.
+
+** 8. Req response headers are lists, not binaries
+
+=Plug.Conn.put_resp_header/3= raised =FunctionClauseError= because Req returns header
+values as =[value]= lists (to accommodate multi-value headers).
+
+Fix applied: =List.wrap(v) |> Enum.join(", ")= before passing to =put_resp_header=.
+
+Plan fix needed: ProxyPlug spec should mention that Req header values must be collapsed
+to a single binary string before forwarding.
+
+** 9. Killing =mix phx.server= does not kill the Erlang VM
+
+=kill $PID= where =$PID= is the mix wrapper leaves the =beam.smp= child running and
+holding the port.  Subsequent starts fail with =:eaddrinuse=.
+
+Fix applied (operational): kill beam PIDs directly with =kill -9=, or use =pkill -f
+beam.smp= / =lsof -ti:PORT | xargs kill -9= before restarting.
+
+Plan fix needed: the ,contract-checker-start script should kill the beam process group
+rather than only the mix PID, e.g. =kill -- -$(cat "$CONTRACT_CHECKER_PID")= to send
+the signal to the entire process group, or store the beam PID instead.

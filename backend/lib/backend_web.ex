@@ -38,9 +38,7 @@ defmodule BackendWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller,
-        formats: [:html, :json],
-        layouts: [html: BackendWeb.Layouts]
+      use Phoenix.Controller, formats: [:html, :json]
 
       use Gettext, backend: BackendWeb.Gettext
 
@@ -52,8 +50,7 @@ defmodule BackendWeb do
 
   def live_view do
     quote do
-      use Phoenix.LiveView,
-        layout: {BackendWeb.Layouts, :app}
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end
@@ -90,8 +87,9 @@ defmodule BackendWeb do
       # Core UI components
       import BackendWeb.CoreComponents
 
-      # Shortcut for generating JS commands
+      # Common modules used in templates
       alias Phoenix.LiveView.JS
+      alias BackendWeb.Layouts
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())

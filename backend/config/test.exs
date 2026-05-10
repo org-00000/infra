@@ -7,8 +7,8 @@ import Config
 # Run `mix help test` for more information.
 config :backend, Backend.Repo,
   username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
+  hostname: "",
+  socket_dir: System.get_env("DB_RUN", "/tmp"),
   database: "backend_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
@@ -17,11 +17,11 @@ config :backend, Backend.Repo,
 # you can enable the server option below.
 config :backend, BackendWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "q5QHHmF0YFttd8fyFMukvqXKgH1ZHwDXIkiaV2X7Oez8j5++HPc93T5OLA5guHd4",
+  secret_key_base: "9WKQH10QHOqgfI3f1szIAkOmLw2gLF111TjMrjAKXtDGETbuKFn0WSC24pA+a1B9",
   server: false
 
 # In test we don't send emails
-config :backend, Backend.GenServer.Mailer, adapter: Swoosh.Adapters.Test
+config :backend, Backend.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
@@ -35,3 +35,7 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Sort query params output of verified routes for robust url comparisons
+config :phoenix,
+  sort_verified_routes_query_params: true

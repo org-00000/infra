@@ -1,13 +1,14 @@
 defmodule BackendWeb.ErrorHTMLTest do
   use BackendWeb.ConnCase, async: true
 
-  # [[id:8fe06c76-e9d2-4102-b24c-503d86571a21]]
-  describe "unmatched browser routes" do
-    @describetag id: "8fe06c76"
+  # Bring render_to_string/4 for testing custom views
+  import Phoenix.Template, only: [render_to_string: 4]
 
-    test "GET unknown path returns 404 plain text", %{conn: conn} do
-      conn = get(conn, "/nonexistent")
-      assert response(conn, 404) =~ "Not Found"
-    end
+  test "renders 404.html" do
+    assert render_to_string(BackendWeb.ErrorHTML, "404", "html", []) == "Not Found"
+  end
+
+  test "renders 500.html" do
+    assert render_to_string(BackendWeb.ErrorHTML, "500", "html", []) == "Internal Server Error"
   end
 end

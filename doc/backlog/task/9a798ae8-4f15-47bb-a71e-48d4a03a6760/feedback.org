@@ -1,0 +1,93 @@
+* Feedback on [[ref:bedb11b5-31bc-46c8-81bb-6a5617ebbd92][Plan]] — recorded during test execution
+
+** Step 1 — Frontend fetch
+
+The plan says "Execute: ,frontend-fetch url" unconditionally. When the frontend is
+already present and up-to-date, running `,frontend-fetch` still performs a =git pull=,
+which is harmless but implicit. The plan should state:
+
+#+begin_ai
+ Document this so the executor does not skip the step thinking it is
+unnecessary.
+#+end_ai
+
+** Step 3.1 — $CONTRACT_CHECKER not defined
+
+The plan references =$CONTRACT_CHECKER= but the variable was absent from
+=etc/bash-dev-profile= (only a bare relative name was present, not rooted at =$ROOT=).
+
+Gaps:
+- The plan should specify that =$CONTRACT_CHECKER= must be added to
+  =etc/bash-dev-profile= as =$ROOT/contract_checker= before Step 3.1 is attempted.
+- The plan should state which command to use to initialise the app, e.g.:
+  =mix phx.new contract_checker --no-ecto --no-html --no-assets --no-mailer --no-dashboard --no-live=
+
+** Step 3.1 — Dependencies not specified
+
+The plan says "stripped-down Phoenix/Elixir application" without listing required
+libraries. The following turned out to be necessary and were not obvious from the plan:
+
+- =open_api_spex= — OpenAPI spec parsing and request/body validation.
+- =req= — HTTP client for proxying to =$BACKEND=.
+- =yaml_elixir= — YAML parsing (=$FRONTEND_OPENAPI= is YAML, not JSON; =open_api_spex=
+  does not bundle a YAML parser).
+
+The plan should enumerate these or at least state "resolve dependencies as needed and
+record them here."
+
+** Step 3.2 — "Sequences of messages" format undefined
+
+The plan mentions "pre-defined sequences of messages" for testing but gives no format.
+In practice, sequences were encoded as ExUnit tests over =ContractChecker.Validator=
+using =Plug.Test.conn/2= to build synthetic connections. The plan should either:
+
+- Specify the format (e.g., ExUnit tests with =Plug.Test= conns), or
+- State that the format is left to the implementor and must be documented in task#data.
+
+** Step 3.4 — "Informative message to the user" is ambiguous
+
+In a proxy context there is no single "user": there is a browser client, a developer
+reading logs, and an AI reading logs. The plan should clarify:
+
+- The *client* receives a =400= JSON response with an =error= field describing the
+  contract violation.
+- The *developer / AI* receives a =Logger.warning= line with the same detail.
+
+** Step 3 ↔ Step 4 — Test reuse mechanism not specified
+
+Step 4.2 says "re-use the tests from $CONTRACT_CHECKER except that instead of a
+simulated server, you use $BACKEND." The mechanism is unclear. Two interpretations:
+
+1. The same ExUnit test module is parameterised with a server URL (simulated or real).
+2. The test module is copied and the simulated server replaced by Req calls to the
+   real backend.
+
+The plan should choose one and specify how the switchover is done (e.g., a shared
+test helper that accepts a =backend_url= option).
+
+** Step 3 — Proxy architecture vs. production use
+
+The plan says requests flow client → $CONTRACT_CHECKER → $BACKEND in production (Step
+4.3), but `,app-start` only starts =$BACKEND=. The plan does not say:
+
+- Whether $CONTRACT_CHECKER is a *development-only* tool or a *production proxy*.
+- If production: how `,app-start= should be updated to start $CONTRACT_CHECKER.
+- If development-only: how to start it separately during development and testing.
+
+** Step 3.5 — "Covers $FRONTEND_OPENAPI" undefined
+
+"Update $CONTRACT_CHECKER until it covers $FRONTEND_OPENAPI" is vague. In practice,
+"covers" was interpreted as: every (method, path) pair in the spec is matched by the
+validator and every required request body field is validated. The plan should make this
+explicit, e.g.: "all (method, path, required-body-fields) triples in the spec are
+validated; unknown paths return 400."
+
+** Convention gap — Specification before implementation (CLAUDE.md)
+
+CLAUDE.md requires writing a specification before any non-trivial implementation, and
+the Elixir convention (=.claude/rules/elixir.md=) requires every module to carry
+=[[id:UUID]]= and =[[ref:UUID][Spec]]= in its =@moduledoc=. The plan does not mention
+this step. The modules were created with placeholder IDs and no spec document.
+
+The plan should include: "Write a specification for $CONTRACT_CHECKER in =doc/= before
+implementing any module."

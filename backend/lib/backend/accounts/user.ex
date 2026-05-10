@@ -1,14 +1,13 @@
 defmodule Backend.Accounts.User do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
-
   schema "users" do
     field :email, :string
     field :password, :string, virtual: true
-    field :hashed_password, :string
-    has_many :todos, Backend.Todos.Todo
+    field :password_hash, :string
     timestamps()
   end
 
@@ -19,11 +18,11 @@ defmodule Backend.Accounts.User do
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
     |> unique_constraint(:email)
-    |> put_pass_hash()
+    |> put_password_hash()
   end
 
-  defp put_pass_hash(%Ecto.Changeset{valid?: true, changes: %{password: pw}} = cs),
-    do: put_change(cs, :hashed_password, Bcrypt.hash_pwd_salt(pw))
+  defp put_password_hash(%{valid?: true, changes: %{password: pw}} = cs),
+    do: put_change(cs, :password_hash, Bcrypt.hash_pwd_salt(pw))
 
-  defp put_pass_hash(cs), do: cs
+  defp put_password_hash(cs), do: cs
 end

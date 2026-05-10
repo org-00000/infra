@@ -1,22 +1,22 @@
 defmodule BackendWeb.TodoController do
+  @moduledoc false
   use BackendWeb, :controller
   alias Backend.Todos
 
-  def index(conn, _params) do
-    todos = Todos.list_todos(conn.assigns.current_user.id)
-    conn |> json(Enum.map(todos, &serialize/1))
+  def index(conn, _) do
+    json(conn, Enum.map(Todos.list_todos(conn.assigns.current_user.id), &serialize/1))
   end
 
   def create(conn, params) do
     case Todos.create_todo(conn.assigns.current_user.id, params) do
       {:ok, todo} -> conn |> put_status(201) |> json(serialize(todo))
-      {:error, _cs} -> conn |> put_status(422) |> json(%{error: "Validation failed"})
+      {:error, _} -> conn |> put_status(422) |> json(%{error: "Validation failed"})
     end
   end
 
   def update(conn, %{"todo_id" => id} = params) do
     case Todos.update_todo(conn.assigns.current_user.id, id, params) do
-      {:ok, todo} -> conn |> json(serialize(todo))
+      {:ok, todo} -> json(conn, serialize(todo))
       {:error, :not_found} -> conn |> put_status(404) |> json(%{error: "Not found"})
       {:error, _} -> conn |> put_status(422) |> json(%{error: "Validation failed"})
     end
@@ -24,16 +24,16 @@ defmodule BackendWeb.TodoController do
 
   def delete(conn, %{"todo_id" => id}) do
     case Todos.delete_todo(conn.assigns.current_user.id, id) do
-      {:ok, _} -> conn |> send_resp(204, "")
+      {:ok, _} -> send_resp(conn, 204, "")
       {:error, :not_found} -> conn |> put_status(404) |> json(%{error: "Not found"})
     end
   end
 
-  defp serialize(todo),
+  defp serialize(t),
     do: %{
-      id: todo.id,
-      text: todo.text,
-      completed: todo.completed,
-      createdAt: todo.inserted_at |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_iso8601()
+      id: t.id,
+      text: t.text,
+      completed: t.completed,
+      createdAt: t.inserted_at |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_iso8601()
     }
 end

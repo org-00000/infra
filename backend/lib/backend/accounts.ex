@@ -1,32 +1,22 @@
 defmodule Backend.Accounts do
   @moduledoc false
-
-  alias Backend.Accounts.User
-  alias Backend.Repo
-
-  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+  import Ecto.Query
+  alias Backend.{Repo, Accounts.User}
 
   def create_user(attrs) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    %User{} |> User.changeset(attrs) |> Repo.insert()
   end
 
   def authenticate(email, password) do
-    user = get_user_by_email(email)
+    user = Repo.one(from u in User, where: u.email == ^email)
 
-    cond do
-      user && Bcrypt.verify_pass(password, user.hashed_password) ->
-        {:ok, user}
-
-      user ->
-        {:error, :wrong_password}
-
-      true ->
-        Bcrypt.no_user_verify()
-        {:error, :not_found}
+    if user && Bcrypt.verify_pass(password, user.password_hash) do
+      {:ok, user}
+    else
+      Bcrypt.no_user_verify()
+      {:error, :invalid}
     end
   end
 
-  def get_user!(id), do: Repo.get!(Backend.Accounts.User, id)
+  def get_user(id), do: Repo.get(User, id)
 end
