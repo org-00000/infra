@@ -59,6 +59,24 @@ which drifts from the formal spec and produces unverified implementations.
 - Objective :≡ Resolve =TODO(be35)= in =os/12.scm=: decide whether the =port= field in
   =application-conf= is still needed and remove it if not.
 
+*** DONE Claude auto-document pseudo-language
+:PROPERTIES:
+:ID: 92e7714e-8818-4993-ba87-eee2c267fa7c
+:OWNER: phf
+:END:
+
+- Objective :: Make Claude auto document the pseudo language for more meaningful interactions
+- Result ::
+  - Compact concept descriptions with semantics (represents …) and computational
+    content for both human and AI understanding.
+  - Example concepts: List, Range, Enumerable added to the pseudo language so that
+    Claude can pick the pattern.
+  - ai code blocks for in context AI directives and Emacs integration for ease of
+    editing.
+  - #+begin_ai directive in pseudo-language.org instructs Claude to warn on incorrect
+    usage and ask before adding undocumented constructs.
+  - CLAUDE.md modified so that Claude Code takes the above into account.
+
 *** FAILED doc-graph
 :PROPERTIES:
 :ID:       c4e7a2f1-8b3d-4e9c-a5f0-6d2b1e8c3a7f

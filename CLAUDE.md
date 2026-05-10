@@ -32,6 +32,9 @@
   `doc/pseudo-language.org` to parse them. If a construct appears that is not defined
   there, warn the user and ask whether it should be added to that file.
 
+- `#+begin_ai … #+end_ai` blocks contain instructions directed at AI assistants. When
+  you read a file containing one, follow its content.
+
 - Task definition: `doc/task.org` — Backlog: `doc/backlog.org`
 
 - Project commands are sent as messages to `bin/actor`. See `doc/actor.org` for the
