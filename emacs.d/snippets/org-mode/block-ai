@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: block-ai
+# key: ai
+# --
+#+begin_ai
+$0
+#+end_ai

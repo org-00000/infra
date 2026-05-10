@@ -75,6 +75,28 @@ Defined in: [[ref:e1eca37b-a2dc-4916-b455-d5791109282a][Notation]]
 
 Defined in [[ref:1f6eeb40-6e6b-4e19-9d5d-23af3858023d][Specification]].
 
+** # — Qualified aspect access
+:PROPERTIES:
+:ID:       a2f7c3e1-9b4d-4a0f-d6e8-3c1b7a5f2e9d
+:END:
+
+For any concept =T=, =T#name= denotes the aspect =name= of =T=. Inside a definition
+block headed by =T=, each listed item =name= is implicitly =T#name=; the prefix is
+omitted for readability but always implied.
+
+#+begin_src pseudo
+% These two blocks are equivalent:
+
+List(X)
+- empty :: …            % shorthand inside the block
+
+List(X)
+- List(X)#empty :: …    % fully qualified form
+#+end_src
+
+=T#name= may be chained: =E#range#list= means the =list= aspect of the =range= aspect
+of =E=.
+
 ** id and ref
 :PROPERTIES:
 :ID:       d0a4e8c6-5b1f-4d2a-a7e3-4c6b9f2d0e5a
@@ -194,26 +216,68 @@ match expr
 
 Defined in [[ref:a588c790-daae-465c-b7ce-5b3ab8894fbd][Actor Model]].
 
-** Built-in operations
+** List
+
+List(X)
+- empty :: represents an empty list of X.
+  - [] :≡ empty
+- cons(x list) :: represents the list that starts with x followed by elements of list
+  - cons : X List(X) → List(X)
+- [a, b…, z] :: shotcut notation for cons(a cons(b …))
+- elim(c f) :: represents a function that maps any list to some type of value
+  - elim : C (X C → C) → List(X) → C
+  - elim(c f) :≡
+    1. rec c f list :≡
+       - match list
+         - [] ↦ c
+         - cons x list' ↦ f(x rec(c f list'))
+    2. c f ↦ list ↦ rec c f list
+- head(list) :: represents the first element of list, if any
+  - If l ≡ cons(x _), then: head(l) :≡ x
+- map(f lst) :: Given lst : List(X), then it represents a list like lst but with all
+  elements mapped according to f
+  - map : (X → C) List(X) → List(C)
+  - map(f) :≡ elim([] (x list' ↦ cons(f(x) list')))
+
+** Range
 :PROPERTIES:
-:ID:       5d0a7e4b-1c6f-4b9d-f3e2-7b4a0d5e1c6f
+:ID:       bc6d898b-dac0-4ff5-975c-08829f11651a
 :END:
 
-Standard operations on common types are assumed available without further definition.
-They follow conventional mathematical or functional-programming meaning:
+Range
+- mk(start end) :: represents a set of consecutive n : ℕ such that start ≤ n <
+  end.
+- start :: represents the starting ℕ of a range.
+- end :: represents the end ℕ of a range.
+- to(n) :: represents the range mk(0 n)
+- list :: represents the unique List(ℕ) associated from some range.
+  - list : Range → List(ℕ)
+  - list(mk(start end)) :≡ [start, …, end-1]
 
-| Operation      | Type                | Meaning                                   |
-|----------------+---------------------+-------------------------------------------|
-| =head(xs)=       | =List T → T=          | First element of =xs=                       |
-| =tail(xs)=       | =List T → List T=     | =xs= without its first element              |
-| =second(xs)=     | =List T → T=          | Second element of =xs=                      |
-| =cons(x, xs)=    | =T × List T → List T= | Prepend =x= to =xs=                           |
-| =length(xs)=     | =List T → ℕ=          | Number of elements in =xs=                  |
-| =xs[i]=          | =List T × ℕ → T=      | Element at zero-based index =i=             |
-| =swap(xs, i, j)= | =List T × ℕ × ℕ ⇝ ∅=  | Swap elements at indices =i= and =j= in place |
+** Enumerable
+:PROPERTIES:
+:ID:       735be708-dd63-4b4b-9c24-9575a0a9d638
+:END:
 
-When a necessary operation is not in this table, define it in the specification
-before using it.
+Enumerable(X)
+- E : Enumerable(X) :: represents a set of element of X indexed by a range
+  - E#set : Set(X)
+  - ∃ n : ℕ, E#range :≡ Range#to(n)
+  - E#index : E#range → E#set
+  - E#index is bijective.
+- E#at(i) :: represents the element of E#set indexed by i
+  - E#at(i) :≡ E#index(i)
+- E#list :: represents the list that is isomorphic to E#set according to E#index
+  - E#list :≡ map E#index E#range#list
+- Since E#set ≅ E#list, then: any operation on E#list may be applied to E#set and
+  reciprocally.
+
+** Additional concepts
+
+#+begin_ai
+If undocumented concepts are used, the: ask the user if they should be added to the pseudo-language.
+If a concept is used incorrectly, then: warn the user.
+#+end_ai
 
 ** Actor model primitives
 :PROPERTIES:
